@@ -1,0 +1,42 @@
+{
+	"name": "casamestra",
+	"version": "1.0.0",
+	"description": "Casa Mestra WEB",
+	"main": "server.js",
+	"scripts": {
+		"test": "mocha --recursive -R list",
+		"tdd": "mocha --recursive --watch -R list"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://devmarco@bitbucket.org/devmarco/casamestra-api.git"
+	},
+	"homepage": "http://api-casamestra.rhcloud.com/",
+	"keywords": [
+		"web",
+		"casamestra"
+	],
+	"author": {
+		"name": "Marco Paulo",
+		"email": "markoskt@gmail.com"
+	},
+	"license": "ISC",
+	"engines": {
+		"node": ">= 0.6.0",
+		"npm": ">= 1.0.0"
+	},
+	"dependencies": {
+		"hapi": "^8.4.0",
+		"joi": "^6.1.0",
+		"lodash": "^3.6.0",
+		"mongoose": "^4.0.1"
+	},
+	"devDependencies": {
+		"expect.js": "^0.3.1",
+		"good": "^6.0.0",
+		"good-console": "^5.0.0",
+		"moment": "^2.10.2",
+		"supertest": "^0.15.0"
+	},
+	"private": true
+}

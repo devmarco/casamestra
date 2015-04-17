@@ -1,10 +1,6 @@
 var Hapi = require('hapi');
-var mongoose = require('mongoose');
 var routes = require('../routes');
 var config = require('../config/config');
-
-//Database connect
-mongoose.connect('mongodb://' + config.db.username + ':' + config.db.password + '@ds061651.mongolab.com:61651/casamestra');
 
 //Create the server
 var server = new Hapi.Server();
@@ -21,11 +17,9 @@ server.connection({
 	}
 });
 
-//Expose routes
-routes.create(server);
 
 //Set the plugins
-server.register({
+server.register([{
 	register: require('good'),
 	options: {
 		reporters: [{
@@ -36,9 +30,17 @@ server.register({
 			}
 		}]
 	}
-}, function(err) {
+}, {
+	register: require('hapi-mongodb'),
+	options: {
+		url: 'mongodb://' + config.db.username + ':' + config.db.password + '@ds061651.mongolab.com:61651/casamestra'
+	}
+}], function(err) {
 	if (err)
 		throw new Error(err);
 });
+
+//Expose routes
+routes.create(server);
 
 module.exports = server;

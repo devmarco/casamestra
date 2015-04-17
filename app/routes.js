@@ -12,6 +12,8 @@ var routes = {
 	estates: {
 		'GET': require('../app/endpoints/estates/get'),
 		'GET-ONE': require('../app/endpoints/estates/get-one'),
+		'GET-BUY': require('../app/endpoints/estates/get-buy'),
+		'GET-RENT': require('../app/endpoints/estates/get-rent'),
 		'POST': require('../app/endpoints/estates/create'),
 		'PUT': require('../app/endpoints/estates/update'),
 		'DELETE': require('../app/endpoints/estates/delete'),
@@ -51,8 +53,12 @@ module.exports = {
 		for (e in routes) {
 			for (i in routes[e]) {
 				endpointValue = routes[e][i];
-				if (typeof endpointValue === 'function') {
-					endpointValue(server);
+				if (typeof endpointValue === 'object') {
+					server.route({
+						method: endpointValue.method,
+						path: endpointValue.path,
+						handler: endpointValue.handler
+					});
 				}
 			}
 		}

@@ -8,7 +8,7 @@ var Filter = require('../../helpers/filter');
 
 var getEstates = {
 	method: 'GET',
-	path: '/estates',
+	path: '/estates/rent',
 	handler: function(req, reply) {
 		/**
 		 * Verify the request parameters and return the result
@@ -18,7 +18,9 @@ var getEstates = {
 		 * - offset [number]
 		 */
 
-		Filter('estates', req, reply);
+		Filter('estates', req, reply, {
+			type: 'rent'
+		});
 	}
 }
 

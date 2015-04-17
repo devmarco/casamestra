@@ -31,12 +31,12 @@
 		"joi": "^6.1.0",
 		"lodash": "^3.6.0",
 		"mongoose": "^4.0.1",
-		"moment": "^2.10.2"
+		"moment": "^2.10.2",
+		"good": "^6.0.0",
+		"good-console": "^5.0.0"
 	},
 	"devDependencies": {
 		"expect.js": "^0.3.1",
-		"good": "^6.0.0",
-		"good-console": "^5.0.0",
 		"supertest": "^0.15.0"
 	},
 	"private": true

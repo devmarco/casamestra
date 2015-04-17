@@ -11,8 +11,8 @@ var server = new Hapi.Server();
 
 //Set the connection
 server.connection({
-	host: process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
-	port: process.env.OPENSHIFT_NODEJS_PORT || 8080,
+	host: process.env.HOST || '127.0.0.1',
+	port: process.env.PORT || 8080,
 	routes: {
 		cors: true
 	},

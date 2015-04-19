@@ -1,6 +1,4 @@
-var model = require('../../models/estates');
 var Filter = require('../../helpers/filter');
-
 
 /*------------------------------------*\
     [ESTATES] GET

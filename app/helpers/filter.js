@@ -1,6 +1,12 @@
 var DB,
 	customFilters;
 
+/**
+ * Filter result by limit
+ * @param  {[string]} collection [The name of collection]
+ * @param  {[function]} reply    [The reply function]
+ * @param  {[number]} limit      [The number of limit]
+ */
 function filterByLimit(collection, reply, limit) {
 	var findOptions = {},
 		limit = parseInt(limit);
@@ -24,6 +30,12 @@ function filterByLimit(collection, reply, limit) {
 		});
 }
 
+/**
+ * Filter result by offset
+ * @param  {[string]} collection [The name of collection]
+ * @param  {[function]} reply    [The reply function]
+ * @param  {[number]} offset     [The number of offset]
+ */
 function filterByOffset(collection, reply, offset) {
 	var findOptions = {},
 		offset = parseInt(offset);
@@ -46,6 +58,13 @@ function filterByOffset(collection, reply, offset) {
 		});
 }
 
+/**
+ * Filter result by limit and offset
+ * @param  {[string]} collection [The name of collection]
+ * @param  {[function]} reply    [The reply function]
+ * @param  {[number]} limit      [The number of limit]
+ * @param  {[number]} offset     [The number of offset]
+ */
 function filterByLimitAndOffset(collection, reply, limit, offset) {
 	var findOptions = {},
 		offset = parseInt(offset),
@@ -70,6 +89,11 @@ function filterByLimitAndOffset(collection, reply, limit, offset) {
 		});
 }
 
+/**
+ * Return all results
+ * @param  {[string]} collection [The name of collection]
+ * @param  {[function]} reply    [The reply function]
+ */
 function getAllResults(collection, reply) {
 	var findOptions = {};
 
@@ -89,6 +113,12 @@ function getAllResults(collection, reply) {
 	});
 }
 
+/**
+ * Verify the request parameters
+ * @param  {[string]} collection [The name of collection]
+ * @param  {[function]} reply    [The reply function]
+ * @param  {[object]} req        [The request object]
+ */
 function verifyLimitAndOffset(collection, req, reply) {
 	var limit,
 		offset;
@@ -139,6 +169,6 @@ module.exports = function(collection, req, reply, custom) {
 		customFilters = custom;
 	}
 
-	//Verify request
+	//Verify and return data
 	verifyLimitAndOffset(collection, req, reply);
 }

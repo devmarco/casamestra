@@ -57,7 +57,8 @@ module.exports = {
 					server.route({
 						method: endpointValue.method,
 						path: endpointValue.path,
-						handler: endpointValue.handler
+						handler: endpointValue.handler,
+						config: endpointValue.config || {}
 					});
 				}
 			}

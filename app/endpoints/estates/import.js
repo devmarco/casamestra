@@ -1,47 +1,54 @@
-var model = require('../../models/estates');
 var Valid = require('joi');
 var moment = require('moment');
 var _ = require('lodash');
 
-/**
- * VALIDATION SCHEMA
- */
-var validateSchema = Valid.object().keys({
-	title: Valid.string().required(),
-	address: {
-		local: Valid.string().required(),
-		lat: Valid.number().required(),
-		lng: Valid.number().required()
-	},
-	gallery: {
-		cover: Valid.string().uri().required(),
-		photos: Valid.array()
-	},
-	features: Valid.array(),
-	details: Valid.array(),
-	type: Valid.string().required(),
-	area: Valid.number().required(),
-	bedroom: Valid.number().required(),
-	bathroom: Valid.number().required(),
-	park: Valid.number().required(),
-	price: Valid.number().required(),
-	description: Valid.string().required(),
-	estate_type: Valid.string().required(),
-	exclusive: Valid.boolean().required(),
-	neighborhood: Valid.string().required(),
-	featured: Valid.boolean()
-});
+/*------------------------------------*\
+    [ESTATES] IMPORT MANY
+\*------------------------------------*/
 
-/**
- * CREATE A ESTATE
- */
-var importEstates = function(req, reply) {
-	var newEstate,
-		estates,
-		importsSuccess = 0,
-		importsFails = [];
+var createEstate = {
+	method: 'POST',
+	path: '/estates/import',
+	handler: function(req, reply) {
+		var DB = req.server.plugins['hapi-mongodb'].db,
+			ObjectID = req.server.plugins['hapi-mongodb'].ObjectID,
+			estates,
+			collection,
+			validateSchema,
+			importsFails = [],
+			importsSuccess = [];
 
-	try {
+		//Set the collection
+		collection = DB.collection('estates');
+
+		/**
+		 * VALIDATION SCHEMA
+		 */
+		validateSchema = Valid.object().keys({
+			title: Valid.string().required(),
+			address: {
+				local: Valid.string().required(),
+				lat: Valid.number().required(),
+				lng: Valid.number().required()
+			},
+			gallery: {
+				cover: Valid.string().uri().required(),
+				photos: Valid.array()
+			},
+			features: Valid.array(),
+			details: Valid.array(),
+			type: Valid.string().required(),
+			area: Valid.number().required(),
+			bedroom: Valid.number().required(),
+			bathroom: Valid.number().required(),
+			park: Valid.number().required(),
+			price: Valid.number().required(),
+			description: Valid.string().required(),
+			estate_type: Valid.string().required(),
+			exclusive: Valid.boolean().required(),
+			neighborhood: Valid.string().required(),
+			featured: Valid.boolean()
+		});
 
 		estates = JSON.parse(req.payload);
 
@@ -55,50 +62,37 @@ var importEstates = function(req, reply) {
 					});
 				} else {
 
-					newEstate = new model(value);
-
-					newEstate.save(function(err) {
-						if (err) {
-							importsFails.push({
-								errorMessage: err.message,
-								estate: value
-							});
-						} else {
-							importsSuccess++;
-						}
-
-						//Return the value
-						if (estates.length === (key + 1)) {
-							reply({
-								status: 'success',
-								successfulImports: importsSuccess,
-								failedImports: importsFails.length || 0,
-								failedData: importsFails
-							})
-						}
-					});
+					//Set the update_at field
+					value.created_at = moment().format();
+					importsSuccess.push(value);
 				}
 			});
 		});
 
-	} catch (err) {
-		return reply({
-			'code': 0,
-			'message': 'Something bad happened :(',
-			'description': 'Json Parse error'
+		//Query
+		collection.insertMany(importsSuccess, function(err, result) {
+			if (err) {
+				return reply({
+					'code': 0,
+					'message': 'Something bad happened :(',
+					'description': err
+				});
+			}
+
+			reply({
+				code: 1,
+				insertedDocuments: result.n,
+				faillureDocuments: {
+					count: importsFails.length,
+					data: importsFails
+				}
+			});
 		});
 	}
 }
-
 
 /**
  * EXPORT FUNCTION
  * @param [server]
  */
-module.exports = function(server) {
-	server.route({
-		method: 'POST',
-		path: '/estates/import',
-		handler: importEstates
-	});
-};
+module.exports = createEstate;

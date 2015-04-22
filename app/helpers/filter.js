@@ -1,4 +1,5 @@
 var DB,
+	collection,
 	customFilters;
 
 /**
@@ -14,7 +15,7 @@ function filterByLimit(collection, reply, limit) {
 	//Add custom filters
 	if (customFilters) findOptions = customFilters;
 
-	DB.collection(collection)
+	collection
 		.find({})
 		.limit(limit)
 		.toArray(function(err, result) {
@@ -43,7 +44,7 @@ function filterByOffset(collection, reply, offset) {
 	//Add custom filters
 	if (customFilters) findOptions = customFilters;
 
-	DB.collection(collection).find(findOptions)
+	collection.find(findOptions)
 		.skip(offset)
 		.toArray(function(err, result) {
 			if (err) {
@@ -73,7 +74,7 @@ function filterByLimitAndOffset(collection, reply, limit, offset) {
 	//Add custom filters
 	if (customFilters) findOptions = customFilters;
 
-	DB.collection(collection).find(findOptions)
+	collection.find(findOptions)
 		.skip(offset)
 		.limit(limit)
 		.toArray(function(err, result) {
@@ -100,7 +101,7 @@ function getAllResults(collection, reply) {
 	//Add custom filters
 	if (customFilters) findOptions = customFilters;
 
-	DB.collection(collection).find(findOptions).toArray(function(err, result) {
+	collection.find(findOptions).toArray(function(err, result) {
 		if (err) {
 			return reply({
 				"code": 0,
@@ -164,6 +165,9 @@ function verifyLimitAndOffset(collection, req, reply) {
 module.exports = function(collection, req, reply, custom) {
 	//Set the DB instance
 	DB = req.server.plugins['hapi-mongodb'].db;
+
+	//Set the DB collection
+	collection = DB.collection(collection);
 
 	if (typeof custom === 'object') {
 		customFilters = custom;

@@ -13,9 +13,18 @@ var getOneEstates = {
 		//Set the collection
 		collection = DB.collection('estates');
 
-		collection.find({
+		//Checks if the ESTATEID is a valid ObjectID
+		if (!ObjectID.isValid(req.params.ESTATEID)) {
+			return reply({
+				"code": 0,
+				"message": "Something bad happened :(",
+				"description": 'This estate not exist'
+			});
+		}
+
+		collection.findOne({
 			_id: new ObjectID(req.params.ESTATEID)
-		}).limit(1).toArray(function(err, result) {
+		}, function(err, result) {
 			if (err) {
 				return reply({
 					"code": 0,

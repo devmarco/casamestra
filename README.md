@@ -15,15 +15,15 @@
 	[PUT] - Update the estate that have this ID
 	[DELETE] - Delete the estate that have this ID
 
-##### /estates?type="buy"
+##### /estates/buy
 
 	[GET] - Returns all estates to buy
 
-##### /estates?type="sell"
+##### /estates/rent
 
-	[GET] - Returns all estates to sell
+	[GET] - Returns all estates to rent
 
-##### /estates?type="new"
+##### /estates/new
 
 	[GET] - Returns estates in construction phase
 

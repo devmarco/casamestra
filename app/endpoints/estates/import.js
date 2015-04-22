@@ -70,7 +70,7 @@ var createEstate = {
 		});
 
 		//Query
-		collection.insertMany(importsSuccess, function(err, result) {
+		collection.insertMany(importsSuccess, {}, function(err, result) {
 			if (err) {
 				return reply({
 					'code': 0,
@@ -81,7 +81,7 @@ var createEstate = {
 
 			reply({
 				code: 1,
-				insertedDocuments: result.n,
+				insertedDocuments: importsSuccess.length,
 				faillureDocuments: {
 					count: importsFails.length,
 					data: importsFails

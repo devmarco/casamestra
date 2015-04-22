@@ -16,35 +16,65 @@ var createEstate = {
 		//Set the collection
 		collection = DB.collection('estates');
 
-		//Query
-		collection.findOne({
-			'address.lat': req.payload.address.lat,
-			'address.lat': req.payload.address.lng
-		}, function(err, result) {
-			if (result.length !== 0) {
+		//Checks if this estate was associated with one agenet
+		if (req.payload.agent) {
+
+			//Verify agenet ObjectID
+			if (!ObjectID.isValid(req.payload.agent)) {
 				return reply({
 					'code': 0,
 					'message': 'Something bad happened :(',
-					'description': 'Already exist an estate in the same address'
-				});
-			} else {
-
-				//Set the update_at field
-				req.payload.created_at = moment().format();
-
-				collection.insertOne(req.payload, function(err, result) {
-					if (err) {
-						return reply({
-							'code': 0,
-							'message': 'Something bad happened :(',
-							'description': err
-						});
-					}
-
-					reply(estate).code(201);
+					'description': 'This agent not exist'
 				});
 			}
-		});
+			DB.collection('agents').findOne({
+				_id: req.payload.agent
+			}, function(err, result) {
+				if (err) {
+					return reply({
+						'code': 0,
+						'message': 'Something bad happened :(',
+						'description': err
+					});
+				}
+
+				createEstate(result);
+			});
+		} else {
+			createEstate();
+		}
+
+		function createEstate(agent) {
+			//Query
+			collection.findOne({
+				'address.lat': req.payload.address.lat,
+				'address.lat': req.payload.address.lng
+			}, function(err, result) {
+				if (result.length !== 0) {
+					return reply({
+						'code': 0,
+						'message': 'Something bad happened :(',
+						'description': 'Already exist an estate in the same address'
+					});
+				} else {
+
+					//Set the update_at field
+					req.payload.created_at = moment().format();
+
+					collection.insertOne(req.payload, function(err, result) {
+						if (err) {
+							return reply({
+								'code': 0,
+								'message': 'Something bad happened :(',
+								'description': err
+							});
+						}
+
+						reply(estate).code(201);
+					});
+				}
+			});
+		}
 	},
 	config: {
 		validate: {
@@ -74,7 +104,9 @@ var createEstate = {
 				estate_type: Valid.string().required(),
 				exclusive: Valid.boolean().required(),
 				neighborhood: Valid.string().required(),
-				featured: Valid.boolean()
+				featured: Valid.boolean(),
+				agent: Valid.number(),
+				dogs_allowed: Valid.boolean
 			}
 		}
 	}

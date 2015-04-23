@@ -15,6 +15,15 @@ var updateEstate = {
 		//Set the collection
 		collection = DB.collection('estates');
 
+		//Checks if the ESTATEID is a valid ObjectID
+		if (!ObjectID.isValid(req.params.ESTATEID)) {
+			return reply({
+				"code": 0,
+				"message": "Something bad happened :(",
+				"description": 'This estate not exist'
+			});
+		}
+
 		//Set the update_at field
 		req.payload.update_at = moment().format();
 

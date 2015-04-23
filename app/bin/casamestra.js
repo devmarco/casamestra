@@ -33,12 +33,12 @@ server.register([{
 }, {
 	register: require('hapi-mongodb'),
 	options: {
-		url: 'mongodb://' + config.db.username + ':' + config.db.password + '@ds061651.mongolab.com:61651/casamestra',
+		url: 'mongodb://127.0.0.1:27017',
 		settings: {
 			db: {
-            	"native_parser": false
-        	}
-    	}
+				"native_parser": false
+			}
+		}
 	}
 }], function(err) {
 	if (err)

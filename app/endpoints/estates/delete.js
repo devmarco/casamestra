@@ -13,6 +13,15 @@ var deleteEstate = {
 		//Set the collection
 		collection = DB.collection('estates');
 
+		//Checks if the ESTATEID is a valid ObjectID
+		if (!ObjectID.isValid(req.params.ESTATEID)) {
+			return reply({
+				"code": 0,
+				"message": "Something bad happened :(",
+				"description": 'This estate not exist'
+			});
+		}
+
 		collection.deleteOne({
 			_id: new ObjectID(req.params.ESTATEID)
 		}, function(err, result) {

@@ -8,7 +8,7 @@ var DB,
  * @param  {[function]} reply    [The reply function]
  * @param  {[number]} limit      [The number of limit]
  */
-function filterByLimit(collection, reply, limit) {
+function filterByLimit(reply, limit) {
 	var findOptions = {},
 		limit = parseInt(limit);
 
@@ -66,7 +66,7 @@ function filterByOffset(collection, reply, offset) {
  * @param  {[number]} limit      [The number of limit]
  * @param  {[number]} offset     [The number of offset]
  */
-function filterByLimitAndOffset(collection, reply, limit, offset) {
+function filterByLimitAndOffset(reply, limit, offset) {
 	var findOptions = {},
 		offset = parseInt(offset),
 		limit = parseInt(limit);
@@ -95,23 +95,24 @@ function filterByLimitAndOffset(collection, reply, limit, offset) {
  * @param  {[string]} collection [The name of collection]
  * @param  {[function]} reply    [The reply function]
  */
-function getAllResults(collection, reply) {
+function getAllResults(reply) {
 	var findOptions = {};
 
 	//Add custom filters
 	if (customFilters) findOptions = customFilters;
 
-	collection.find(findOptions).toArray(function(err, result) {
-		if (err) {
-			return reply({
-				"code": 0,
-				"message": "Something bad happened :(",
-				"description": err
-			});
-		}
+	collection.find(findOptions)
+		.toArray(function(err, result) {
+			if (err) {
+				return reply({
+					"code": 0,
+					"message": "Something bad happened :(",
+					"description": err
+				});
+			}
 
-		reply(result);
-	});
+			reply(result);
+		});
 }
 
 /**
@@ -133,7 +134,7 @@ function verifyLimitAndOffset(collection, req, reply) {
 			});
 		}
 
-		filterByLimitAndOffset(collection, reply, req.query.limit, req.query.offset);
+		filterByLimitAndOffset(reply, req.query.limit, req.query.offset);
 
 	} else if (req.query.offset) {
 		if (typeof parseInt(req.query.offset) !== 'number') {
@@ -144,7 +145,7 @@ function verifyLimitAndOffset(collection, req, reply) {
 			});
 		}
 
-		filterByOffset(collection, reply, req.query.offset);
+		filterByOffset(reply, req.query.offset);
 
 	} else if (req.query.limit) {
 		if (typeof parseInt(req.query.limit) !== 'number') {
@@ -155,19 +156,19 @@ function verifyLimitAndOffset(collection, req, reply) {
 			});
 		}
 
-		filterByLimit(collection, reply, req.query.limit);
+		filterByLimit(reply, req.query.limit);
 
 	} else {
-		getAllResults(collection, reply);
+		getAllResults(reply);
 	}
 }
 
-module.exports = function(collection, req, reply, custom) {
+module.exports = function(collectionName, req, reply, custom) {
 	//Set the DB instance
 	DB = req.server.plugins['hapi-mongodb'].db;
 
 	//Set the DB collection
-	collection = DB.collection(collection);
+	collection = DB.collection(collectionName);
 
 	if (typeof custom === 'object') {
 		customFilters = custom;

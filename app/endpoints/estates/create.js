@@ -1,5 +1,6 @@
 var Valid = require('joi');
 var moment = require('moment');
+var Boom = require('boom');
 
 /*------------------------------------*\
     [ESTATES] CREATE ONE
@@ -10,52 +11,48 @@ var createEstate = {
 	path: '/estates',
 	handler: function(req, reply) {
 		var DB = req.server.plugins['hapi-mongodb'].db,
-			ObjectID = req.server.plugins['hapi-mongodb'].ObjectID,
-			collection;
+			OBJECTID = req.server.plugins['hapi-mongodb'].ObjectID,
+			DATABASE,
+			estate;
 
 		//Set the collection
-		collection = DB.collection('estates');
+		DATABASE = DB.collection('estates');
 
-		//Checks if this estate was associated with one agenet
-		if (req.payload.agent) {
+		//Get the payload
+		estate = req.payload;
 
-			//Verify agenet ObjectID
-			if (!ObjectID.isValid(req.payload.agent)) {
-				return reply({
-					'code': 0,
-					'message': 'Something bad happened :(',
-					'description': 'This agent not exist'
-				});
-			}
-			DB.collection('agents').findOne({
-				_id: req.payload.agent
+		//Checks if this estate was associated with an agent
+		if (estate.agent) {
+
+			if (!OBJECTID.isValid(estate.agent)) {
+				return Boom.notFound('The agent ' + estate.agent + ' not exist');
+			};
+
+			//Search agent
+			DATABASE.findOne({
+				_id: estate.agent
+
 			}, function(err, result) {
+
 				if (err) {
-					return reply({
-						'code': 0,
-						'message': 'Something bad happened :(',
-						'description': err
-					});
+					return Boom.badRequest(err);
 				}
 
 				createEstate(result);
 			});
-		} else {
-			createEstate();
-		}
+
+		} else createEstate();
 
 		function createEstate(agent) {
-			//Query
-			collection.findOne({
+			DATABASE.findOne({
 				'address.lat': req.payload.address.lat,
 				'address.lat': req.payload.address.lng
+
 			}, function(err, result) {
+
 				if (result.length !== 0) {
-					return reply({
-						'code': 0,
-						'message': 'Something bad happened :(',
-						'description': 'Already exist an estate in the same address'
-					});
+					return Boom.badRequest(err);
+
 				} else {
 
 					//Set the update_at field
@@ -63,11 +60,7 @@ var createEstate = {
 
 					collection.insertOne(req.payload, function(err, result) {
 						if (err) {
-							return reply({
-								'code': 0,
-								'message': 'Something bad happened :(',
-								'description': err
-							});
+							return Boom.badRequest(err);
 						}
 
 						reply(estate).code(201);
@@ -90,9 +83,9 @@ var createEstate = {
 				},
 				gallery: {
 					cover: Valid.string().uri().required(),
-					photos: Valid.array()
+					photos: Valid.array().items(Valid.string().uri())
 				},
-				features: Valid.array(),
+				features: Valid.array().items(Valid.string()),
 				details: Valid.array(),
 				type: Valid.string().required(),
 				area: Valid.number().required(),
@@ -106,7 +99,7 @@ var createEstate = {
 				neighborhood: Valid.string().required(),
 				featured: Valid.boolean(),
 				agent: Valid.number(),
-				dogs_allowed: Valid.boolean
+				dogs_allowed: Valid.boolean()
 			}
 		}
 	}

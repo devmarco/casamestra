@@ -1,36 +1,28 @@
-var model = require('../../models/agents');
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
 
-/**
- * GET ONE AGENT
- */
-var getOneAgent = function(req, reply) {
-	var query = model.find({
-		_id: req.params.ID
-	}).limit(1);
+/*------------------------------------*\
+	[AGENTS] GET ONE
+\*------------------------------------*/
 
-	query.exec(function(err, agent) {
-		if (err) {
-			return reply({
-				'code': 0,
-				'message': 'Something bad happened :(',
-				'description': 'This agent not exist'
+var getOneAgent = {
+	method: 'GET',
+	path: '/agents/{CRECI}',
+	handler: function(req, reply) {
+		r.table('agents')
+			.get(parseInt(req.params.CRECI))
+			.run()
+			.then(function(result) {
+				if (result) {
+					reply(result);
+				} else {
+					reply(Boom.notFound('Sorry, this agent not exist'));
+				}
+			}).error(function(err) {
+				reply(Boom.forbidden('Try again some time'));
 			});
-		}
-
-		return reply(agent);
-	});
+	}
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: 'GET',
-		path: '/agents/{ID}',
-		handler: getOneAgent
-	});
-
-	return true;
-};
+module.exports = getOneAgent;

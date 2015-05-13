@@ -1,20 +1,21 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var settings = require('../config/settings');
+var thinky = require('thinky')(settings.db);
+var type = thinky.type;
 
-var agentSchema = new Schema({
-	first_name: String,
-	last_name: String,
-	email: String,
-	phone: {
-		office: String,
-		cellphone: String
+var Agents = thinky.createModel('Agents', {
+	firstName: type.string(),
+	lastName: type.string(),
+	email: type.string(),
+	phones: {
+		cellphone: type.number(),
+		homephone: type.number(),		
 	},
-	description: String,
-	experience: Array,
-	expertise: Array,
-	creci: Number
-});
+	description: type.string(),
+	experience: [{
+        company: [type.string()],
+        specialities: [type.string()]
+    }],
+	creci: type.number()
+}); 
 
-var agents = mongoose.model('agents', agentSchema);
-
-module.exports = agents;
+module.exports = Agents;

@@ -1,6 +1,7 @@
 var Hapi = require('hapi');
+var settings = require('../config/settings');
 var routes = require('../routes');
-var config = require('../config/config');
+var plugins = require('../config/plugins');
 
 var internals = {};
 
@@ -8,10 +9,10 @@ var internals = {};
 internals.config = function() {
 	var server = new Hapi.Server();
 
-	//Set the connection
+	// //Set the connection
 	server.connection({
 		host: '0.0.0.0',
-		port: process.env.PORT || 8080,
+		port: process.env.PORT || 8000,
 		routes: {
 			cors: true
 		},
@@ -20,44 +21,20 @@ internals.config = function() {
 		}
 	});
 
-
-	//Set the plugins
-	server.register([{
-		register: require('good'),
-		options: {
-			reporters: [{
-				reporter: require('good-console'),
-				events: {
-					log: '*',
-					response: '*'
-				}
-			}]
-		}
-	}, {
-		register: require('hapi-mongodb'),
-		options: {
-			url: 'mongodb://127.0.0.1:27017',
-			settings: {
-				db: {
-					"native_parser": false
-				}
-			}
-		}
-	}], function(err) {
-		if (err)
-			throw new Error(err);
-	});
-
-	//Expose routes
+	// Bootstrap Hapi Server Plugins, passes the server object to the plugins
+	plugins.init(server);
+	
+	// //Expose routes
 	routes.create(server);
 
-	return server;
+	return {
+		server: server
+	};
 }
 
 //Init the server instance
 internals.init = function() {
-
-	var server = this.config();
+	var server = this.config().server;
 
 	//Start the server
 	server.start(function() {

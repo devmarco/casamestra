@@ -1,74 +1,51 @@
-var model = require('../../models/agents');
-var Valid = require('joi');
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
+var Joi 	= require('joi');
 
-/**
- * CREATE A NEW AGENT
- */
-var createAgent = function(req, reply) {
-	var Agent = new model(req.payload);
+/*------------------------------------*\
+	[AGENTS] CREATE
+\*------------------------------------*/
 
-	model.findOne({
-		creci: req.payload.creci
-	}, function(err, agent) {
-		if (err) {
-			return reply({
-				'code': 0,
-				'message': 'Something bad happened :(',
-				'description': err
-			});
-		}
-
-		if (!agent) {
-			Agent.save(function(err, agent) {
-				if (err) {
-					return reply({
-						'code': 0,
-						'message': 'Something bad happened :(',
-						'description': err
-					});
+var createAgent = {
+	method: 'POST',
+	path: '/agents',
+	handler: function(req, reply) {
+		r.table('agents')
+			.insert(req.payload, {
+				conflict: 'error'
+			})
+			.run()
+			.then(function(result) {
+				if (result.errors !== 0) {
+					reply(Boom.conflict('Probably this agent already exist'));
+				} else {
+					reply(req.payload);
 				}
-
-				reply(agent).code(201);
+				
+			}).error(function(err) {
+				reply(Boom.forbidden('Something bad happen :('));
 			});
-		} else {
-			return reply({
-				'code': 0,
-				'message': 'Something bad happened :(',
-				'description': 'Already exist an agent with this creci number'
-			});
-		}
-	});
-}
-
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: 'POST',
-		path: '/agents',
-		handler: createAgent,
-		config: {
-			validate: {
-				options: {
-					abortEarly: false
+	},
+	config: {
+		validate: {
+			options: {
+				abortEarly: false
+			},
+			payload: {
+				firstName: Joi.string().required(),
+				lastName: Joi.string().required(),
+				email: Joi.string().email().required(),
+				phones: {
+					cellphone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required(),
+					homephone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required()
 				},
-				payload: {
-					name: Valid.string().required(),
-					email: Valid.string().email().required(),
-					phone: {
-						office: Valid.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required(),
-						cellphone: Valid.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required()
-					},
-					description: Valid.string().required(),
-					experience: Valid.array().required(),
-					expertise: Valid.array().required(),
-					creci: Valid.number().required()
-				}
+				description: Joi.string().required(),
+				experience: Joi.array().required(),
+				creci: Joi.number().required()
 			}
 		}
-	});
+	}
+}
 
-	return true;
-};
+module.exports = createAgent;

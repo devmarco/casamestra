@@ -1,4 +1,3 @@
-require('newrelic');
 var server = require('./casamestra');
 
 //Initialize

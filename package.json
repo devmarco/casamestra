@@ -1,46 +1,42 @@
 {
-	"name": "casamestra",
-	"version": "1.0.0",
-	"description": "Casa Mestra WEB",
-	"main": "server.js",
-	"scripts": {
-		"test": "mocha --recursive -R list",
-		"tdd": "mocha --recursive --watch -R list",
-		"start": "node server.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://devmarco@bitbucket.org/devmarco/casamestra-api.git"
-	},
-	"homepage": "http://api-casamestra.rhcloud.com/",
-	"keywords": [
-		"web",
-		"casamestra"
-	],
-	"author": {
-		"name": "Marco Paulo",
-		"email": "markoskt@gmail.com"
-	},
-	"license": "ISC",
-	"engines": {
-		"node": ">= 0.12.2",
-		"npm": ">= 2.7.4"
-	},
-	"dependencies": {
-		"boom": "^2.7.1",
-		"good": "^6.0.0",
-		"good-console": "^5.0.0",
-		"hapi": "^8.4.0",
-		"hapi-mongodb": "^3.0.0",
-		"joi": "^6.1.0",
-		"lodash": "^3.6.0",
-		"moment": "^2.10.2",
-		"mongodb": "^2.0.27",
-		"newrelic": "^1.18.4"
-	},
-	"devDependencies": {
-		"expect.js": "^0.3.1",
-		"supertest": "^0.15.0"
-	},
-	"private": true
+  "name": "casamestra",
+  "version": "1.0.0",
+  "description": "Casa Mestra WEB",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha --recursive -R list",
+    "tdd": "mocha --recursive --watch -R list",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://devmarco@bitbucket.org/devmarco/casamestra-api.git"
+  },
+  "homepage": "http://api-casamestra.rhcloud.com/",
+  "keywords": [
+    "web",
+    "casamestra"
+  ],
+  "author": {
+    "name": "Marco Paulo",
+    "email": "markoskt@gmail.com"
+  },
+  "license": "ISC",
+  "engines": {
+    "node": ">= 0.12.2",
+    "npm": ">= 2.7.4"
+  },
+  "dependencies": {
+    "boom": "^2.7.1",
+    "good": "^6.0.0",
+    "good-console": "^5.0.0",
+    "hapi": "^8.4.0",
+    "joi": "^6.1.0",
+    "rethinkdbdash": "^2.0.10",
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "supertest": "^0.15.0"
+  },
+  "private": true
 }

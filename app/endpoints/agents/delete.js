@@ -1,46 +1,34 @@
-var model = require('../../models/agents');
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
+var Joi 	= require('joi');
 
-/**
- * DELETE ONE AGENT
- */
-var deleteAgent = function(req, reply) {
-	model.findOne({
-		creci: req.params.CRECI
-	}, function(err, agent) {
-		if (err) {
-			return reply({
-				'code': 0,
-				'message': 'Something bad happened :(',
-				'description': 'This agent not exist'
+/*------------------------------------*\
+	[AGENTS] DELETE
+\*------------------------------------*/
+
+var createAgent = {
+	method: 'DELETE',
+	path: '/agents/{CRECI}',
+	handler: function(req, reply) {
+		r.table('agents')
+			.get(parseInt(req.params.CRECI))
+			.delete({
+				returnChanges: true
+			})
+			.run()
+			.then(function(result) {
+				if (result.deleted === 0) {
+					reply(Boom.notFound('Sorry, this agent not exist'));
+				} else {
+					reply({
+						message: 'The agent was deleted'
+					});
+				}
+			}).error(function(err) {
+				reply(Boom.forbidden('Something bad happen :('));
 			});
-		}
-
-		agent.remove(function(err) {
-			if (err) {
-				return reply({
-					'code': 0,
-					'message': 'Something bad happened :(',
-					'description': err
-				});
-			}
-
-			return reply({
-				'code': 0,
-				'message': 'success',
-				'description': 'Agent was deleted'
-			});
-		});
-	});
+	}
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: 'DELETE',
-		path: '/agents/{CRECI}',
-		handler: deleteAgent
-	});
-};
+module.exports = createAgent;

@@ -9,8 +9,9 @@ var config = {
 		investiments: '/investiments'
 	},
 	db: {
-		username: 'casamestra',
-		password: '7u7kmkt.'
+		host: 'localhost',
+		port: 28015,
+		db: 'casamestra'
 	}
 }
 

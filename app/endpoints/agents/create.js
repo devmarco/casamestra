@@ -3,7 +3,7 @@ var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
 var Joi 	= require('joi');
 
-/*------------------------------------*\
+/*------------------------------------ *\
 	[AGENTS] CREATE
 \*------------------------------------*/
 
@@ -36,12 +36,17 @@ var createAgent = {
 				firstName: Joi.string().required(),
 				lastName: Joi.string().required(),
 				email: Joi.string().email().required(),
-				phones: {
+				phones: Joi.object({
 					cellphone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required(),
 					homephone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required()
-				},
+				}),
 				description: Joi.string().required(),
-				experience: Joi.array().required(),
+				about: Joi.object({
+					academic: Joi.array().items(Joi.string()),
+					professional: Joi.array().items(Joi.string()),
+					expertise: Joi.array().items(Joi.string()).required(),
+					languages: Joi.array().items(Joi.string()).required()
+				}),
 				creci: Joi.number().required()
 			}
 		}

@@ -24,7 +24,7 @@ var createAgent = {
 				}
 				
 			}).error(function(err) {
-				reply(Boom.forbidden('Something bad happen :('));
+				reply(Boom.badRequest('Something bad happen :('));
 			});
 	},
 	config: {

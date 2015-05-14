@@ -15,7 +15,7 @@ var getAgents = {
 			.then(function(result) {
 				reply(result);
 			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
+				reply(Boom.badRequest('Try again some time'));
 			});
 	}
 }

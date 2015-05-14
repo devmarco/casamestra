@@ -20,7 +20,7 @@ var getOneAgent = {
 					reply(Boom.notFound('Sorry, this agent not exist'));
 				}
 			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
+				reply(Boom.badRequest('Try again some time'));
 			});
 	}
 }

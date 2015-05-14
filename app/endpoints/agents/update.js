@@ -17,7 +17,7 @@ var createAgent = {
             .run()
             .then(function(result) {
                 if (result.replaced === 0) {
-                    reply(Boom.forbidden('Something bad happen :('));
+                    reply(Boom.badRequest('Something bad happen :('));
                 } else {
                     reply({
                         message: 'The agent was updated'
@@ -25,7 +25,7 @@ var createAgent = {
                 }
                 
             }).error(function(err) {
-                reply(Boom.forbidden('Something bad happen :('));
+                reply(Boom.badRequest('Something bad happen :('));
             });
     },
     config: {

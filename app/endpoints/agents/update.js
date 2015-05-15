@@ -7,7 +7,7 @@ var Joi     = require('joi');
     [AGENTS] CREATE
 \*------------------------------------*/
 
-var createAgent = {
+var updateAgent = {
     method: ['PUT', 'PATCH'],
     path: '/agents/{CRECI}',
     handler: function(req, reply) {
@@ -54,4 +54,4 @@ var createAgent = {
     }
 }
 
-module.exports = createAgent;
+module.exports = updateAgent;

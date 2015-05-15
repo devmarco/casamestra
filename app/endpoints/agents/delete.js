@@ -1,13 +1,12 @@
 var DB 		= require('../../config/settings').db;
 var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
-var Joi 	= require('joi');
 
 /*------------------------------------*\
 	[AGENTS] DELETE
 \*------------------------------------*/
 
-var createAgent = {
+var deleteAgent = {
 	method: 'DELETE',
 	path: '/agents/{CRECI}',
 	handler: function(req, reply) {
@@ -31,4 +30,4 @@ var createAgent = {
 	}
 }
 
-module.exports = createAgent;
+module.exports = deleteAgent;

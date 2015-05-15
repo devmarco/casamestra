@@ -18,7 +18,7 @@ var routes = {
 		'PUT': 		require('../../app/endpoints/estates/update'),
 		'DELETE': 	require('../../app/endpoints/estates/delete'),
 	// 	'IMPORT': require('../app/endpoints/estates/import')
-	}
+	},
 	// neighborhoods: {
 	// 	'GET': require('../app/endpoints/neighborhoods/get'),
 	// 	'GET-ONE': require('../app/endpoints/neighborhoods/get-one'),
@@ -26,13 +26,13 @@ var routes = {
 	// 	'PUT': require('../app/endpoints/neighborhoods/update'),
 	// 	'DELETE': require('../app/endpoints/neighborhoods/delete')
 	// },
-	// favorites: {
+	favorites: {
 	// 	'GET': require('../app/endpoints/favorites/get'),
 	// 	'GET-ESTATE': require('../app/endpoints/favorites/get-user-favorites'),
 	// 	'GET-USER': require('../app/endpoints/favorites/get-users-favorited'),
-	// 	'POST': require('../app/endpoints/favorites/create'),
+		'POST': 	require('../../app/endpoints/favorites/create'),
 	// 	'DELETE': require('../app/endpoints/favorites/delete')
-	// }
+	}
 	// users: {
 	// 	'GET': require('../app/endpoints/users/get'),
 	// 	'GET-ONE': require('../app/endpoints/users/get-one'),

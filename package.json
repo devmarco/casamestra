@@ -1,7 +1,7 @@
 {
   "name": "casamestra",
   "version": "1.0.0",
-  "description": "Casa Mestra WEB",
+  "description": "Casa Mestra API",
   "main": "server.js",
   "scripts": {
     "test": "mocha --recursive -R list",

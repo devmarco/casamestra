@@ -1,6 +1,6 @@
 var Hapi = require('hapi');
 var settings = require('../config/settings');
-var routes = require('../routes');
+var routes = require('../config/routes');
 var plugins = require('../config/plugins');
 
 var internals = {};

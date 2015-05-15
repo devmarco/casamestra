@@ -3,20 +3,20 @@
  */
 var routes = {
 	agents: {
-		'GET': 		require('../app/endpoints/agents/get'),
-		'GET-ONE': 	require('../app/endpoints/agents/get-one'),
-		'POST': 	require('../app/endpoints/agents/create'),
-		'PUT': 		require('../app/endpoints/agents/update'),
-		'DELETE': 	require('../app/endpoints/agents/delete')
+		'GET': 		require('../../app/endpoints/agents/get'),
+		'GET-ONE': 	require('../../app/endpoints/agents/get-one'),
+		'POST': 	require('../../app/endpoints/agents/create'),
+		'PUT': 		require('../../app/endpoints/agents/update'),
+		'DELETE': 	require('../../app/endpoints/agents/delete')
 	},
 	estates: {
-	// 	'GET': require('../app/endpoints/estates/get'),
-	// 	'GET-ONE': require('../app/endpoints/estates/get-one'),
-	// 	'GET-BUY': require('../app/endpoints/estates/get-buy'),
-	// 	'GET-RENT': require('../app/endpoints/estates/get-rent'),
-		'POST': 	require('../app/endpoints/estates/create')
-	// 	'PUT': require('../app/endpoints/estates/update'),
-	// 	'DELETE': require('../app/endpoints/estates/delete'),
+		'GET': 		require('../../app/endpoints/estates/get'),
+		'GET-ONE': 	require('../../app/endpoints/estates/get-one'),
+		'GET-BUY': 	require('../../app/endpoints/estates/get-buy'),
+		'GET-RENT': require('../../app/endpoints/estates/get-rent'),
+		'POST': 	require('../../app/endpoints/estates/create'),
+		'PUT': 		require('../../app/endpoints/estates/update'),
+		'DELETE': 	require('../../app/endpoints/estates/delete'),
 	// 	'IMPORT': require('../app/endpoints/estates/import')
 	}
 	// neighborhoods: {

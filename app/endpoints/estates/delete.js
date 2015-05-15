@@ -1,51 +1,33 @@
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
+
 /*------------------------------------*\
-    [ESTATES] DELETE ONE
+	[ESTATE] DELETE
 \*------------------------------------*/
 
 var deleteEstate = {
 	method: 'DELETE',
-	path: '/estates/{ESTATEID}',
+	path: '/estates/{CMID}',
 	handler: function(req, reply) {
-		var DB = req.server.plugins['hapi-mongodb'].db,
-			ObjectID = req.server.plugins['hapi-mongodb'].ObjectID,
-			collection;
-
-		//Set the collection
-		collection = DB.collection('estates');
-
-		//Checks if the ESTATEID is a valid ObjectID
-		if (!ObjectID.isValid(req.params.ESTATEID)) {
-			return reply({
-				"code": 0,
-				"message": "Something bad happened :(",
-				"description": 'This estate not exist'
+		r.table('estates')
+			.get(req.params.CMID)
+			.delete({
+				returnChanges: true
+			})
+			.run()
+			.then(function(result) {
+				if (result.deleted === 0) {
+					reply(Boom.notFound('Sorry, this estate not exist'));
+				} else {
+					reply({
+						message: 'The estate was deleted'
+					});
+				}
+			}).error(function(err) {
+				reply(Boom.badRequest('Something bad happen :('));
 			});
-		}
-
-		collection.deleteOne({
-			_id: new ObjectID(req.params.ESTATEID)
-		}, function(err, result) {
-			if (err) {
-				return reply({
-					'code': 0,
-					'message': 'Something bad happened :(',
-					'description': err
-				});
-			}
-
-			reply({
-				'code': 0,
-				'message': 'success',
-				'description': 'Estate was deleted'
-			});
-
-		});
-
 	}
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
 module.exports = deleteEstate;

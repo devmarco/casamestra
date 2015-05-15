@@ -1,30 +1,43 @@
-var Filter = require('../../helpers/filter');
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
+var filter 	= require('../../filters/limit-offset');
 
 /*------------------------------------*\
-    [ESTATES] GET
+	[ESTATE] GET
 \*------------------------------------*/
 
 var getEstates = {
 	method: 'GET',
 	path: '/estates/buy',
 	handler: function(req, reply) {
-		/**
-		 * Verify the request parameters and return the result
-		 * Available parameters:
-		 * - type [number]
-		 * - limit [number]
-		 * - offset [number]
-		 */
 
-		Filter('estates', req, reply, {
-			type: 'buy'
+		//Check if user want a filtered result
+		var resultFilter = filter('estates', req, {
+			action: 'buy'
 		});
+
+		if (resultFilter) {
+			resultFilter
+				.run()
+				.then(function(result) {
+					reply(result);
+				}).error(function(err) {
+					reply(Boom.badRequest('Try again some time'));
+				});
+		} else {
+			r.table('estates')
+				.filter({
+					action: 'sell'
+				})
+				.run()
+				.then(function(result) {
+					reply(result);
+				}).error(function(err) {
+					reply(Boom.badRequest('Try again some time'));
+				});
+		}
 	}
 }
 
-
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
 module.exports = getEstates;

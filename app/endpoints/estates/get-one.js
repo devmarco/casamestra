@@ -1,38 +1,28 @@
+var DB      = require('../../config/settings').db;
+var r       = require('rethinkdbdash')(DB);
+var Boom    = require('boom');
+
 /*------------------------------------*\
-    [ESTATES] GET ONE
+	[ESTATES] GET ONE
 \*------------------------------------*/
 
-var getOneEstates = {
-    method: 'GET',
-    path: '/estates/{ESTATEID}',
-    handler: function(req, reply) {
-        var DB = req.server.plugins['hapi-mongodb'].db,
-            ObjectID = req.server.plugins['hapi-mongodb'].ObjectID,
-            collection;
-
-        //Set the collection
-        collection = DB.collection('estates');
-
-        collection.find({
-            _id: new ObjectID(req.params.ESTATEID)
-        }).limit(1).toArray(function(err, result) {
-            if (err) {
-                return reply({
-                    "code": 0,
-                    "message": "Something bad happened :(",
-                    "description": err
-                });
-            }
-
-            reply(result);
-        });
-    }
+var getOneEstate = {
+	method: 'GET',
+	path: '/estates/{CMID}',
+	handler: function(req, reply) {
+		r.table('estates')
+			.get(req.params.CMID)
+			.run()
+			.then(function(result) {
+				if (result) {
+					reply(result);
+				} else {
+					reply(Boom.notFound('Sorry, this estate not exist'));
+				}
+			}).error(function(err) {
+				reply(Boom.badRequest('Try again some time'));
+			});
+	}
 }
 
-
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = getOneEstates;
-
+module.exports = getOneEstate;

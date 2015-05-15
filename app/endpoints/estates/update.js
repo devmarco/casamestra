@@ -1,89 +1,72 @@
-var Valid = require('joi');
-var moment = require('moment');
+var DB      = require('../../config/settings').db;
+var r       = require('rethinkdbdash')(DB);
+var Boom    = require('boom');
+var Joi     = require('joi');
 
 /*------------------------------------*\
-    [ESTATES] UPDATE ONE
+    [ESTATE] UPDATE
 \*------------------------------------*/
+
 var updateEstate = {
-	method: ['PUT', 'PATCH'],
-	path: '/estates/{ESTATEID}',
-	handler: function(req, reply) {
-		var DB = req.server.plugins['hapi-mongodb'].db,
-			ObjectID = req.server.plugins['hapi-mongodb'].ObjectID,
-			collection;
-
-		//Set the collection
-		collection = DB.collection('estates');
-
-		//Checks if the ESTATEID is a valid ObjectID
-		if (!ObjectID.isValid(req.params.ESTATEID)) {
-			return reply({
-				"code": 0,
-				"message": "Something bad happened :(",
-				"description": 'This estate not exist'
-			});
-		}
-
-		//Set the update_at field
-		req.payload.update_at = moment().format();
-
-		collection.updateOne({
-			_id: new ObjectID(req.params.ESTATEID)
-		}, {
-			$set: req.payload
-		}, function(err, result) {
-			if (err) {
-				return reply({
-					'code': 0,
-					'message': 'Something bad happened :(',
-					'description': err
-				});
-			}
-
-			reply({
-				'code': 0,
-				'message': 'success',
-				'description': 'Estate was changed'
-			});
-
-		});
-
-	},
-	config: {
-		validate: {
-			options: {
-				abortEarly: false
-			},
-			payload: {
-				title: Valid.string(),
-				address: {
-					local: Valid.string(),
-					lat: Valid.number(),
-					lng: Valid.number()
-				},
-				gallery: {
-					cover: Valid.string().uri(),
-					photos: Valid.array()
-				},
-				features: Valid.array(),
-				details: Valid.array(),
-				type: Valid.string(),
-				area: Valid.number(),
-				bedroom: Valid.number(),
-				bathroom: Valid.number(),
-				park: Valid.number(),
-				price: Valid.number(),
-				description: Valid.string(),
-				estate_type: Valid.string(),
-				exclusive: Valid.boolean(),
-				neighborhood: Valid.array()
-			}
-		}
-	}
+    method: ['PUT', 'PATCH'],
+    path: '/estates/{CMID}',
+    handler: function(req, reply) {
+        r.table('estates')
+            .get(req.params.CMID)
+            .update(req.payload)
+            .run()
+            .then(function(result) {
+                if (result.replaced === 0) {
+                    reply(Boom.badRequest('Something bad happen :('));
+                } else {
+                    reply({
+                        message: 'The estate was updated'
+                    });
+                }
+                
+            }).error(function(err) {
+                reply(Boom.badRequest('Something bad happen :('));
+            });
+    },
+    config: {
+        validate: {
+            options: {
+                abortEarly: false
+            },
+            payload: {
+                title: Joi.string(),
+                description: Joi.string(),
+                location: Joi.object({
+                    lat: Joi.number(),
+                    lng: Joi.number()
+                }),
+                address: Joi.string(),
+                bathrooms: Joi.number(),
+                bedrooms: Joi.number(),
+                photos: Joi.object({
+                    cover: Joi.string().uri(),
+                    gallery: Joi.array().items(Joi.string().uri())
+                }),
+                features: Joi.array().items(Joi.string()),
+                details: Joi.object({
+                    type: Joi.string(),
+                    value: Joi.string()
+                }),
+                homeType: Joi.string(),
+                action: Joi.any().valid(['rent', 'sell']),
+                area: Joi.number(),
+                garages: Joi.number(),
+                price: Joi.number(),
+                city: Joi.string(),
+                neighborhood: Joi.string(),
+                dogAllowed: Joi.boolean(),
+                catAllowed: Joi.boolean(),
+                birdAllowed: Joi.boolean(),
+                exclusive: Joi.boolean(),
+                agent: Joi.number()
+            }
+        }
+    }
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
 module.exports = updateEstate;

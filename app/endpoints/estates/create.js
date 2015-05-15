@@ -7,7 +7,7 @@ var Joi 	= require('joi');
 	[ESTATES] CREATE
 \*------------------------------------*/
 
-var createAgent = {
+var createEstate = {
 	method: 'POST',
 	path: '/estates',
 	handler: function(req, reply) {
@@ -39,15 +39,11 @@ var createAgent = {
 
 			r.table('estates')
 				.filter({
-					location: {
-						lat: req.payload.location.lat,
-						lng: req.payload.location.lng
-					}
+					location: req.payload.location
 				})
 				.run()
 				.then(function(result) {
-					console.log(result);
-					if (result.length !== 0) {
+					if (result.length === 0) {
 						r.table('estates')
 							.insert(req.payload, {
 								conflict: 'error'
@@ -97,6 +93,7 @@ var createAgent = {
 					value: Joi.string()
 				}),
 				homeType: Joi.string().required(),
+				action: Joi.any().valid(['rent', 'sell']).required(),
 				area: Joi.number().required(),
 				garages: Joi.number().required(),
 				price: Joi.number().required(),
@@ -112,4 +109,4 @@ var createAgent = {
 	}
 }
 
-module.exports = createAgent;
+module.exports = createEstate;

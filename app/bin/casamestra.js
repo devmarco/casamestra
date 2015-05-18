@@ -1,9 +1,9 @@
-var Hapi = require('hapi');
-var settings = require('../config/settings');
-var routes = require('../config/routes');
-var plugins = require('../config/plugins');
+var Hapi 		= require('hapi');
+var settings 	= require('../config/settings');
+var routes 		= require('../config/routes');
+var plugins 	= require('../config/plugins');
 
-var internals = {};
+var internals 	= {};
 
 //Create the server instance
 internals.config = function() {

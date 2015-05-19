@@ -6,18 +6,24 @@ var Boom 	= require('boom');
 	[FAVORITES] GET
 \*------------------------------------*/
 
-var getFavoritedEstates = {
+var getFavoritedUsers = {
 	method: 'GET',
-	path: '/favorites',
+	path: '/estates/{ESTATECMID}/favorites/users',
 	handler: function(req, reply) {
-		r.table('favorites')
-			.run() 
+		r.table('estates')('favorites')
+			.filter(function(users) {
+				return users.filter(function(user) {
+					return user('cmid').eq(req.params.USERCMID);
+				});
+			})
+			.run()
 			.then(function(result) {
 				reply(result);
-			}).error(function(err) {
+			})
+			.error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
 	}
 }
 
-module.exports = getFavoritedEstates;
+module.exports = getFavoritedUsers;

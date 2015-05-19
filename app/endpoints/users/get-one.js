@@ -1,34 +1,28 @@
-var model = require('../../models/users');
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
 
-/**
- * GET ONE USER
- */
-var getOneUser = function(req, reply) {
-	var query = model.find({
-		_id: req.params.USERID
-	}).limit(1);
+/*------------------------------------*\
+	[USERS] GET ONE
+\*------------------------------------*/
 
-	query.exec(function(err, user) {
-		if (err) {
-			return reply({
-				'code': 0,
-				'message': 'Something bad happened :(',
-				'description': 'This user not exist'
+var getOneUser = {
+	method: 'GET',
+	path: '/users/{CMID}',
+	handler: function(req, reply) {
+		r.table('users')
+			.get(parseInt(req.params.CMID))
+			.run()
+			.then(function(result) {
+				if (result) {
+					reply(result);
+				} else {
+					reply(Boom.notFound('Sorry, this user not exist'));
+				}
+			}).error(function(err) {
+				reply(Boom.badRequest('Try again some time'));
 			});
-		}
-
-		return reply(user);
-	});
+	}
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: 'GET',
-		path: '/users/{USERID}',
-		handler: getOneUser
-	});
-};
+module.exports = getOneUser;

@@ -1,46 +1,33 @@
-var model = require('../../models/users');
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
 
-/**
- * DELETE A USER
- */
-var deleteUser = function(req, reply) {
-	model.findOne({
-		_id: req.params.USERID
-	}, function(err, user) {
-		if (err) {
-			return reply({
-				'code': 0,
-				'message': 'Something bad happened :(',
-				'description': err
+/*------------------------------------*\
+	[USERS] DELETE
+\*------------------------------------*/
+
+var deleteUsers = {
+	method: 'DELETE',
+	path: '/users/{CMID}',
+	handler: function(req, reply) {
+		r.table('users')
+			.get(parseInt(req.params.CMID))
+			.delete({
+				returnChanges: true
+			})
+			.run()
+			.then(function(result) {
+				if (result.deleted === 0) {
+					reply(Boom.notFound('Sorry, this user not exist'));
+				} else {
+					reply({
+						message: 'The user was deleted'
+					});
+				}
+			}).error(function(err) {
+				reply(Boom.badRequest('Something bad happen :('));
 			});
-		}
-
-		user.remove(function(err) {
-			if (err) {
-				return reply({
-					'code': 0,
-					'message': 'Something bad happened :(',
-					'description': err
-				});
-			}
-
-			return reply({
-				'code': 0,
-				'message': 'success',
-				'description': 'User was deleted'
-			});
-		});
-	});
+	}
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: 'DELETE',
-		path: '/users/{USERID}',
-		handler: deleteUser
-	});
-};
+module.exports = deleteUsers;

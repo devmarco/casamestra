@@ -1,83 +1,68 @@
-var model = require('../../models/users');
-var Valid = require('joi');
-var bcrypt = require('bcrypt');
+var DB      = require('../../config/settings').db;
+var r       = require('rethinkdbdash')(DB);
+var Boom    = require('boom');
+var Joi     = require('joi');
+var bcrypt  = require('bcrypt');
 
-/**
- * UPDATE A USER
- */
-var updateUser = function(req, reply) {
-	var User;
+/*------------------------------------*\
+	[USERS] CREATE
+\*------------------------------------*/
 
-	if (req.payload.password) {
-		bcrypt.genSalt(10, function(err, salt) {
-			bcrypt.hash(req.payload.password, salt, function(err, hash) {
+var updateUser = {
+	method: ['PUT', 'PATCH'],
+	path: '/users/{CMID}',
+	handler: function(req, reply) {
 
-				//Set the password as a hash
-				req.payload.password = hash;
+		if (req.payload.password) {
+			bcrypt.genSalt(15, function(err, salt) {
+				bcrypt.hash(req.payload.password, salt, function(err, hash) {
 
-				update();
+					//Set the new password
+					req.payload.password = hash;
+
+					updateUserFn();
+				});
 			});
-		});
-	} else {
-		update();
-	}
+		} else {
+			updateUserFn();
+		}
 
-	function update() {
-		model.update({
-				_id: req.params.USERID
+		function updateUserFn() {
+			r.table('users')
+				.get(parseInt(req.params.CMID))
+				.update(req.payload)
+				.run()
+				.then(function(result) {
+					if (result.replaced === 0) {
+						reply(Boom.badRequest('Something bad happen :('));
+					} else {
+						reply({
+							message: 'The user was updated'
+						});
+					}
+					
+				}).error(function(err) {
+					reply(Boom.badRequest('Something bad happen :('));
+				});
+		}
+	},
+	config: {
+		validate: {
+			options: {
+				abortEarly: false
 			},
-			req.payload,
-			function(err, resp) {
-				if (err) {
-					return reply({
-						'code': 0,
-						'message': 'Something bad happened :(',
-						'description': err
-					});
-				}
-
-				if (resp.nModified !== 0) {
-					return reply({
-						'code': 0,
-						'message': 'success',
-						'description': 'User was updated'
-					});
-				} else {
-					return reply({
-						'code': 0,
-						'message': 'Something bad happened :(',
-						'description': 'This user not exist'
-					});
-				}
-			});
+			payload: {
+				firstName: Joi.string(),
+				lastName: Joi.string(),
+				email: Joi.string().email(),
+				phones: Joi.object({
+					cellphone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/),
+					homephone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/)
+				}),
+				password: Joi.string()
+			}
+		}
 	}
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: ['PUT', 'PATCH'],
-		path: '/users/{USERID}',
-		handler: updateUser,
-		config: {
-			validate: {
-				options: {
-					abortEarly: false
-				},
-				payload: {
-					first_name: Valid.string(),
-					last_name: Valid.string(),
-					email: Valid.string().email(),
-					phone: {
-						home: Valid.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/),
-						cellphone: Valid.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/)
-					},
-					password: Valid.string()
-				}
-			}
-		}
-	});
-};
+module.exports = updateUser;

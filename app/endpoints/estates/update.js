@@ -9,10 +9,10 @@ var Joi     = require('joi');
 
 var updateEstate = {
     method: ['PUT', 'PATCH'],
-    path: '/estates/{CMID}',
+    path: '/estates/{ECMID}',
     handler: function(req, reply) {
         r.table('estates')
-            .get(req.params.CMID)
+            .get(req.params.ECMID)
             .update(req.payload)
             .run()
             .then(function(result) {

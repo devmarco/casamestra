@@ -8,10 +8,10 @@ var Boom 	= require('boom');
 
 var deleteEstate = {
 	method: 'DELETE',
-	path: '/estates/{CMID}',
+	path: '/estates/{ECMID}',
 	handler: function(req, reply) {
 		r.table('estates')
-			.get(req.params.CMID)
+			.get(req.params.ECMID)
 			.delete({
 				returnChanges: true
 			})

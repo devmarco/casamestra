@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://devmarco@bitbucket.org/devmarco/casamestra-api.git"
+    "url": "https://github.com/devmarco/casamestra.git"
   },
   "homepage": "http://api-casamestra.rhcloud.com/",
   "keywords": [
@@ -27,12 +27,13 @@
     "npm": ">= 2.7.4"
   },
   "dependencies": {
+    "bcrypt": "^0.8.3",
     "boom": "^2.7.1",
     "good": "^6.0.0",
     "good-console": "^5.0.0",
     "hapi": "^8.4.0",
     "joi": "^6.1.0",
-    "rethinkdbdash": "^2.0.10",
+    "rethinkdbdash": "^2.0.10"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",

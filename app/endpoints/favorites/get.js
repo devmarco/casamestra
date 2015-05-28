@@ -10,12 +10,15 @@ var getFavoritedEstates = {
 	method: 'GET',
 	path: '/favorites',
 	handler: function(req, reply) {
-		r.table('favorites')
-			.run() 
+		r.table('estates')
+			.filter(function(estates) {
+				return estates('favorites').count().ne(0);
+			})
+			.run()
 			.then(function(result) {
 				reply(result);
 			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
+				reply(Boom.badRequest('Sorry, Something are wrong!'));
 			});
 	}
 }

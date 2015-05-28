@@ -8,20 +8,19 @@ var Boom 	= require('boom');
 
 var getFavoritedUsers = {
 	method: 'GET',
-	path: '/estates/{ESTATECMID}/favorites/users',
+	path: '/favorites/users/{ECMID}',
 	handler: function(req, reply) {
-		r.table('estates')('favorites')
-			.filter(function(users) {
-				return users.filter(function(user) {
-					return user('cmid').eq(req.params.USERCMID);
-				});
-			})
+		r.table('estates')
+			.get(req.params.ECMID)
 			.run()
 			.then(function(result) {
-				reply(result);
-			})
-			.error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
+				if (result) {
+					reply(result.favorites);
+				} else {
+					reply(Boom.badRequest('Sorry, This user not have favorites'));
+				}
+			}).error(function(err) {
+				reply(Boom.badRequest('Sorry, Something are wrong!'));
 			});
 	}
 }

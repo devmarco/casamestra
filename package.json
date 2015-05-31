@@ -29,10 +29,10 @@
   "dependencies": {
     "bcrypt": "^0.8.3",
     "boom": "^2.7.1",
-    "good": "^6.0.0",
+    "good": "^6.1.4",
     "good-console": "^5.0.0",
-    "hapi": "^8.4.0",
-    "joi": "^6.1.0",
+    "hapi": "^8.6.0",
+    "joi": "^6.4.3",
     "rethinkdbdash": "^2.0.10"
   },
   "devDependencies": {

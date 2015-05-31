@@ -1,72 +1,65 @@
-var model = require('../../models/neighborhoods');
-var Valid = require('joi');
+var DB      = require('../../config/settings').db;
+var r       = require('rethinkdbdash')(DB);
+var Boom    = require('boom');
+var Joi     = require('joi');
 
-/**
- * UPDATE A NEIGHBORHOOD
- */
+/*------------------------------------*\
+    [NEIGHBORHOODS] UPDATE
+\*------------------------------------*/
 
-var updateNeighborhood = function(req, reply) {
-	var Neighborhood;
-
-	model.update({
-			_id: req.params.ID
-		},
-		req.payload,
-		function(err, resp) {
-			if (err) reply(err);
-
-			if (resp.nModified !== 0) {
-				reply({
-					status: 'Neighborhood updated'
-				});
-			} else {
-				reply({
-					status: 'No neighborhood was affected'
-				});
-			}
-		});
-}
-
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: ['PUT', 'PATCH'],
-		path: '/neighborhoods/{ID}',
-		handler: updateNeighborhood,
-		config: {
-			validate: {
-				options: {
-					abortEarly: false
-				},
-				payload: {
-					city: Valid.string(),
-					name: Valid.string(),
-					title: Valid.string(),
-					description: Valid.string(),
-					cover: Valid.string(),
-					tags: Valid.array(),
-					about: {
-						neighbors: Valid.string(),
-						expect: Valid.string(),
-						lifestyle: Valid.string(),
-						notexpect: Valid.string(),
-						market: Valid.string(),
-						love: Valid.string()
-					},
-					address: {
-						local: Valid.string(),
-						lat: Valid.number(),
-						lng: Valid.number()
-					},
-					commutetimes: Valid.array().items({
-						destination: Valid.string(),
-						time: Valid.number()
-					})
-				}
+var updateNeighborhoods = {
+    method: ['PUT', 'PATCH'],
+    path: '/neighborhoods/{NCMID}',
+    handler: function(req, reply) {
+        r.table('neighborhoods')
+            .get(req.params.NCMID)
+            .update(req.payload)
+            .run()
+            .then(function(result) {
+                if (result.replaced === 0) {
+                    reply(Boom.badRequest('Something bad happen :('));
+                } else {
+                    reply({
+                        message: 'The neighborhood was updated'
+                    });
+                }
+                
+            }).error(function(err) {
+                reply(Boom.badRequest('Something bad happen :('));
+            });
+    },
+    config: {
+		validate: {
+			options: {
+				abortEarly: false
+			},
+			payload: {
+				city: Joi.string(),
+				name: Joi.string(),
+				title: Joi.string(),
+				description: Joi.string(),
+				cover: Joi.string(),
+				tags: Joi.array(),
+				about: Joi.object({
+					neighbors: Joi.string(),
+					expect: Joi.string(),
+					lifestyle: Joi.string(),
+					notexpect: Joi.string(),
+					market: Joi.string(),
+					love: Joi.string()
+				}),
+				address: Joi.object({
+					local: Joi.string(),
+					lat: Joi.number(),
+					lng: Joi.number()
+				}),
+				commutetimes: Joi.array().items({
+					destination: Joi.string(),
+					time: Joi.number()
+				})
 			}
 		}
-	});
-};
+	}
+}
+
+module.exports = updateNeighborhoods;

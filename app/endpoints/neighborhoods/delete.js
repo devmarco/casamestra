@@ -1,46 +1,33 @@
-var model = require('../../models/neighborhoods');
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
 
-/**
- * REMOVE A NEIGHBORHOOD
- */
-var deleteNeighborhood = function(req, reply) {
-	model.findOne({
-		_id: req.params.ID
-	}, function(err, neighborhood) {
-		if (err) {
-			return reply({
-				'code': 0,
-				'message': 'Something bad happened :(',
-				'description': err
+/*------------------------------------*\
+	[NEIGHBORHOODS] DELETE
+\*------------------------------------*/
+
+var deleteNeighborhoods = {
+	method: 'DELETE',
+	path: '/neighborhoods/{NCMID}',
+	handler: function(req, reply) {
+		r.table('neighborhoods')
+			.get(req.params.NCMID)
+			.delete({
+				returnChanges: true
+			})
+			.run()
+			.then(function(result) {
+				if (result.deleted === 0) {
+					reply(Boom.notFound('Sorry, this neighborhood not exist'));
+				} else {
+					reply({
+						message: 'The neighborhood was deleted'
+					});
+				}
+			}).error(function(err) {
+				reply(Boom.badRequest('Something bad happen :('));
 			});
-		}
-
-		neighborhood.remove(function(err) {
-			if (err) {
-				return reply({
-					'code': 0,
-					'message': 'Something bad happened :(',
-					'description': err
-				});
-			}
-
-			return reply({
-				'code': 0,
-				'message': 'success',
-				'description': 'Neighborhood was deleted'
-			});
-		})
-	});
+	}
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: 'DELETE',
-		path: '/neighborhoods/{ID}',
-		handler: deleteNeighborhood
-	});
-};
+module.exports = deleteNeighborhoods;

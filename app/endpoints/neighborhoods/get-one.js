@@ -1,34 +1,28 @@
-var model = require('../../models/neighborhoods');
+var DB 		= require('../../config/settings').db;
+var r 		= require('rethinkdbdash')(DB);
+var Boom 	= require('boom');
 
-/**
- * GET ONE NEIGHBORHOOD
- */
-var getOneNeighborhood = function(req, reply) {
-	var query = model.find({
-		_id: req.params.ID
-	}).limit(1);
+/*------------------------------------*\
+	[NEIGHBORHOODS] GET ONE
+\*------------------------------------*/
 
-	query.exec(function(err, neighborhood) {
-		if (err) {
-			return reply({
-				'code': 0,
-				'message': 'Something bad happened :(',
-				'description': 'This neighborhood not exist'
+var getOneNeighborhoods = {
+	method: 'GET',
+	path: '/neighborhoods/{NCMID}',
+	handler: function(req, reply) {
+		r.table('neighborhoods')
+			.get(req.params.NCMID)
+			.run()
+			.then(function(result) {
+				if (result) {
+					reply(result);
+				} else {
+					reply(Boom.notFound('Sorry, this neighborhood not exist'));
+				}
+			}).error(function(err) {
+				reply(Boom.badRequest('Try again some time'));
 			});
-		}
-
-		reply(neighborhood);
-	});
+	}
 }
 
-/**
- * EXPORT FUNCTION
- * @param [server]
- */
-module.exports = function(server) {
-	server.route({
-		method: 'GET',
-		path: '/neighborhoods/{ID}',
-		handler: getOneNeighborhood
-	});
-};
+module.exports = getOneNeighborhoods;

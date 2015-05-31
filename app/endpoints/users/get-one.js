@@ -8,17 +8,14 @@ var Boom 	= require('boom');
 
 var getOneUser = {
 	method: 'GET',
-	path: '/users/{CMID}',
+	path: '/users/{UCMID}',
 	handler: function(req, reply) {
 		r.table('users')
-			.get(parseInt(req.params.CMID))
+			.get(req.params.UCMID)
+			.without('password')
 			.run()
 			.then(function(result) {
-				if (result) {
-					reply(result);
-				} else {
-					reply(Boom.notFound('Sorry, this user not exist'));
-				}
+				reply(result);
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});

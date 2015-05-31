@@ -10,26 +10,46 @@ var bcrypt  = require('bcrypt');
 
 var updateUser = {
 	method: ['PUT', 'PATCH'],
-	path: '/users/{CMID}',
+	path: '/users/{UCMID}',
 	handler: function(req, reply) {
 
-		if (req.payload.password) {
-			bcrypt.genSalt(15, function(err, salt) {
-				bcrypt.hash(req.payload.password, salt, function(err, hash) {
+		if (req.payload.oldPassword && req.payload.password) {
+			r.table('users')
+				.get(req.params.UCMID)
+				.run()
+				.then(function(result) {
+					if (result) {
+						bcrypt.compare(req.payload.oldPassword, result.password, function(err, res) {
+							if (res) {
+								bcrypt.genSalt(15, function(err, salt) {
+									bcrypt.hash(req.payload.password, salt, function(err, hash) {
 
-					//Set the new password
-					req.payload.password = hash;
+										//Set the new password
+										req.payload.password = hash;
 
-					updateUserFn();
+										updateUserFn();
+									});
+								});	
+							} else {
+								reply(Boom.badRequest('Sorry, The oldPassword are wrong'));
+							}
+						});
+					} else {
+						reply(Boom.badRequest('Something bad happen :('));
+					}
+				}).error(function(err) {
+					reply(Boom.badRequest('Something bad happen :('));
 				});
-			});
+
+		} else if (req.payload.oldPassword || req.payload.password) {
+			reply(Boom.badRequest('Sorry, Update password need of the both properties (oldPassword and password)'));
 		} else {
 			updateUserFn();
 		}
 
 		function updateUserFn() {
 			r.table('users')
-				.get(parseInt(req.params.CMID))
+				.get(req.params.UCMID)
 				.update(req.payload)
 				.run()
 				.then(function(result) {
@@ -59,7 +79,8 @@ var updateUser = {
 					cellphone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/),
 					homephone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/)
 				}),
-				password: Joi.string()
+				password: Joi.string(),
+				oldPassword: Joi.string()
 			}
 		}
 	}

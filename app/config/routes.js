@@ -19,13 +19,13 @@ var routes = {
 		'DELETE': 		require('../../app/endpoints/estates/delete'),
 	// 	'IMPORT': require('../app/endpoints/estates/import')
 	},
-	// neighborhoods: {
-	// 	'GET': require('../app/endpoints/neighborhoods/get'),
-	// 	'GET-ONE': require('../app/endpoints/neighborhoods/get-one'),
-	// 	'POST': require('../app/endpoints/neighborhoods/create'),
-	// 	'PUT': require('../app/endpoints/neighborhoods/update'),
-	// 	'DELETE': require('../app/endpoints/neighborhoods/delete')
-	// },
+	neighborhoods: {
+		'GET': 			require('../../app/endpoints/neighborhoods/get'),
+		'GET-ONE': 		require('../../app/endpoints/neighborhoods/get-one'),
+		'POST': 		require('../../app/endpoints/neighborhoods/create'),
+		'PUT': 			require('../../app/endpoints/neighborhoods/update'),
+		'DELETE': 		require('../../app/endpoints/neighborhoods/delete')
+	},
 	favorites: {
 		'GET': 			require('../../app/endpoints/favorites/get'),
 		'GET-ESTATE': 	require('../../app/endpoints/favorites/get-estates-by-user'),

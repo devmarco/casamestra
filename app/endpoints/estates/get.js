@@ -16,7 +16,6 @@ var getEstates = {
 
 		if (resultFilter) {
 			resultFilter.run()
-				.without('favorites')
 				.then(function(result) {
 					reply(result);
 				}).error(function(err) {
@@ -24,7 +23,6 @@ var getEstates = {
 				});
 		} else {
 			r.table('estates')
-				.without('favorites')
 				.run()
 				.then(function(result) {
 					reply(result);

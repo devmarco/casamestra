@@ -36,7 +36,6 @@ var createEstate = {
 		 * Create Estate
 		 */
 		function create() {
-
 			r.table('estates')
 				.filter({
 					location: req.payload.location
@@ -44,10 +43,11 @@ var createEstate = {
 				.run()
 				.then(function(result) {
 					if (result.length === 0) {
+
+						req.payload.createdAt = new Date();
+
 						r.table('estates')
-							.insert(req.payload, {
-								conflict: 'error'
-							})
+							.insert(req.payload)
 							.run()
 							.then(function(result) {
 								if (result.errors !== 0) {
@@ -101,7 +101,6 @@ var createEstate = {
 				neighborhood: Joi.string().required(),
 				dogAllowed: Joi.boolean(),
 				catAllowed: Joi.boolean(),
-				birdAllowed: Joi.boolean(),
 				exclusive: Joi.boolean(),
 				agent: Joi.number()
 			}

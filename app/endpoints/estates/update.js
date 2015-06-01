@@ -11,6 +11,9 @@ var updateEstate = {
     method: ['PUT', 'PATCH'],
     path: '/estates/{ECMID}',
     handler: function(req, reply) {
+
+        req.payload.updatedAt = new Date();
+
         r.table('estates')
             .get(req.params.ECMID)
             .update(req.payload)
@@ -63,7 +66,8 @@ var updateEstate = {
                 catAllowed: Joi.boolean(),
                 birdAllowed: Joi.boolean(),
                 exclusive: Joi.boolean(),
-                agent: Joi.number()
+                agent: Joi.number(),
+                updatedAt: Joi.date()
             }
         }
     }

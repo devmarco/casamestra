@@ -10,16 +10,27 @@ var getFavoritedEstates = {
 	method: 'GET',
 	path: '/favorites',
 	handler: function(req, reply) {
-		r.table('estates')
-			.filter(function(estates) {
-				return estates('favorites').count().ne(0);
-			})
-			.run()
-			.then(function(result) {
-				reply(result);
-			}).error(function(err) {
-				reply(Boom.badRequest('Sorry, Something are wrong!'));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [ESTATES]
+		 */
+		T_ESTATES = r.table('estates');
+
+		get();
+
+		function get() {
+			T_ESTATES
+				.filter(function(estates) {
+					return estates('favorites').count().ne(0);
+				})
+				.run()
+				.then(function(result) {
+					reply(result);
+				}).error(function(err) {
+					reply(Boom.badRequest('Sorry, Something are wrong!'));
+				});
+		}
 	}
 }
 

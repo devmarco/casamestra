@@ -10,23 +10,34 @@ var deleteNeighborhoods = {
 	method: 'DELETE',
 	path: '/neighborhoods/{NCMID}',
 	handler: function(req, reply) {
-		r.table('neighborhoods')
-			.get(req.params.NCMID)
-			.delete({
-				returnChanges: true
-			})
-			.run()
-			.then(function(result) {
-				if (result.deleted === 0) {
-					reply(Boom.notFound('Sorry, this neighborhood not exist'));
-				} else {
-					reply({
-						message: 'The neighborhood was deleted'
-					});
-				}
-			}).error(function(err) {
-				reply(Boom.badRequest('Something bad happen :('));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [NEIGHBORHOODS]
+		 */
+		T_NEIGHBORHOODS = r.table('neighborhoods');
+
+		del();
+
+		function del() {
+			T_NEIGHBORHOODS
+				.get(req.params.NCMID)
+				.delete({
+					returnChanges: true
+				})
+				.run()
+				.then(function(result) {
+					if (result.deleted === 0) {
+						reply(Boom.notFound('Sorry, this neighborhood not exist'));
+					} else {
+						reply({
+							message: 'The neighborhood was deleted'
+						});
+					}
+				}).error(function(err) {
+					reply(Boom.badRequest('Something bad happen :('));
+				});
+		}
 	}
 }
 

@@ -10,13 +10,24 @@ var getNeighborhoods = {
 	method: 'GET',
 	path: '/neighborhoods',
 	handler: function(req, reply) {
-		r.table('neighborhoods')
-			.run()
-			.then(function(result) {
-				reply(result);
-			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [NEIGHBORHOODS]
+		 */
+		T_NEIGHBORHOODS = r.table('neighborhoods');
+
+		get();
+
+		function get() {
+			T_NEIGHBORHOODS
+				.run()
+				.then(function(result) {
+					reply(result);
+				}).error(function(err) {
+					reply(Boom.badRequest('Try again some time'));
+				});
+		}
 	}
 }
 

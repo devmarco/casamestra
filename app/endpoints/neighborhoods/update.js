@@ -4,31 +4,42 @@ var Boom    = require('boom');
 var Joi     = require('joi');
 
 /*------------------------------------*\
-    [NEIGHBORHOODS] UPDATE
+	[NEIGHBORHOODS] UPDATE
 \*------------------------------------*/
 
 var updateNeighborhoods = {
-    method: ['PUT', 'PATCH'],
-    path: '/neighborhoods/{NCMID}',
-    handler: function(req, reply) {
-        r.table('neighborhoods')
-            .get(req.params.NCMID)
-            .update(req.payload)
-            .run()
-            .then(function(result) {
-                if (result.replaced === 0) {
-                    reply(Boom.badRequest('Something bad happen :('));
-                } else {
-                    reply({
-                        message: 'The neighborhood was updated'
-                    });
-                }
-                
-            }).error(function(err) {
-                reply(Boom.badRequest('Something bad happen :('));
-            });
-    },
-    config: {
+	method: ['PUT', 'PATCH'],
+	path: '/neighborhoods/{NCMID}',
+	handler: function(req, reply) {
+
+		/*
+		 * Set the table
+		 * Table: [NEIGHBORHOODS]
+		 */
+		T_NEIGHBORHOODS = r.table('neighborhoods');
+
+		update();
+
+		function update() {
+			T_NEIGHBORHOODS
+				.get(req.params.NCMID)
+				.update(req.payload)
+				.run()
+				.then(function(result) {
+					if (result.replaced === 0) {
+						reply(Boom.badRequest('Something bad happen :('));
+					} else {
+						reply({
+							message: 'The neighborhood was updated'
+						});
+					}
+					
+				}).error(function(err) {
+					reply(Boom.badRequest('Something bad happen :('));
+				});
+		}
+	},
+	config: {
 		validate: {
 			options: {
 				abortEarly: false

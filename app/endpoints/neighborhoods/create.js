@@ -11,21 +11,32 @@ var createNeighborhoods = {
 	method: 'POST',
 	path: '/neighborhoods',
 	handler: function(req, reply) {
-		r.table('neighborhoods')
-			.insert(req.payload, {
-				conflict: 'error'
-			})
-			.run()
-			.then(function(result) {
-				if (result.errors !== 0) {
-					reply(Boom.conflict('Probably this neighborhood already exist'));
-				} else {
-					reply(req.payload);
-				}
-				
-			}).error(function(err) {
-				reply(Boom.badRequest('Something bad happen :('));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [NEIGHBORHOODS]
+		 */
+		T_NEIGHBORHOODS = r.table('neighborhoods');
+
+		create();
+
+		function create() {
+			T_NEIGHBORHOODS
+				.insert(req.payload, {
+					conflict: 'error'
+				})
+				.run()
+				.then(function(result) {
+					if (result.errors !== 0) {
+						reply(Boom.conflict('Probably this neighborhood already exist'));
+					} else {
+						reply(req.payload);
+					}
+					
+				}).error(function(err) {
+					reply(Boom.badRequest('Something bad happen :('));
+				});
+		}
 	},
 	config: {
 		validate: {

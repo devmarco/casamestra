@@ -10,18 +10,29 @@ var getOneAgent = {
 	method: 'GET',
 	path: '/agents/{CRECI}',
 	handler: function(req, reply) {
-		r.table('agents')
-			.get(parseInt(req.params.CRECI))
-			.run()
-			.then(function(result) {
-				if (result) {
-					reply(result);
-				} else {
-					reply(Boom.notFound('Sorry, this agent not exist'));
-				}
-			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [AGENTS]
+		 */
+		T_AGENTS = r.table('agents');
+
+		get();
+
+		function get() {
+			T_AGENTS
+				.get(parseInt(req.params.CRECI))
+				.run()
+				.then(function(result) {
+					if (result) {
+						reply(result);
+					} else {
+						reply(Boom.notFound('Sorry, this agent not exist'));
+					}
+				}).error(function(err) {
+					reply(Boom.badRequest('Try again some time'));
+				});
+		}
 	}
 }
 

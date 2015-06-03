@@ -11,21 +11,32 @@ var createAgent = {
 	method: 'POST',
 	path: '/agents',
 	handler: function(req, reply) {
-		r.table('agents')
-			.insert(req.payload, {
-				conflict: 'error'
-			})
-			.run()
-			.then(function(result) {
-				if (result.errors !== 0) {
-					reply(Boom.conflict('Probably this agent already exist'));
-				} else {
-					reply(req.payload);
-				}
-				
-			}).error(function(err) {
-				reply(Boom.badRequest('Something bad happen :('));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [AGENTS]
+		 */
+		T_AGENTS = r.table('agents');
+
+		create();
+
+		function create() {
+			T_AGENTS
+				.insert(req.payload, {
+					conflict: 'error'
+				})
+				.run()
+				.then(function(result) {
+					if (result.errors !== 0) {
+						reply(Boom.conflict('Probably this agent already exist'));
+					} else {
+						reply(req.payload);
+					}
+					
+				}).error(function(err) {
+					reply(Boom.badRequest('Something bad happen :('));
+				});
+		}
 	},
 	config: {
 		validate: {

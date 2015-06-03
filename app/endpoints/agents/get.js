@@ -10,13 +10,24 @@ var getAgents = {
 	method: 'GET',
 	path: '/agents',
 	handler: function(req, reply) {
-		r.table('agents')
-			.run()
-			.then(function(result) {
-				reply(result);
-			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [AGENTS]
+		 */
+		T_AGENTS = r.table('agents');
+
+		get();
+
+		function get() {
+			T_AGENTS
+				.run()
+				.then(function(result) {
+					reply(result);
+				}).error(function(err) {
+					reply(Boom.badRequest('Try again some time'));
+				});
+		}
 	}
 }
 

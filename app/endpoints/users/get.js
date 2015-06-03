@@ -10,14 +10,25 @@ var getUsers = {
 	method: 'GET',
 	path: '/users',
 	handler: function(req, reply) {
-		r.table('users')
-			.without('password')
-			.run()
-			.then(function(result) {
-				reply(result);
-			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [USERS]
+		 */
+		T_USERS = r.table('users');
+
+		get();
+
+		function get() {
+			T_USERS
+				.without('password')
+				.run()
+				.then(function(result) {
+					reply(result);
+				}).error(function(err) {
+					reply(Boom.badRequest('Try again some time'));
+				});
+		}
 	}
 }
 

@@ -13,8 +13,14 @@ var updateUser = {
 	path: '/users/{UCMID}',
 	handler: function(req, reply) {
 
+		/*
+		 * Set the table
+		 * Table: [USERS]
+		 */
+		T_USERS = r.table('users');
+
 		if (req.payload.oldPassword && req.payload.password) {
-			r.table('users')
+			T_USERS
 				.get(req.params.UCMID)
 				.run()
 				.then(function(result) {
@@ -48,7 +54,7 @@ var updateUser = {
 		}
 
 		function updateUserFn() {
-			r.table('users')
+			T_USERS
 				.get(req.params.UCMID)
 				.update(req.payload)
 				.run()

@@ -13,35 +13,45 @@ var createUser = {
 	path: '/users',
 	handler: function(req, reply) {
 
-		bcrypt.genSalt(15, function(err, salt) {
-			bcrypt.hash(req.payload.password, salt, function(err, hash) {
+		/*
+		 * Set the table
+		 * Table: [USERS]
+		 */
+		T_USERS = r.table('users');
 
-				if (err) {
-					return reply(Boom.badRequest('Something bad happen :('));
-				}
+		create();
 
-				//Set the new password
-				req.payload.password = hash;
+		function create() {
+			bcrypt.genSalt(15, function(err, salt) {
+				bcrypt.hash(req.payload.password, salt, function(err, hash) {
 
-				r.table('users')
-					.insert(req.payload, {
-						conflict: 'error'
-					})
-					.run()
-					.then(function(result) {
-						if (result.errors !== 0) {
-							reply(Boom.conflict('Probably this user already exist'));
-						} else {
-							reply({
-								message: 'Success'
-							});
-						}
-						
-					}).error(function(err) {
-						reply(Boom.badRequest('Something bad happen :('));
-					});
+					if (err) {
+						return reply(Boom.badRequest('Something bad happen :('));
+					}
+
+					//Set the new password
+					req.payload.password = hash;
+
+					T_USERS
+						.insert(req.payload, {
+							conflict: 'error'
+						})
+						.run()
+						.then(function(result) {
+							if (result.errors !== 0) {
+								reply(Boom.conflict('Probably this user already exist'));
+							} else {
+								reply({
+									message: 'Success'
+								});
+							}
+							
+						}).error(function(err) {
+							reply(Boom.badRequest('Something bad happen :('));
+						});
+				});
 			});
-		});
+		}
 	},
 	config: {
 		validate: {

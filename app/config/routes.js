@@ -1,66 +1,62 @@
 /**
  * ROUTES HANDLER
  */
-var routes = {
-	agents: {
-		'GET': 			require('../../app/endpoints/agents/get'),
-		'GET-ONE': 		require('../../app/endpoints/agents/get-one'),
-		'POST': 		require('../../app/endpoints/agents/create'),
-		'PUT': 			require('../../app/endpoints/agents/update'),
-		'DELETE': 		require('../../app/endpoints/agents/delete')
-	},
-	estates: {
-		'GET': 			require('../../app/endpoints/estates/get'),
-		'GET-ONE': 		require('../../app/endpoints/estates/get-one'),
-		'GET-BUY': 		require('../../app/endpoints/estates/get-buy'),
-		'GET-RENT': 	require('../../app/endpoints/estates/get-rent'),
-		'POST': 		require('../../app/endpoints/estates/create'),
-		'PUT': 			require('../../app/endpoints/estates/update'),
-		'DELETE': 		require('../../app/endpoints/estates/delete'),
-	// 	'IMPORT': require('../app/endpoints/estates/import')
-	},
-	neighborhoods: {
-		'GET': 			require('../../app/endpoints/neighborhoods/get'),
-		'GET-ONE': 		require('../../app/endpoints/neighborhoods/get-one'),
-		'POST': 		require('../../app/endpoints/neighborhoods/create'),
-		'PUT': 			require('../../app/endpoints/neighborhoods/update'),
-		'DELETE': 		require('../../app/endpoints/neighborhoods/delete')
-	},
-	favorites: {
-		'GET': 			require('../../app/endpoints/favorites/get'),
-		'GET-ESTATE': 	require('../../app/endpoints/favorites/get-estates-by-user'),
-		'GET-USER': 	require('../../app/endpoints/favorites/get-users-by-estate'),
-		'POST': 		require('../../app/endpoints/favorites/create'),
-		'DELETE': 		require('../../app/endpoints/favorites/delete')
-	},
-	users: {
-		'GET': 			require('../../app/endpoints/users/get'),
-		'GET-ONE': 		require('../../app/endpoints/users/get-one'),
-		'POST': 		require('../../app/endpoints/users/create'),
-		'PUT': 			require('../../app/endpoints/users/update'),
-		'DELETE': 		require('../../app/endpoints/users/delete')
-	}
-}
+var routes = [
+	// Agents
+	require('../../app/endpoints/agents/get'),
+	require('../../app/endpoints/agents/get-one'),
+	require('../../app/endpoints/agents/create'),
+	require('../../app/endpoints/agents/update'),
+	require('../../app/endpoints/agents/delete'),
+
+	//Estates
+	require('../../app/endpoints/estates/get'),
+	require('../../app/endpoints/estates/get-one'),
+	require('../../app/endpoints/estates/get-buy'),
+	require('../../app/endpoints/estates/get-rent'),
+	require('../../app/endpoints/estates/create'),
+	require('../../app/endpoints/estates/update'),
+	require('../../app/endpoints/estates/delete'),
+
+	//Neighborhoods
+	require('../../app/endpoints/neighborhoods/get'),
+	require('../../app/endpoints/neighborhoods/get-one'),
+	require('../../app/endpoints/neighborhoods/create'),
+	require('../../app/endpoints/neighborhoods/update'),
+	require('../../app/endpoints/neighborhoods/delete'),
+
+	//Favorites
+	require('../../app/endpoints/favorites/get'),
+	require('../../app/endpoints/favorites/get-estates-by-user'),
+	require('../../app/endpoints/favorites/get-users-by-estate'),
+	require('../../app/endpoints/favorites/create'),
+	require('../../app/endpoints/favorites/delete'),
+
+	//Users
+	require('../../app/endpoints/users/get'),
+	require('../../app/endpoints/users/get-one'),
+	require('../../app/endpoints/users/create'),
+	require('../../app/endpoints/users/update'),
+	require('../../app/endpoints/users/delete')
+];
 
 module.exports = {
 	create: function(server) {
 		var endpointValue,
-			e, i
+			r = 0, i
 
 		if (!server || !routes)
 			throw new error('Routes: Server or Endpoints are not found');
 
-		for (e in routes) {
-			for (i in routes[e]) {
-				endpointValue = routes[e][i];
-				if (typeof endpointValue === 'object') {
-					server.route({
-						method: endpointValue.method,
-						path: endpointValue.path,
-						handler: endpointValue.handler,
-						config: endpointValue.config || {}
-					});
-				}
+		for (r; r < routes.length; r++) {
+			endpointValue = routes[r];
+			if (typeof endpointValue === 'object') {
+				server.route({
+					method: endpointValue.method,
+					path: endpointValue.path,
+					handler: endpointValue.handler,
+					config: endpointValue.config || {}
+				});
 			}
 		}
 	}

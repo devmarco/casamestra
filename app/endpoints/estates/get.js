@@ -12,23 +12,33 @@ var getEstates = {
 	path: '/estates',
 	handler: function(req, reply) {
 
-		var resultFilter = filter('estates', req);
+		/*
+		 * Set the table
+		 * Table: [ESTATES]
+		 */
+		T_ESTATES = r.table('estates');
 
-		if (resultFilter) {
-			resultFilter.run()
-				.then(function(result) {
-					reply(result);
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		} else {
-			r.table('estates')
-				.run()
-				.then(function(result) {
-					reply(result);
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
+		get();
+
+		function  get() {
+			var resultFilter = filter('estates', req);
+
+			if (resultFilter) {
+				resultFilter.run()
+					.then(function(result) {
+						reply(result);
+					}).error(function(err) {
+						reply(Boom.badRequest('Try again some time'));
+					});
+			} else {
+				T_ESTATES
+					.run()
+					.then(function(result) {
+						reply(result);
+					}).error(function(err) {
+						reply(Boom.badRequest('Try again some time'));
+					});
+			}
 		}
 	}
 }

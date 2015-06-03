@@ -10,18 +10,29 @@ var getOneEstate = {
 	method: 'GET',
 	path: '/estates/{ECMID}',
 	handler: function(req, reply) {
-		r.table('estates')
-			.get(req.params.ECMID)
-			.run()
-			.then(function(result) {
-				if (result) {
-					reply(result);
-				} else {
-					reply(Boom.notFound('Sorry, this estate not exist'));
-				}
-			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
+
+		/*
+		 * Set the table
+		 * Table: [ESTATES]
+		 */
+		T_ESTATES = r.table('estates');
+
+		get();
+
+		function get() {
+			T_ESTATES
+				.get(req.params.ECMID)
+				.run()
+				.then(function(result) {
+					if (result) {
+						reply(result);
+					} else {
+						reply(Boom.notFound('Sorry, this estate not exist'));
+					}
+				}).error(function(err) {
+					reply(Boom.badRequest('Try again some time'));
+				});
+		}
 	}
 }
 

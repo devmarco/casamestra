@@ -12,11 +12,17 @@ var createEstate = {
 	path: '/estates',
 	handler: function(req, reply) {
 
+		/*
+		 * Set the table
+		 * Table: [ESTATES]
+		 */
+		T_ESTATES = r.table('estates');
+
 		/* First we need check if has an Agent
 		 * If yes, we need check if the Agent exist
 		 */
 		if (req.payload.agent) {
-			r.table('agents')
+			T_ESTATES
 				.get(req.payload.agent)	
 				.run()
 				.then(function(result) {
@@ -33,20 +39,21 @@ var createEstate = {
 		}
 
 		/*
-		 * Create Estate
+		 * Create the estate
+		 * Check if the address already exist
 		 */
 		function create() {
-			r.table('estates')
+			T_ESTATES
 				.filter({
 					location: req.payload.location
 				})
 				.run()
 				.then(function(result) {
 					if (result.length === 0) {
-
+						//Add updatedAt to payload
 						req.payload.createdAt = new Date();
 
-						r.table('estates')
+						T_ESTATES
 							.insert(req.payload)
 							.run()
 							.then(function(result) {
@@ -94,6 +101,7 @@ var createEstate = {
 				}),
 				homeType: Joi.string().required(),
 				action: Joi.any().valid(['rent', 'sell']).required(),
+				status: Joi.any().valid(['sold', 'available', 'negotiation']),
 				area: Joi.number().required(),
 				garages: Joi.number().required(),
 				price: Joi.number().required(),

@@ -12,30 +12,40 @@ var getEstates = {
 	path: '/estates/rent',
 	handler: function(req, reply) {
 
-		//Check if user want a filtered result
-		var resultFilter = filter('estates', req, {
-			action: 'rent'
-		});
+		/*
+		 * Set the table
+		 * Table: [ESTATES]
+		 */
+		T_ESTATES = r.table('estates');
 
-		if (resultFilter) {
-			resultFilter
-				.run()
-				.then(function(result) {
-					reply(result);
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		} else {
-			r.table('estates')
-				.filter({
-					action: 'rent'
-				})
-				.run()
-				.then(function(result) {
-					reply(result);
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
+		get();
+
+		function get() {
+
+			var resultFilter = filter('estates', req, {
+				action: 'rent'
+			});
+
+			if (resultFilter) {
+				resultFilter
+					.run()
+					.then(function(result) {
+						reply(result);
+					}).error(function(err) {
+						reply(Boom.badRequest('Try again some time'));
+					});
+			} else {
+				T_ESTATES
+					.filter({
+						action: 'rent'
+					})
+					.run()
+					.then(function(result) {
+						reply(result);
+					}).error(function(err) {
+						reply(Boom.badRequest('Try again some time'));
+					});
+			}
 		}
 	}
 }

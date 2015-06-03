@@ -70,7 +70,7 @@ var updateEstate = {
 				}),
 				homeType: Joi.string(),
 				action: Joi.any().valid(['rent', 'sell']),
-				status: Joi.any().valid(['sold', 'available', 'negotiation']),
+				status: Joi.any().valid(['sold', 'rented', 'available', 'negotiation']),
 				area: Joi.number(),
 				garages: Joi.number(),
 				price: Joi.number(),

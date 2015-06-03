@@ -101,7 +101,7 @@ var createEstate = {
 				}),
 				homeType: Joi.string().required(),
 				action: Joi.any().valid(['rent', 'sell']).required(),
-				status: Joi.any().valid(['sold', 'available', 'negotiation']).required(),
+				status: Joi.any().valid(['sold', 'rented', 'available', 'negotiation']).required(),
 				area: Joi.number().required(),
 				garages: Joi.number().required(),
 				price: Joi.number().required(),

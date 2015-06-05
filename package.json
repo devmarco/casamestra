@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
+    "lab": "^5.9.0",
     "supertest": "^0.15.0"
   },
   "private": true

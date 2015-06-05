@@ -16,7 +16,7 @@ var updateEstate = {
 		 * Set the table
 		 * Table: [ESTATES]
 		 */
-		T_ESTATES = r.table('estates');
+		var T_ESTATES = r.table('estates');
 
 		//Add updatedAt to payload
 		req.payload.updatedAt = new Date();

@@ -15,7 +15,7 @@ var deleteEstate = {
 		 * Set the table
 		 * Table: [ESTATES]
 		 */
-		T_ESTATES = r.table('estates');
+		var T_ESTATES = r.table('estates');
 
 		del();
 

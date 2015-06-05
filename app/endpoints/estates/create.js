@@ -16,7 +16,7 @@ var createEstate = {
 		 * Set the table
 		 * Table: [ESTATES]
 		 */
-		T_ESTATES = r.table('estates');
+		var T_ESTATES = r.table('estates');
 
 		/* First we need check if has an Agent
 		 * If yes, we need check if the Agent exist

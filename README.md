@@ -6,7 +6,7 @@ This is the oficial Private API for Casa Mestra
 
 Here you can understand better how the API works, and how you can access the endpoints
 
-## Featues
+## Features
 
 - [x] Error Handlings
 - [x] Logging
@@ -27,7 +27,7 @@ phones.cellphone | The cellphone numnber of User
 phones.homephone | The office/home number of User
 password | The password of User
 
-**** Endpoints
+#### Endpoints
 
 Endpoints | Method | Description
 ----------|-------|-----

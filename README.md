@@ -6,12 +6,12 @@ This is the oficial Private API for Casa Mestra
 
 Here you can understand better how the API works, and how you can access the endpoints
 
-[Features](#features)
-[Users](#users)
-[Agents](#agents)
-[Estates](#estates)
-[Neighborhoods](#neighborhoods)
-[Favorites](#favorites)
+- [Features](#features)
+- [Users](#users)
+- [Agents](#agents)
+- [Estates](#estates)
+- [Neighborhoods](#neighborhoods)
+- [Favorites](#favorites)
 
 ## Features
 

@@ -16,7 +16,7 @@ var createNeighborhoods = {
 		 * Set the table
 		 * Table: [NEIGHBORHOODS]
 		 */
-		T_NEIGHBORHOODS = r.table('neighborhoods');
+		var T_NEIGHBORHOODS = r.table('neighborhoods');
 
 		create();
 

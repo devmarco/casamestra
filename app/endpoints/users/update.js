@@ -17,7 +17,7 @@ var updateUser = {
 		 * Set the table
 		 * Table: [USERS]
 		 */
-		T_USERS = r.table('users');
+		var T_USERS = r.table('users');
 
 		if (req.payload.oldPassword && req.payload.password) {
 			T_USERS

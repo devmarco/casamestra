@@ -15,7 +15,7 @@ var getUsers = {
 		 * Set the table
 		 * Table: [USERS]
 		 */
-		T_USERS = r.table('users');
+		var T_USERS = r.table('users');
 
 		get();
 

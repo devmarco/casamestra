@@ -16,7 +16,7 @@ var updateAgent = {
 		 * Set the table
 		 * Table: [AGENTS]
 		 */
-		T_AGENTS = r.table('agents');
+		var T_AGENTS = r.table('agents');
 
 		update();
 

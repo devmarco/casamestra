@@ -4,8 +4,7 @@
   "description": "Casa Mestra API",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --recursive -R list",
-    "tdd": "mocha --recursive --watch -R list",
+    "test": "lab -c",
     "start": "node server.js"
   },
   "repository": {
@@ -36,8 +35,10 @@
     "rethinkdbdash": "^2.0.10"
   },
   "devDependencies": {
+    "code": "^1.4.0",
     "expect.js": "^0.3.1",
     "lab": "^5.9.0",
+    "shot": "^1.5.3",
     "supertest": "^0.15.0"
   },
   "private": true

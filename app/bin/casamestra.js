@@ -6,7 +6,7 @@ var plugins 	= require('../config/plugins');
 var internals 	= {};
 
 //Create the server instance
-internals.config = function() {
+internals.config = (function() {
 	var server = new Hapi.Server();
 
 	// //Set the connection
@@ -30,11 +30,11 @@ internals.config = function() {
 	return {
 		server: server
 	};
-}
+}());
 
 //Init the server instance
 internals.init = function() {
-	var server = this.config().server;
+	var server = this.config.server;
 
 	//Start the server
 	server.start(function() {

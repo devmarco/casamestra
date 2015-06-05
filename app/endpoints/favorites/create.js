@@ -17,8 +17,8 @@ var createFavorite = {
 		 * Table: [ESTATES]
 		 * Table: [USERS]
 		 */
-		T_ESTATES = r.table('estates');
-		T_USERS = r.table('users');
+		var T_ESTATES = r.table('estates'),
+			T_USERS = r.table('users');
 
 		checkEstate();
 

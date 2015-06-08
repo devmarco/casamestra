@@ -21,7 +21,9 @@ Here you can understand better how the API works, and how you can access the end
 - [x] Testing
 - [ ] Authentication & Authorization
 - [ ] Hypermedia
-- [ ] Email integration
+- [ ] Alert System
+- [ ] Apointmments
+- [ ] Recommendations
 
 ## Users
 

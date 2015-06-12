@@ -40,7 +40,8 @@ var routes = [
 	require('../../app/endpoints/users/delete'),
 
 	//Alerts
-	require('../../app/endpoints/alerts/create')
+	require('../../app/endpoints/alerts/create'),
+	require('../../app/endpoints/alerts/delete')
 ];
 
 module.exports = {

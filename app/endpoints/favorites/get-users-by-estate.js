@@ -1,6 +1,5 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
+var Estates = require('../../config/tables').agents;
 
 /*------------------------------------*\
 	[FAVORITES] GET
@@ -9,31 +8,25 @@ var Boom 	= require('boom');
 var getFavoritedUsers = {
 	method: 'GET',
 	path: '/favorites/users/{ECMID}',
-	handler: function(req, reply) {
+	handler: getFavorites
+}
 
-		/*
-		 * Set the table
-		 * Table: [ESTATES]
-		 */
-		var T_ESTATES = r.table('estates');
-
-		get();
-
-		function get() {
-			T_ESTATES
-				.get(req.params.ECMID)
-				.run()
-				.then(function(result) {
-					if (result) {
-						reply(result.favorites);
-					} else {
-						reply(Boom.badRequest('Sorry, This user not have favorites'));
-					}
-				}).error(function(err) {
-					reply(Boom.badRequest('Sorry, Something are wrong!'));
-				});
-		}
-	}
+/*
+ * Get all favorites of a specific estate
+ */
+function getFavorites(req, reply) {
+	Estates
+		.get(req.params.ECMID)
+		.run()
+		.then(function(result) {
+			if (result) {
+				reply(result.favorites);
+			} else {
+				reply(Boom.badRequest('Sorry, This user not have favorites'));
+			}
+		}).error(function(err) {
+			reply(Boom.badRequest('Sorry, Something are wrong!'));
+		});
 }
 
 module.exports = getFavoritedUsers;

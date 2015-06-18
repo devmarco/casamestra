@@ -1,49 +1,15 @@
-var DB      = require('../../config/settings').db;
-var r       = require('rethinkdbdash')(DB);
 var Boom    = require('boom');
 var Joi     = require('joi');
+var Estates = require('../../config/tables').estates;
 
 /*------------------------------------*\
 	[ESTATE] UPDATE
 \*------------------------------------*/
 
-var updateEstate = {
+var handleUpdate = {
 	method: ['PUT', 'PATCH'],
 	path: '/estates/{ECMID}',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [ESTATES]
-		 */
-		var T_ESTATES = r.table('estates');
-
-		//Add updatedAt to payload
-		req.payload.updatedAt = new Date();
-
-		update();
-
-		function update() {
-			T_ESTATES
-				.get(req.params.ECMID)
-				.update(req.payload)
-				.run()
-				.then(function(result) {
-					if (result.replaced === 0) {
-						reply(Boom.badRequest('Something bad happen :('));
-					} else {
-						reply({
-							message: 'The estate was updated'
-						});
-					}
-					
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
-		}
-
-		
-	},
+	handler: updateEstate,
 	config: {
 		validate: {
 			options: {
@@ -87,4 +53,30 @@ var updateEstate = {
 	}
 }
 
-module.exports = updateEstate;
+/*
+ * Update an Estate
+ */
+function updateEstate(req, reply) {
+
+	//Add updatedAt to payload
+	req.payload.updatedAt = new Date();
+
+	Estates
+		.get(req.params.ECMID)
+		.update(req.payload)
+		.run()
+		.then(function(result) {
+			if (result.replaced === 0) {
+				reply(Boom.badRequest('Something bad happen :('));
+			} else {
+				reply({
+					message: 'The estate was updated'
+				});
+			}
+			
+		}).error(function(err) {
+			reply(Boom.badRequest('Something bad happen :('));
+		});
+}
+
+module.exports = handleUpdate;

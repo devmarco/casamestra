@@ -1,80 +1,16 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
-var Boom 	= require('boom');
-var Joi 	= require('joi');
+var Boom 		= require('boom');
+var Joi 		= require('joi');
+var Estates 	= require('../../config/tables').estates;
+var Agents 		= require('../../config/tables').agents;
 
 /*------------------------------------*\
 	[ESTATES] CREATE
 \*------------------------------------*/
 
-var createEstate = {
+var handleEstate = {
 	method: 'POST',
 	path: '/estates',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [ESTATES]
-		 */
-		var T_ESTATES = r.table('estates');
-
-		/* First we need check if has an Agent
-		 * If yes, we need check if the Agent exist
-		 */
-		if (req.payload.agent) {
-			T_ESTATES
-				.get(req.payload.agent)	
-				.run()
-				.then(function(result) {
-					if (result) {
-						create();
-					} else {
-						reply(Boom.notFound('Sorry, this agent not exist'));
-					}
-				}).error(function(err) {
-					reply(Boom.forbidden('Try again some time'));
-				});
-		} else {
-			create();
-		}
-
-		/*
-		 * Create the estate
-		 * Check if the address already exist
-		 */
-		function create() {
-			T_ESTATES
-				.filter({
-					location: req.payload.location
-				})
-				.run()
-				.then(function(result) {
-					if (result.length === 0) {
-						//Add updatedAt to payload
-						req.payload.createdAt = new Date();
-
-						T_ESTATES
-							.insert(req.payload)
-							.run()
-							.then(function(result) {
-								if (result.errors !== 0) {
-									reply(Boom.conflict('Probably this estate already exist'));
-								} else {
-									reply(req.payload);
-								}
-								
-							}).error(function(err) {
-								reply(Boom.badRequest('Something bad happen :('));
-							});
-					} else {
-						reply(Boom.conflict('Already exist an estate with the same address'));
-					}
-				})
-				.error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		}
-	},
+	handler: createEstate,
 	config: {
 		validate: {
 			options: {
@@ -116,4 +52,68 @@ var createEstate = {
 	}
 }
 
-module.exports = createEstate;
+/*
+ * Create an Estates
+ */
+function createEstate(req, reply) {
+	
+	/*
+	 * Check if the Agent exist before create the estates
+	 * This prevent that you associating an agent that not exist
+	 */
+	if (req.payload.agent) {
+		Agents
+			.get(req.payload.agent)	
+			.run()
+			.then(function(result) {
+				if (result) {
+					create();
+				} else {
+					reply(Boom.notFound('Sorry, this agent not exist'));
+				}
+			}).error(function(err) {
+				reply(Boom.forbidden('Try again some time'));
+			});
+	} else {
+		create();
+	}
+
+	/*
+	 * Create the estates
+	 * First, we have to check if already exist an estate in the same address
+	 */
+	function create() {
+		Estates
+			.filter({
+				location: req.payload.location
+			})
+			.run()
+			.then(function(result) {
+				if (result.length === 0) {
+					//Add updatedAt to payload
+					req.payload.createdAt = new Date();
+
+					Estates
+						.insert(req.payload)
+						.run()
+						.then(function(result) {
+							if (result.errors !== 0) {
+								reply(Boom.conflict('Probably this estate already exist'));
+							} else {
+								reply(req.payload);
+							}
+							
+						}).error(function(err) {
+							reply(Boom.badRequest('Something bad happen :('));
+						});
+				} else {
+					reply(Boom.conflict('Already exist an estate with the same address'));
+				}
+			})
+			.error(function(err) {
+				reply(Boom.badRequest('Try again some time'));
+			});
+	}
+}
+
+module.exports = handleEstate;

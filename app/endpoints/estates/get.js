@@ -1,46 +1,40 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
 var filter 	= require('../../filters/limit-offset');
+var Estates = require('../../config/tables').estates;
+
 
 /*------------------------------------*\
 	[ESTATE] GET
 \*------------------------------------*/
 
-var getEstates = {
+var handleGet = {
 	method: 'GET',
 	path: '/estates',
-	handler: function(req, reply) {
+	handler: getEstates
+}
 
-		/*
-		 * Set the table
-		 * Table: [ESTATES]
-		 */
-		var T_ESTATES = r.table('estates');
+/*
+ * Get all Estates
+ */
+function  getEstates(req, reply) {
+	var filterQuery = filter('estates', req);
 
-		get();
-
-		function  get() {
-			var resultFilter = filter('estates', req);
-
-			if (resultFilter) {
-				resultFilter.run()
-					.then(function(result) {
-						reply(result);
-					}).error(function(err) {
-						reply(Boom.badRequest('Try again some time'));
-					});
-			} else {
-				T_ESTATES
-					.run()
-					.then(function(result) {
-						reply(result);
-					}).error(function(err) {
-						reply(Boom.badRequest('Try again some time'));
-					});
-			}
-		}
+	if (filterQuery) {
+		filterQuery.run()
+			.then(function(result) {
+				reply(result);
+			}).error(function(err) {
+				reply(Boom.badRequest('Try again some time'));
+			});
+	} else {
+		Estates
+			.run()
+			.then(function(result) {
+				reply(result);
+			}).error(function(err) {
+				reply(Boom.badRequest('Try again some time'));
+			});
 	}
 }
 
-module.exports = getEstates;
+module.exports = handleGet;

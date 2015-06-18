@@ -1,39 +1,32 @@
-var DB      = require('../../config/settings').db;
-var r       = require('rethinkdbdash')(DB);
 var Boom    = require('boom');
+var Estates = require('../../config/tables').estates;
 
 /*------------------------------------*\
 	[ESTATES] GET ONE
 \*------------------------------------*/
 
-var getOneEstate = {
+var handleGet = {
 	method: 'GET',
 	path: '/estates/{ECMID}',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [ESTATES]
-		 */
-		var T_ESTATES = r.table('estates');
-
-		get();
-
-		function get() {
-			T_ESTATES
-				.get(req.params.ECMID)
-				.run()
-				.then(function(result) {
-					if (result) {
-						reply(result);
-					} else {
-						reply(Boom.notFound('Sorry, this estate not exist'));
-					}
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		}
-	}
+	handler: getEstates
 }
 
-module.exports = getOneEstate;
+/*
+ * Get an Estate
+ */
+function getEstates(req, reply) {
+	Estates
+		.get(req.params.ECMID)
+		.run()
+		.then(function(result) {
+			if (result) {
+				reply(result);
+			} else {
+				reply(Boom.notFound('Sorry, this estate not exist'));
+			}
+		}).error(function(err) {
+			reply(Boom.badRequest('Try again some time'));
+		});
+}
+
+module.exports = handleGet;

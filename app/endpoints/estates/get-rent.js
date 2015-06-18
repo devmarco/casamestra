@@ -1,53 +1,45 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
 var filter 	= require('../../filters/limit-offset');
+var Estates = require('../../config/tables').estates;
 
 /*------------------------------------*\
 	[ESTATE] GET
 \*------------------------------------*/
 
-var getEstates = {
+var handleGet = {
 	method: 'GET',
 	path: '/estates/rent',
-	handler: function(req, reply) {
+	handler: getEstates
+}
 
-		/*
-		 * Set the table
-		 * Table: [ESTATES]
-		 */
-		var T_ESTATES = r.table('estates');
+/*
+ * Get the estate for rent
+ */
+function getEstates(req, reply) {
+	var filterQuery = filter('estates', req, {
+		action: 'rent'
+	});
 
-		get();
-
-		function get() {
-
-			var resultFilter = filter('estates', req, {
-				action: 'rent'
+	if (filterQuery) {
+		filterQuery
+			.run()
+			.then(function(result) {
+				reply(result);
+			}).error(function(err) {
+				reply(Boom.badRequest('Try again some time'));
 			});
-
-			if (resultFilter) {
-				resultFilter
-					.run()
-					.then(function(result) {
-						reply(result);
-					}).error(function(err) {
-						reply(Boom.badRequest('Try again some time'));
-					});
-			} else {
-				T_ESTATES
-					.filter({
-						action: 'rent'
-					})
-					.run()
-					.then(function(result) {
-						reply(result);
-					}).error(function(err) {
-						reply(Boom.badRequest('Try again some time'));
-					});
-			}
-		}
+	} else {
+		Estates
+			.filter({
+				action: 'rent'
+			})
+			.run()
+			.then(function(result) {
+				reply(result);
+			}).error(function(err) {
+				reply(Boom.badRequest('Try again some time'));
+			});
 	}
 }
 
-module.exports = getEstates;
+module.exports = handleGet;

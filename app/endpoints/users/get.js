@@ -1,35 +1,28 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
+var Users 	= require('../../config/tables').users;
 
 /*------------------------------------*\
 	[USERS] GET
 \*------------------------------------*/
 
-var getUsers = {
+var handleGet = {
 	method: 'GET',
 	path: '/users',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [USERS]
-		 */
-		var T_USERS = r.table('users');
-
-		get();
-
-		function get() {
-			T_USERS
-				.without('password')
-				.run()
-				.then(function(result) {
-					reply(result);
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		}
-	}
+	handler: getUsers
 }
 
-module.exports = getUsers;
+/*
+ * Get all users
+ */
+function getUsers(req, reply) {
+	Users
+		.without('password')
+		.run()
+		.then(function(result) {
+			reply(result);
+		}).error(function(err) {
+			reply(Boom.badRequest('Try again some time'));
+		});
+}
+
+module.exports = handleGet;

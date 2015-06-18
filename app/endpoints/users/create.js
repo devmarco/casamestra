@@ -1,58 +1,16 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
 var Joi 	= require('joi');
 var bcrypt	= require('bcrypt');
+var Users 	= require('../../config/tables').users;
 
 /*------------------------------------ *\
 	[USERS] CREATE
 \*------------------------------------*/
 
-var createUser = {
+var handleCreate = {
 	method: 'POST',
 	path: '/users',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [USERS]
-		 */
-		var T_USERS = r.table('users');
-
-		create();
-
-		function create() {
-			bcrypt.genSalt(15, function(err, salt) {
-				bcrypt.hash(req.payload.password, salt, function(err, hash) {
-
-					if (err) {
-						return reply(Boom.badRequest('Something bad happen :('));
-					}
-
-					//Set the new password
-					req.payload.password = hash;
-
-					T_USERS
-						.insert(req.payload, {
-							conflict: 'error'
-						})
-						.run()
-						.then(function(result) {
-							if (result.errors !== 0) {
-								reply(Boom.conflict('Probably this user already exist'));
-							} else {
-								reply({
-									message: 'Success'
-								});
-							}
-							
-						}).error(function(err) {
-							reply(Boom.badRequest('Something bad happen :('));
-						});
-				});
-			});
-		}
-	},
+	handler: createUser,
 	config: {
 		validate: {
 			options: {
@@ -72,4 +30,39 @@ var createUser = {
 	}
 }
 
-module.exports = createUser;
+/*
+ * Create an User
+ */
+function createUser(req, reply) {
+	bcrypt.genSalt(15, function(err, salt) {
+		bcrypt.hash(req.payload.password, salt, function(err, hash) {
+
+			if (err) {
+				return reply(Boom.badRequest('Something bad happen :('));
+			}
+
+			//Set the new password
+			req.payload.password = hash;
+
+			T_USERS
+				.insert(req.payload, {
+					conflict: 'error'
+				})
+				.run()
+				.then(function(result) {
+					if (result.errors !== 0) {
+						reply(Boom.conflict('Probably this user already exist'));
+					} else {
+						reply({
+							message: 'Success'
+						});
+					}
+					
+				}).error(function(err) {
+					reply(Boom.badRequest('Something bad happen :('));
+				});
+		});
+	});
+}
+
+module.exports = handleCreate;

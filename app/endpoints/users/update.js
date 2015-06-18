@@ -1,77 +1,16 @@
-var DB      = require('../../config/settings').db;
-var r       = require('rethinkdbdash')(DB);
-var Boom    = require('boom');
-var Joi     = require('joi');
-var bcrypt  = require('bcrypt');
+var Boom 	= require('boom');
+var Joi 	= require('joi');
+var bcrypt	= require('bcrypt');
+var Users 	= require('../../config/tables').users;
 
 /*------------------------------------*\
 	[USERS] CREATE
 \*------------------------------------*/
 
-var updateUser = {
+var handleUpdate = {
 	method: ['PUT', 'PATCH'],
 	path: '/users/{UCMID}',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [USERS]
-		 */
-		var T_USERS = r.table('users');
-
-		if (req.payload.oldPassword && req.payload.password) {
-			T_USERS
-				.get(req.params.UCMID)
-				.run()
-				.then(function(result) {
-					if (result) {
-						bcrypt.compare(req.payload.oldPassword, result.password, function(err, res) {
-							if (res) {
-								bcrypt.genSalt(15, function(err, salt) {
-									bcrypt.hash(req.payload.password, salt, function(err, hash) {
-
-										//Set the new password
-										req.payload.password = hash;
-
-										updateUserFn();
-									});
-								});	
-							} else {
-								reply(Boom.badRequest('Sorry, The oldPassword are wrong'));
-							}
-						});
-					} else {
-						reply(Boom.badRequest('Something bad happen :('));
-					}
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
-
-		} else if (req.payload.oldPassword || req.payload.password) {
-			reply(Boom.badRequest('Sorry, Update password need of the both properties (oldPassword and password)'));
-		} else {
-			updateUserFn();
-		}
-
-		function updateUserFn() {
-			T_USERS
-				.get(req.params.UCMID)
-				.update(req.payload)
-				.run()
-				.then(function(result) {
-					if (result.replaced === 0) {
-						reply(Boom.badRequest('Something bad happen :('));
-					} else {
-						reply({
-							message: 'The user was updated'
-						});
-					}
-					
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
-		}
-	},
+	handler: updateUser,
 	config: {
 		validate: {
 			options: {
@@ -92,4 +31,66 @@ var updateUser = {
 	}
 }
 
-module.exports = updateUser;
+/*
+ * Update an user
+ */
+function updateUser(req, reply) {
+
+	/*
+	 * For update the password i need the older password
+	 */
+	if (req.payload.oldPassword && req.payload.password) {
+		Users
+			.get(req.params.UCMID)
+			.run()
+			.then(function(result) {
+				if (result) {
+					bcrypt.compare(req.payload.oldPassword, result.password, function(err, res) {
+						if (res) {
+							bcrypt.genSalt(15, function(err, salt) {
+								bcrypt.hash(req.payload.password, salt, function(err, hash) {
+
+									//Set the new password
+									req.payload.password = hash;
+
+									updateUserFn();
+								});
+							});	
+						} else {
+							reply(Boom.badRequest('Sorry, The oldPassword are wrong'));
+						}
+					});
+				} else {
+					reply(Boom.badRequest('Something bad happen :('));
+				}
+			}).error(function(err) {
+				reply(Boom.badRequest('Something bad happen :('));
+			});
+
+	} else if (req.payload.oldPassword || req.payload.password) {
+		reply(Boom.badRequest('Sorry, Update password need of the both properties (oldPassword and password)'));
+	} else {
+		updateUserFn();
+	}
+
+	function updateUserFn() {
+		Users
+			.get(req.params.UCMID)
+			.update(req.payload)
+			.run()
+			.then(function(result) {
+				if (result.replaced === 0) {
+					reply(Boom.badRequest('Something bad happen :('));
+				} else {
+					reply({
+						message: 'The user was updated'
+					});
+				}
+				
+			}).error(function(err) {
+				reply(Boom.badRequest('Something bad happen :('));
+			});
+	}
+}
+
+module.exports = handleUpdate;

@@ -33,6 +33,7 @@
     "good-console": "^5.0.0",
     "hapi": "^8.6.0",
     "joi": "^6.4.3",
+    "moment": "^2.10.3",
     "rethinkdbdash": "^2.0.10"
   },
   "devDependencies": {

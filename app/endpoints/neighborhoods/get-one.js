@@ -1,39 +1,32 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
-var Boom 	= require('boom');
+var Boom 			= require('boom');
+var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 /*------------------------------------*\
 	[NEIGHBORHOODS] GET ONE
 \*------------------------------------*/
 
-var getOneNeighborhoods = {
+var handleGet = {
 	method: 'GET',
 	path: '/neighborhoods/{NCMID}',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [NEIGHBORHOODS]
-		 */
-		var T_NEIGHBORHOODS = r.table('neighborhoods');
-
-		get();
-
-		function get() {
-			T_NEIGHBORHOODS
-				.get(req.params.NCMID)
-				.run()
-				.then(function(result) {
-					if (result) {
-						reply(result);
-					} else {
-						reply(Boom.notFound('Sorry, this neighborhood not exist'));
-					}
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		}
-	}
+	handler: getNeighborhood
 }
 
-module.exports = getOneNeighborhoods;
+/*
+ * Get a neighborhood
+ */
+function getNeighborhood(req, reply) {
+	Neighborhoods
+		.get(req.params.NCMID)
+		.run()
+		.then(function(result) {
+			if (result) {
+				reply(result);
+			} else {
+				reply(Boom.notFound('Sorry, this neighborhood not exist'));
+			}
+		}).error(function(err) {
+			reply(Boom.badRequest('Try again some time'));
+		});
+}
+
+module.exports = handleGet;

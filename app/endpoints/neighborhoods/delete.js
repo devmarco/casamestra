@@ -1,44 +1,37 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
-var Boom 	= require('boom');
+var Boom 			= require('boom');
+var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 /*------------------------------------*\
 	[NEIGHBORHOODS] DELETE
 \*------------------------------------*/
 
-var deleteNeighborhoods = {
+var handleDelete = {
 	method: 'DELETE',
 	path: '/neighborhoods/{NCMID}',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [NEIGHBORHOODS]
-		 */
-		var T_NEIGHBORHOODS = r.table('neighborhoods');
-
-		del();
-
-		function del() {
-			T_NEIGHBORHOODS
-				.get(req.params.NCMID)
-				.delete({
-					returnChanges: true
-				})
-				.run()
-				.then(function(result) {
-					if (result.deleted === 0) {
-						reply(Boom.notFound('Sorry, this neighborhood not exist'));
-					} else {
-						reply({
-							message: 'The neighborhood was deleted'
-						});
-					}
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
-		}
-	}
+	handler: deleteNeighborhoods
 }
 
-module.exports = deleteNeighborhoods;
+/*
+ * Delete a Neighborhood
+ */
+function deleteNeighborhoods(req, reply) {
+	Neighborhoods
+		.get(req.params.NCMID)
+		.delete({
+			returnChanges: true
+		})
+		.run()
+		.then(function(result) {
+			if (result.deleted === 0) {
+				reply(Boom.notFound('Sorry, this neighborhood not exist'));
+			} else {
+				reply({
+					message: 'The neighborhood was deleted'
+				});
+			}
+		}).error(function(err) {
+			reply(Boom.badRequest('Something bad happen :('));
+		});
+}
+
+module.exports = handleDelete;

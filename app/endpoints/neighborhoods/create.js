@@ -1,43 +1,15 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
-var Boom 	= require('boom');
-var Joi 	= require('joi');
+var Boom 			= require('boom');
+var Joi 			= require('joi');
+var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 /*------------------------------------ *\
 	[NEIGHBORHOODS] CREATE
 \*------------------------------------*/
 
-var createNeighborhoods = {
+var handleCreate = {
 	method: 'POST',
 	path: '/neighborhoods',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [NEIGHBORHOODS]
-		 */
-		var T_NEIGHBORHOODS = r.table('neighborhoods');
-
-		create();
-
-		function create() {
-			T_NEIGHBORHOODS
-				.insert(req.payload, {
-					conflict: 'error'
-				})
-				.run()
-				.then(function(result) {
-					if (result.errors !== 0) {
-						reply(Boom.conflict('Probably this neighborhood already exist'));
-					} else {
-						reply(req.payload);
-					}
-					
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
-		}
-	},
+	handler: createNeighborhood,
 	config: {
 		validate: {
 			options: {
@@ -72,4 +44,25 @@ var createNeighborhoods = {
 	}
 }
 
-module.exports = createNeighborhoods;
+/*
+ * Create a Neighborhood
+ */
+function createNeighborhood(req, reply) {
+	Neighborhoods
+		.insert(req.payload, {
+			conflict: 'error'
+		})
+		.run()
+		.then(function(result) {
+			if (result.errors !== 0) {
+				reply(Boom.conflict('Probably this neighborhood already exist'));
+			} else {
+				reply(req.payload);
+			}
+			
+		}).error(function(err) {
+			reply(Boom.badRequest('Something bad happen :('));
+		});
+}
+
+module.exports = handleCreate;

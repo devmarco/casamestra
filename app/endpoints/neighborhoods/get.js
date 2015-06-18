@@ -1,34 +1,27 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
-var Boom 	= require('boom');
+var Boom 			= require('boom');
+var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 /*------------------------------------*\
 	[NEIGHBORHOODS] GET
 \*------------------------------------*/
 
-var getNeighborhoods = {
+var handleGet = {
 	method: 'GET',
 	path: '/neighborhoods',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [NEIGHBORHOODS]
-		 */
-		var T_NEIGHBORHOODS = r.table('neighborhoods');
-
-		get();
-
-		function get() {
-			T_NEIGHBORHOODS
-				.run()
-				.then(function(result) {
-					reply(result);
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		}
-	}
+	handler: getNeighborhoods
 }
 
-module.exports = getNeighborhoods;
+/*
+ * Get all neighborhoods
+ */
+function getNeighborhoods(req, reply) {
+	Neighborhoods
+		.run()
+		.then(function(result) {
+			reply(result);
+		}).error(function(err) {
+			reply(Boom.badRequest('Try again some time'));
+		});
+}
+
+module.exports = handleGet;

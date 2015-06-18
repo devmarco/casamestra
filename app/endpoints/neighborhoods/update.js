@@ -1,44 +1,15 @@
-var DB      = require('../../config/settings').db;
-var r       = require('rethinkdbdash')(DB);
-var Boom    = require('boom');
-var Joi     = require('joi');
+var Boom 			= require('boom');
+var Joi 			= require('joi');
+var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 /*------------------------------------*\
 	[NEIGHBORHOODS] UPDATE
 \*------------------------------------*/
 
-var updateNeighborhoods = {
+var handleUpdate = {
 	method: ['PUT', 'PATCH'],
 	path: '/neighborhoods/{NCMID}',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [NEIGHBORHOODS]
-		 */
-		var T_NEIGHBORHOODS = r.table('neighborhoods');
-
-		update();
-
-		function update() {
-			T_NEIGHBORHOODS
-				.get(req.params.NCMID)
-				.update(req.payload)
-				.run()
-				.then(function(result) {
-					if (result.replaced === 0) {
-						reply(Boom.badRequest('Something bad happen :('));
-					} else {
-						reply({
-							message: 'The neighborhood was updated'
-						});
-					}
-					
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
-		}
-	},
+	handler: updateNeighborhood,
 	config: {
 		validate: {
 			options: {
@@ -73,4 +44,26 @@ var updateNeighborhoods = {
 	}
 }
 
-module.exports = updateNeighborhoods;
+/*
+ * Update a neighborhood
+ */
+function updateNeighborhood(req, reply) {
+	Neighborhoods
+		.get(req.params.NCMID)
+		.update(req.payload)
+		.run()
+		.then(function(result) {
+			if (result.replaced === 0) {
+				reply(Boom.badRequest('Something bad happen :('));
+			} else {
+				reply({
+					message: 'The neighborhood was updated'
+				});
+			}
+			
+		}).error(function(err) {
+			reply(Boom.badRequest('Something bad happen :('));
+		});
+}
+
+module.exports = handleUpdate;

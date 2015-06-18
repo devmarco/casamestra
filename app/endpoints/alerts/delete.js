@@ -2,7 +2,6 @@ var DB 		= require('../../config/settings').db;
 var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
 var Joi 	= require('joi');
-var Storage = require('../alerts/alert-storage');
 
 /*------------------------------------*\
 	[ALERTS] DELETE

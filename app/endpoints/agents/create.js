@@ -1,43 +1,15 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
 var Joi 	= require('joi');
+var Agents 	= require('../../config/tables').agents;
 
 /*------------------------------------ *\
 	[AGENTS] CREATE
 \*------------------------------------*/
 
-var createAgent = {
+var handleCreate = {
 	method: 'POST',
 	path: '/agents',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [AGENTS]
-		 */
-		var T_AGENTS = r.table('agents');
-
-		create();
-
-		function create() {
-			T_AGENTS
-				.insert(req.payload, {
-					conflict: 'error'
-				})
-				.run()
-				.then(function(result) {
-					if (result.errors !== 0) {
-						reply(Boom.conflict('Probably this agent already exist'));
-					} else {
-						reply(req.payload);
-					}
-					
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
-		}
-	},
+	handler: createAgent,
 	config: {
 		validate: {
 			options: {
@@ -62,6 +34,27 @@ var createAgent = {
 			}
 		}
 	}
+}	
+
+/*
+ * Create an Agent
+ */
+function createAgent(req, reply) {
+	Agents
+		.insert(req.payload, {
+			conflict: 'error'
+		})
+		.run()
+		.then(function(result) {
+			if (result.errors !== 0) {
+				reply(Boom.conflict('Probably this agent already exist'));
+			} else {
+				reply(req.payload);
+			}
+			
+		}).error(function(err) {
+			reply(Boom.badRequest('Something bad happen :('));
+		});
 }
 
-module.exports = createAgent;
+module.exports = handleCreate;

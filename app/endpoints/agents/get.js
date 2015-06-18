@@ -1,34 +1,27 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
+var Agents 	= require('../../config/tables').agents;
 
 /*------------------------------------*\
 	[AGENTS] GET
 \*------------------------------------*/
 
-var getAgents = {
+var handleGet = {
 	method: 'GET',
 	path: '/agents',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [AGENTS]
-		 */
-		var T_AGENTS = r.table('agents');
-
-		get();
-
-		function get() {
-			T_AGENTS
-				.run()
-				.then(function(result) {
-					reply(result);
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		}
-	}
+	handler: getAgent
 }
 
-module.exports = getAgents;
+/*
+ * Get all Agents
+ */
+function getAgent(req, reply) {
+	Agents
+		.run()
+		.then(function(result) {
+			reply(result);
+		}).error(function(err) {
+			reply(Boom.badRequest('Try again some time'));
+		});
+}
+
+module.exports = handleGet;

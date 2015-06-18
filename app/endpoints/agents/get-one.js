@@ -1,39 +1,32 @@
-var DB 		= require('../../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
+var Agents 	= require('../../config/tables').agents;
 
 /*------------------------------------*\
 	[AGENTS] GET ONE
 \*------------------------------------*/
 
-var getOneAgent = {
+var handleGet = {
 	method: 'GET',
 	path: '/agents/{CRECI}',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [AGENTS]
-		 */
-		var T_AGENTS = r.table('agents');
-
-		get();
-
-		function get() {
-			T_AGENTS
-				.get(parseInt(req.params.CRECI))
-				.run()
-				.then(function(result) {
-					if (result) {
-						reply(result);
-					} else {
-						reply(Boom.notFound('Sorry, this agent not exist'));
-					}
-				}).error(function(err) {
-					reply(Boom.badRequest('Try again some time'));
-				});
-		}
-	}
+	handler: getAgent
 }
 
-module.exports = getOneAgent;
+/*
+ * Get an Agent
+ */
+function getAgent(req, reply) {
+	Agents
+		.get(parseInt(req.params.CRECI))
+		.run()
+		.then(function(result) {
+			if (result) {
+				reply(result);
+			} else {
+				reply(Boom.notFound('Sorry, this agent not exist'));
+			}
+		}).error(function(err) {
+			reply(Boom.badRequest('Try again some time'));
+		});
+}
+
+module.exports = handleGet;

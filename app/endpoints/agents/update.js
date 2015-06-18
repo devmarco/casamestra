@@ -1,44 +1,15 @@
-var DB      = require('../../config/settings').db;
-var r       = require('rethinkdbdash')(DB);
 var Boom    = require('boom');
 var Joi     = require('joi');
+var Agents 	= require('../../config/tables').agents;
 
 /*------------------------------------*\
 	[AGENTS] CREATE
 \*------------------------------------*/
 
-var updateAgent = {
+var handleUpdate = {
 	method: ['PUT', 'PATCH'],
 	path: '/agents/{CRECI}',
-	handler: function(req, reply) {
-
-		/*
-		 * Set the table
-		 * Table: [AGENTS]
-		 */
-		var T_AGENTS = r.table('agents');
-
-		update();
-
-		function update() {
-			T_AGENTS
-				.get(parseInt(req.params.CRECI))
-				.update(req.payload)
-				.run()
-				.then(function(result) {
-					if (result.replaced === 0) {
-						reply(Boom.badRequest('Something bad happen :('));
-					} else {
-						reply({
-							message: 'The agent was updated'
-						});
-					}
-					
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
-		}
-	},
+	handler: updateAgent,
 	config: {
 		validate: {
 			options: {
@@ -65,4 +36,26 @@ var updateAgent = {
 	}
 }
 
-module.exports = updateAgent;
+/*
+ * Update an Agent
+ */
+function updateAgent(req, reply) {
+	Agents
+		.get(parseInt(req.params.CRECI))
+		.update(req.payload)
+		.run()
+		.then(function(result) {
+			if (result.replaced === 0) {
+				reply(Boom.badRequest('Something bad happen :('));
+			} else {
+				reply({
+					message: 'The agent was updated'
+				});
+			}
+			
+		}).error(function(err) {
+			reply(Boom.badRequest('Something bad happen :('));
+		});
+}
+
+module.exports = handleUpdate;

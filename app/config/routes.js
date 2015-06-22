@@ -1,6 +1,7 @@
-/**
- * ROUTES HANDLER
- */
+/*------------------------------------*\
+	[ROUTES]
+\*------------------------------------*/
+
 var routes = [
 	// Agents
 	require('../../app/endpoints/agents/get'),
@@ -41,7 +42,10 @@ var routes = [
 
 	//Alerts
 	require('../../app/endpoints/alerts/create'),
-	require('../../app/endpoints/alerts/delete')
+	require('../../app/endpoints/alerts/delete'),
+	require('../../app/endpoints/alerts/get'),
+	require('../../app/endpoints/alerts/get-one'),
+	require('../../app/endpoints/alerts/get-alerts-by-user')
 ];
 
 module.exports = {

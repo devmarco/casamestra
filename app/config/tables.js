@@ -1,3 +1,7 @@
+/*------------------------------------*\
+	[DATABSE TABLES]
+\*------------------------------------*/
+
 var DB 		= require('../config/settings').db;
 var r 		= require('rethinkdbdash')(DB);
 

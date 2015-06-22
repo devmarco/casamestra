@@ -1,6 +1,7 @@
-/*
- * Good Plugin
- */
+/*------------------------------------*\
+	[PLUGINS]
+\*------------------------------------*/
+
 var goodPlugin = {
 	register: require('good'),
 	options: {

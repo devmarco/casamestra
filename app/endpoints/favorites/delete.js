@@ -4,7 +4,7 @@
 
 var Boom 	= require('boom');
 var Joi 	= require('joi');
-var Estates = require('../../config/tables').agents;
+var Estates = require('../../config/tables').estates;
 
 var handleDelete = {
 	method: 'DELETE',
@@ -45,7 +45,7 @@ function removeFavorite(req, reply) {
 				Estates
 					.get(req.payload.ECMID)
 					.update({
-						favorites: r.row('favorites').deleteAt(resultIndex)
+						favorites: Estates.r.row('favorites').deleteAt(resultIndex)
 					})
 					.run()
 					.then(function(result) {
@@ -53,7 +53,6 @@ function removeFavorite(req, reply) {
 							message: 'Favorite was removed'
 						});
 					}).error(function(err) {
-						console.log('Error');
 						reply(Boom.badRequest('Sorry, Something are wrong!'));
 					});
 			} else {

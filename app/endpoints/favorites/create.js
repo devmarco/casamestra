@@ -4,7 +4,7 @@
 
 var Boom 		= require('boom');
 var Joi 		= require('joi');
-var Estates 	= require('../../config/tables').agents;
+var Estates 	= require('../../config/tables').estates;
 var Users 		= require('../../config/tables').users;
 
 var handleCreate = {
@@ -81,11 +81,12 @@ function createFavorite(req, reply) {
 				Estates
 					.get(estateID)
 					.update({
-						favorites: r.row('favorites').default([]).append(result)
+						favorites: Users.r.row('favorites').default([]).append(result)
 					})
 					.run()
 					.then(function(result) {
 						reply({
+							status: 'success',
 							message: 'Estate favorited'
 						});
 					}).error(function(err) {

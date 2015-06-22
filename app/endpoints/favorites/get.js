@@ -3,7 +3,7 @@
 \*------------------------------------*/
 
 var Boom 	= require('boom');
-var Estates = require('../../config/tables').agents;
+var Estates = require('../../config/tables').estates;
 
 var handleGet = {
 	method: 'GET',

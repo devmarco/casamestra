@@ -1,10 +1,10 @@
-var Boom    = require('boom');
-var Joi     = require('joi');
-var Estates = require('../../config/tables').estates;
-
 /*------------------------------------*\
 	[ESTATE] UPDATE
 \*------------------------------------*/
+
+var Boom    = require('boom');
+var Joi     = require('joi');
+var Estates = require('../../config/tables').estates;
 
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],

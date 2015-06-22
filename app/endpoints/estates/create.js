@@ -1,11 +1,11 @@
+/*------------------------------------*\
+	[ESTATES] CREATE
+\*------------------------------------*/
+
 var Boom 		= require('boom');
 var Joi 		= require('joi');
 var Estates 	= require('../../config/tables').estates;
 var Agents 		= require('../../config/tables').agents;
-
-/*------------------------------------*\
-	[ESTATES] CREATE
-\*------------------------------------*/
 
 var handleEstate = {
 	method: 'POST',

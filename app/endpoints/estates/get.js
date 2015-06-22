@@ -1,11 +1,10 @@
-var Boom 	= require('boom');
-var filter 	= require('../../filters/limit-offset');
-var Estates = require('../../config/tables').estates;
-
-
 /*------------------------------------*\
 	[ESTATE] GET
 \*------------------------------------*/
+
+var Boom 	= require('boom');
+var filter 	= require('../../filters/limit-offset');
+var Estates = require('../../config/tables').estates;
 
 var handleGet = {
 	method: 'GET',

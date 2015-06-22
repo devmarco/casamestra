@@ -1,9 +1,9 @@
-var Boom 	= require('boom');
-var Estates = require('../../config/tables').estates;
-
 /*------------------------------------*\
 	[ESTATE] DELETE
 \*------------------------------------*/
+
+var Boom 	= require('boom');
+var Estates = require('../../config/tables').estates;
 
 var handleDelete = {
 	method: 'DELETE',

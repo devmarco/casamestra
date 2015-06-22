@@ -13,7 +13,7 @@ var handleGet = {
 }
 
 /*
- * Get all Agents
+ * Get alerts of user
  */
 function getAlerts(req, reply) {
 	/*

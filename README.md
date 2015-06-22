@@ -27,9 +27,9 @@ Here you can understand better how the API works, and how you can access the end
 
 ##ENDPOINTS DOCS
 
-- [Users][http://github.com/devmarco/casamestra/blob/master/USERS.md]
-- [Agents][http://github.com/devmarco/casamestra/blob/master/AGENTS.md]
-- [Estates][http://github.com/devmarco/casamestra/blob/master/ESTATES.md]
-- [Neighborhoods][http://github.com/devmarco/casamestra/blob/master/NEIGHBORHOODS.md]
-- [Alerts][http://github.com/devmarco/casamestra/blob/master/ALERTS.md]
-- [Favorites][http://github.com/devmarco/casamestra/blob/master/FAVORITES.md]
+- [Users](http://github.com/devmarco/casamestra/blob/master/docs/USERS.md)
+- [Agents](http://github.com/devmarco/casamestra/blob/master/docs/AGENTS.md)
+- [Estates](http://github.com/devmarco/casamestra/blob/master/docs/ESTATES.md)
+- [Neighborhoods](http://github.com/devmarco/casamestra/blob/master/docs/NEIGHBORHOODS.md)
+- [Alerts](http://github.com/devmarco/casamestra/blob/master/docs/ALERTS.md)
+- [Favorites](http://github.com/devmarco/casamestra/blob/master/docs/FAVORITES.md)

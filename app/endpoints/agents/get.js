@@ -1,9 +1,9 @@
-var Boom 	= require('boom');
-var Agents 	= require('../../config/tables').agents;
-
 /*------------------------------------*\
 	[AGENTS] GET
 \*------------------------------------*/
+
+var Boom 	= require('boom');
+var Agents 	= require('../../config/tables').agents;
 
 var handleGet = {
 	method: 'GET',

@@ -1,14 +1,14 @@
-var Boom    = require('boom');
-var Joi     = require('joi');
-var Agents 	= require('../../config/tables').agents;
-
 /*------------------------------------*\
 	[AGENTS] CREATE
 \*------------------------------------*/
 
+var Boom    = require('boom');
+var Joi     = require('joi');
+var Agents 	= require('../../config/tables').agents;
+
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],
-	path: '/agents/{CRECI}',
+	path: '/agents/{ACMID}',
 	handler: updateAgent,
 	config: {
 		validate: {
@@ -41,7 +41,7 @@ var handleUpdate = {
  */
 function updateAgent(req, reply) {
 	Agents
-		.get(parseInt(req.params.CRECI))
+		.get(req.params.ACMID)
 		.update(req.payload)
 		.run()
 		.then(function(result) {

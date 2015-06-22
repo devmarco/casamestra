@@ -1,13 +1,13 @@
-var Boom 	= require('boom');
-var Agents 	= require('../../config/tables').agents;
-
 /*------------------------------------*\
 	[AGENTS] DELETE
 \*------------------------------------*/
 
+var Boom 	= require('boom');
+var Agents 	= require('../../config/tables').agents;
+
 var handleDelete = {
 	method: 'DELETE',
-	path: '/agents/{CRECI}',
+	path: '/agents/{ACMID}',
 	handler: deleteAgent
 }
 
@@ -16,7 +16,7 @@ var handleDelete = {
  */
 function deleteAgent(req, reply) {
 	Agents
-		.get(parseInt(req.params.CRECI))
+		.get(req.params.ACMID)
 		.delete({
 			returnChanges: true
 		})

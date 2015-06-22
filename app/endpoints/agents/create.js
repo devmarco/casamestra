@@ -1,10 +1,10 @@
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var Agents 	= require('../../config/tables').agents;
-
 /*------------------------------------ *\
 	[AGENTS] CREATE
 \*------------------------------------*/
+
+var Boom 	= require('boom');
+var Joi 	= require('joi');
+var Agents 	= require('../../config/tables').agents;
 
 var handleCreate = {
 	method: 'POST',

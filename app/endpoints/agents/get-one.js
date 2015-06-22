@@ -1,13 +1,13 @@
-var Boom 	= require('boom');
-var Agents 	= require('../../config/tables').agents;
-
 /*------------------------------------*\
 	[AGENTS] GET ONE
 \*------------------------------------*/
 
+var Boom 	= require('boom');
+var Agents 	= require('../../config/tables').agents;
+
 var handleGet = {
 	method: 'GET',
-	path: '/agents/{CRECI}',
+	path: '/agents/{ACMID}',
 	handler: getAgent
 }
 
@@ -16,7 +16,7 @@ var handleGet = {
  */
 function getAgent(req, reply) {
 	Agents
-		.get(parseInt(req.params.CRECI))
+		.get(req.params.ACMID)
 		.run()
 		.then(function(result) {
 			if (result) {

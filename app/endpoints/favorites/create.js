@@ -1,11 +1,11 @@
+/*------------------------------------*\
+	[FAVORITES] CREATE
+\*------------------------------------*/
+
 var Boom 		= require('boom');
 var Joi 		= require('joi');
 var Estates 	= require('../../config/tables').agents;
 var Users 		= require('../../config/tables').users;
-
-/*------------------------------------*\
-	[FAVORITES] CREATE
-\*------------------------------------*/
 
 var handleCreate = {
 	method: 'POST',

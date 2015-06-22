@@ -1,9 +1,9 @@
-var Boom 	= require('boom');
-var Estates = require('../../config/tables').agents;
-
 /*------------------------------------*\
 	[FAVORITES] GET
 \*------------------------------------*/
+
+var Boom 	= require('boom');
+var Estates = require('../../config/tables').agents;
 
 var getFavoritedUsers = {
 	method: 'GET',

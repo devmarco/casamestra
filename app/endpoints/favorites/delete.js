@@ -1,10 +1,10 @@
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var Estates = require('../../config/tables').agents;
-
 /*------------------------------------*\
 	[FAVORITES] REMOVE
 \*------------------------------------*/
+
+var Boom 	= require('boom');
+var Joi 	= require('joi');
+var Estates = require('../../config/tables').agents;
 
 var handleDelete = {
 	method: 'DELETE',

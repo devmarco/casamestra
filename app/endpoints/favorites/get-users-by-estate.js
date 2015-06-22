@@ -12,7 +12,7 @@ var getFavoritedUsers = {
 }
 
 /*
- * Get all favorites of a specific estate
+ * Get all users that has favorited a specific estate
  */
 function getFavorites(req, reply) {
 	Estates
@@ -22,7 +22,7 @@ function getFavorites(req, reply) {
 			if (result) {
 				reply(result.favorites);
 			} else {
-				reply(Boom.badRequest('Sorry, This user not have favorites'));
+				reply(Boom.badRequest('Sorry, This estate not have favorites'));
 			}
 		}).error(function(err) {
 			reply(Boom.badRequest('Sorry, Something are wrong!'));

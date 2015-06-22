@@ -1,9 +1,9 @@
-var Boom 			= require('boom');
-var Neighborhoods 	= require('../../config/tables').neighborhoods;
-
 /*------------------------------------*\
 	[NEIGHBORHOODS] GET ONE
 \*------------------------------------*/
+
+var Boom 			= require('boom');
+var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 var handleGet = {
 	method: 'GET',

@@ -1,10 +1,10 @@
-var Boom 			= require('boom');
-var Joi 			= require('joi');
-var Neighborhoods 	= require('../../config/tables').neighborhoods;
-
 /*------------------------------------*\
 	[NEIGHBORHOODS] UPDATE
 \*------------------------------------*/
+
+var Boom 			= require('boom');
+var Joi 			= require('joi');
+var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],

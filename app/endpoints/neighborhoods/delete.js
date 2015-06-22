@@ -1,9 +1,9 @@
-var Boom 			= require('boom');
-var Neighborhoods 	= require('../../config/tables').neighborhoods;
-
 /*------------------------------------*\
 	[NEIGHBORHOODS] DELETE
 \*------------------------------------*/
+
+var Boom 			= require('boom');
+var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 var handleDelete = {
 	method: 'DELETE',

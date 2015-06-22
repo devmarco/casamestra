@@ -1,11 +1,11 @@
+/*------------------------------------*\
+	[USERS] CREATE
+\*------------------------------------*/
+
 var Boom 	= require('boom');
 var Joi 	= require('joi');
 var bcrypt	= require('bcrypt');
 var Users 	= require('../../config/tables').users;
-
-/*------------------------------------ *\
-	[USERS] CREATE
-\*------------------------------------*/
 
 var handleCreate = {
 	method: 'POST',

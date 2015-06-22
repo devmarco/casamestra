@@ -1,9 +1,9 @@
-var Boom 	= require('boom');
-var Users 	= require('../../config/tables').users;
-
 /*------------------------------------*\
 	[USERS] DELETE
 \*------------------------------------*/
+
+var Boom 	= require('boom');
+var Users 	= require('../../config/tables').users;
 
 var handleDelete = {
 	method: 'DELETE',

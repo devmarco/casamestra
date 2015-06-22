@@ -1,9 +1,9 @@
-var Boom 	= require('boom');
-var Users 	= require('../../config/tables').users;
-
 /*------------------------------------*\
 	[USERS] GET ONE
 \*------------------------------------*/
+
+var Boom 	= require('boom');
+var Users 	= require('../../config/tables').users;
 
 var handleGet = {
 	method: 'GET',

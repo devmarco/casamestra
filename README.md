@@ -18,32 +18,18 @@ Here you can understand better how the API works, and how you can access the end
 - [x] Error Handlings
 - [x] Logging
 - [x] Validation
-- [x] Testing
+- [ ] Test cover
 - [ ] Authentication & Authorization
 - [ ] Hypermedia
-- [ ] Alert System
+- [x] Alert System
 - [ ] Apointmments
 - [ ] Recommendations
 
-## Users
+##ENDPOINTS DOCS
 
-Users live under **users/**
-
-Field | Description
-------|------------
-firstName | The first name of User
-lastName | The last name of User
-email | The email of User
-phones.cellphone | The cellphone numnber of User
-phones.homephone | The office/home number of User
-password | The password of User
-
-#### Endpoints
-
-Endpoints | Method | Description
-----------|-------|-----
-/users | GET | Get all users
-/users | POST | Create an user
-/users/{UCMID} | GET | Get a single user by ID
-/users/{UCMID} | DELETE | Delete an user
-/users/{UCMID} | PUT/PATCH | Update an user
+- [Users][http://github.com/devmarco/casamestra/blob/master/USERS.md]
+- [Agents][http://github.com/devmarco/casamestra/blob/master/AGENTS.md]
+- [Estates][http://github.com/devmarco/casamestra/blob/master/ESTATES.md]
+- [Neighborhoods][http://github.com/devmarco/casamestra/blob/master/NEIGHBORHOODS.md]
+- [Alerts][http://github.com/devmarco/casamestra/blob/master/ALERTS.md]
+- [Favorites][http://github.com/devmarco/casamestra/blob/master/FAVORITES.md]

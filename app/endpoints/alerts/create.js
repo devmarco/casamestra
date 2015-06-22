@@ -1,16 +1,16 @@
+/*------------------------------------*\
+	[ALERTS] CREATE
+\*------------------------------------*/
+
 var moment	= require('moment');
 var Boom 	= require('boom');
 var Joi 	= require('joi');
 var Alerts 	= require('../../config/tables').alerts;
 var Users 	= require('../../config/tables').users;
 
-/*------------------------------------*\
-	[ALERTS] CREATE
-\*------------------------------------*/
-
 var handleCreate = {
 	method: 'POST',
-	path: '/estates/alert',
+	path: '/estates/alerts',
 	handler: createAlert,
 	config: {
 		validate: {
@@ -58,7 +58,6 @@ function createAlert(req, reply) {
 	 * Check if the User exist before create the alert
 	 * This prevent that you associating an alert for an user that not exist
 	 */
-
 	Users
 		.get(req.payload.UCMID)
 		.run()
@@ -79,9 +78,9 @@ function createAlert(req, reply) {
 		Alerts
 			.filter(function(alerts) {
 				return alerts('filters')
-					.eq(req.payload.filters)
-					.and(alerts('UCMID')
-						.eq(req.payload.UCMID));
+							.eq(req.payload.filters)
+							.and(alerts('UCMID')
+							.eq(req.payload.UCMID));
 			})
 			.run()
 			.then(function(result) {

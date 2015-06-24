@@ -30,10 +30,8 @@ var handleCreate = {
 	}
 }
 
-/*
- * Create an User
- */
 function createUser(req, reply) {
+
 	bcrypt.genSalt(15, function(err, salt) {
 		bcrypt.hash(req.payload.password, salt, function(err, hash) {
 
@@ -41,7 +39,6 @@ function createUser(req, reply) {
 				return reply(Boom.badRequest('Something bad happen :('));
 			}
 
-			//Set the new password
 			req.payload.password = hash;
 
 			T_USERS

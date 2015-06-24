@@ -31,14 +31,8 @@ var handleUpdate = {
 	}
 }
 
-/*
- * Update an user
- */
 function updateUser(req, reply) {
 
-	/*
-	 * For update the password i need the older password
-	 */
 	if (req.payload.oldPassword && req.payload.password) {
 		Users
 			.get(req.params.UCMID)

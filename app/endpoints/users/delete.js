@@ -11,10 +11,8 @@ var handleDelete = {
 	handler: removeUser
 }
 
-/*
- * Remove an User
- */
 function removeUser(req, reply) {
+	
 	Users
 		.get(req.params.UCMID)
 		.delete({

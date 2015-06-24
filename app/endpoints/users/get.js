@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getUsers
 }
 
-/*
- * Get all users
- */
 function getUsers(req, reply) {
+	
 	Users
 		.without('password')
 		.run()

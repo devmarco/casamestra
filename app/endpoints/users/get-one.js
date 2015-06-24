@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getUser
 }
 
-/*
- * Get an User
- */
 function getUser(req, reply) {
+	
 	Users
 		.get(req.params.UCMID)
 		.without('password')

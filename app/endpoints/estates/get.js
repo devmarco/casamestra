@@ -12,20 +12,23 @@ var handleGet = {
 	handler: getEstates
 }
 
-/*
- * Get all Estates
- */
 function  getEstates(req, reply) {
+
 	var filterQuery = filter('estates', req);
 
-	if (filterQuery) {
+	(function getWithFilter() {
+
+		if (!filterQuery) return false;
+
 		filterQuery.run()
 			.then(function(result) {
 				reply(result);
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	} else {
+	}());
+
+	(function get() {
 		Estates
 			.run()
 			.then(function(result) {
@@ -33,7 +36,7 @@ function  getEstates(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	}
+	}());
 }
 
 module.exports = handleGet;

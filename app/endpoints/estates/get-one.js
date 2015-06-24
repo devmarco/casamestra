@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getEstates
 }
 
-/*
- * Get an Estate
- */
 function getEstates(req, reply) {
+
 	Estates
 		.get(req.params.ECMID)
 		.run()

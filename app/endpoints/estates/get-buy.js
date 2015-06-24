@@ -12,15 +12,16 @@ var handleGet = {
 	handler: getEstates
 }
 
-/*
- * Get the estate for buy
- */
 function getEstates(req, reply) {
+
 	var filterQuery = filter('estates', req, {
 		action: 'buy'
 	});
 
-	if (filterQuery) {
+	(function getBuyWithFilter() {
+
+		if (!filterQuery) return false;
+
 		filterQuery
 			.run()
 			.then(function(result) {
@@ -28,7 +29,10 @@ function getEstates(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	} else {
+	}());
+
+	(function getBuy() {
+
 		Estates
 			.filter({
 				action: 'sell'
@@ -39,7 +43,7 @@ function getEstates(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	}
+	}());
 }
 
 module.exports = handleGet;

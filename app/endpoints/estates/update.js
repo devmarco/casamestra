@@ -5,6 +5,8 @@
 var Boom    = require('boom');
 var Joi     = require('joi');
 var Estates = require('../../config/tables').estates;
+var Agents 	= require('../../config/tables').agents;
+var Users 	= require('../../config/tables').users;
 
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],
@@ -46,37 +48,68 @@ var handleUpdate = {
 				catAllowed: Joi.boolean(),
 				birdAllowed: Joi.boolean(),
 				exclusive: Joi.boolean(),
-				agent: Joi.number(),
-				updatedAt: Joi.date()
+				updatedAt: Joi.date(),
+				ACMID: Joi.string(),
+				UCMID: Joi.string()
 			}
 		}
 	}
 }
 
-/*
- * Update an Estate
- */
 function updateEstate(req, reply) {
 
-	//Add updatedAt to payload
 	req.payload.updatedAt = new Date();
 
-	Estates
-		.get(req.params.ECMID)
-		.update(req.payload)
-		.run()
-		.then(function(result) {
-			if (result.replaced === 0) {
+	(function checkAgent() {
+
+		if (!req.payload.ACMID) return false;
+
+		Agents
+			.get(req.payload.ACMID)	
+			.run()
+			.then(function(result) {
+				if (!result) {
+					reply(Boom.notFound('Sorry, this agent not exist'));
+				} 
+			}).error(function(err) {
+				reply(Boom.forbidden('Try again some time'));
+			});
+	}());
+
+	(function checkUser() {
+
+		if (!req.payload.UCMID) return false;
+
+		Users
+			.get(req.payload.UCMID)	
+			.run()
+			.then(function(result) {
+				if (!result) {
+					reply(Boom.notFound('Sorry, this user not exist'));
+				} 
+			}).error(function(err) {
+				reply(Boom.forbidden('Try again some time'));
+			});
+	}());
+
+	(function update() {
+		Estates
+			.get(req.params.ECMID)
+			.update(req.payload)
+			.run()
+			.then(function(result) {
+				if (result.replaced === 0) {
+					reply(Boom.badRequest('Something bad happen :('));
+				} else {
+					reply({
+						message: 'The estate was updated'
+					});
+				}
+				
+			}).error(function(err) {
 				reply(Boom.badRequest('Something bad happen :('));
-			} else {
-				reply({
-					message: 'The estate was updated'
-				});
-			}
-			
-		}).error(function(err) {
-			reply(Boom.badRequest('Something bad happen :('));
-		});
+			});
+	}());
 }
 
 module.exports = handleUpdate;

@@ -12,15 +12,16 @@ var handleGet = {
 	handler: getEstates
 }
 
-/*
- * Get the estate for rent
- */
 function getEstates(req, reply) {
+
 	var filterQuery = filter('estates', req, {
 		action: 'rent'
 	});
 
-	if (filterQuery) {
+	(function getRentWithFilter() {
+
+		if (!filterQuery) return false;
+
 		filterQuery
 			.run()
 			.then(function(result) {
@@ -28,7 +29,10 @@ function getEstates(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	} else {
+	}());
+
+	(function getRent() {
+
 		Estates
 			.filter({
 				action: 'rent'
@@ -39,7 +43,7 @@ function getEstates(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	}
+	}());
 }
 
 module.exports = handleGet;

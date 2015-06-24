@@ -11,10 +11,8 @@ var handleDelete = {
 	handler: deleteEstate
 }
 
-/*
- * Delete the Agent
- */
 function deleteEstate(req, reply) {
+	
 	Estates
 		.get(req.params.ECMID)
 		.delete({

@@ -2,10 +2,11 @@
 	[ESTATES] CREATE
 \*------------------------------------*/
 
-var Boom 		= require('boom');
-var Joi 		= require('joi');
-var Estates 	= require('../../config/tables').estates;
-var Agents 		= require('../../config/tables').agents;
+var Boom 	= require('boom');
+var Joi 	= require('joi');
+var Estates = require('../../config/tables').estates;
+var Agents 	= require('../../config/tables').agents;
+var Users 	= require('../../config/tables').users;
 
 var handleEstate = {
 	method: 'POST',
@@ -46,43 +47,49 @@ var handleEstate = {
 				dogAllowed: Joi.boolean(),
 				catAllowed: Joi.boolean(),
 				exclusive: Joi.boolean(),
-				agent: Joi.number()
+				ACMID: Joi.string(),
+				UCMID: Joi.string()
 			}
 		}
 	}
 }
 
-/*
- * Create an Estates
- */
 function createEstate(req, reply) {
-	
-	/*
-	 * Check if the Agent exist before create the estates
-	 * This prevent that you associating an agent that not exist
-	 */
-	if (req.payload.agent) {
+
+	(function checkAgent() {
+
+		if (!req.payload.ACMID) return false;
+
 		Agents
-			.get(req.payload.agent)	
+			.get(req.payload.ACMID)	
 			.run()
 			.then(function(result) {
-				if (result) {
-					create();
-				} else {
+				if (!result) {
 					reply(Boom.notFound('Sorry, this agent not exist'));
-				}
+				} 
 			}).error(function(err) {
 				reply(Boom.forbidden('Try again some time'));
 			});
-	} else {
-		create();
-	}
+	}());
 
-	/*
-	 * Create the estates
-	 * First, we have to check if already exist an estate in the same address
-	 */
-	function create() {
+	(function checkUser() {
+
+		if (!req.payload.UCMID) return false;
+
+		Users
+			.get(req.payload.UCMID)	
+			.run()
+			.then(function(result) {
+				if (!result) {
+					reply(Boom.notFound('Sorry, this user not exist'));
+				} 
+			}).error(function(err) {
+				reply(Boom.forbidden('Try again some time'));
+			});
+	}());
+
+	(function create() {
+		
 		Estates
 			.filter({
 				location: req.payload.location
@@ -113,7 +120,7 @@ function createEstate(req, reply) {
 			.error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	}
+	}());
 }
 
 module.exports = handleEstate;

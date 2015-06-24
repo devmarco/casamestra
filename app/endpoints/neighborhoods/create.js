@@ -44,10 +44,8 @@ var handleCreate = {
 	}
 }
 
-/*
- * Create a Neighborhood
- */
 function createNeighborhood(req, reply) {
+	
 	Neighborhoods
 		.insert(req.payload, {
 			conflict: 'error'

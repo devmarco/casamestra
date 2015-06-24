@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getNeighborhood
 }
 
-/*
- * Get a neighborhood
- */
 function getNeighborhood(req, reply) {
+	
 	Neighborhoods
 		.get(req.params.NCMID)
 		.run()

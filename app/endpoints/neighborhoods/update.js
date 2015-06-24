@@ -44,10 +44,8 @@ var handleUpdate = {
 	}
 }
 
-/*
- * Update a neighborhood
- */
 function updateNeighborhood(req, reply) {
+	
 	Neighborhoods
 		.get(req.params.NCMID)
 		.update(req.payload)

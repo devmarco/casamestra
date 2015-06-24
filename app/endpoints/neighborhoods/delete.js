@@ -11,10 +11,8 @@ var handleDelete = {
 	handler: deleteNeighborhoods
 }
 
-/*
- * Delete a Neighborhood
- */
 function deleteNeighborhoods(req, reply) {
+	
 	Neighborhoods
 		.get(req.params.NCMID)
 		.delete({

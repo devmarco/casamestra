@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getNeighborhoods
 }
 
-/*
- * Get all neighborhoods
- */
 function getNeighborhoods(req, reply) {
+	
 	Neighborhoods
 		.run()
 		.then(function(result) {

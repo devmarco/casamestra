@@ -23,45 +23,51 @@ var handleDelete = {
 	}
 }
 
-/*
- * Remove a favorite
- */
 function removeFavorite(req, reply) {
-	Estates
-		.get(req.payload.ECMID)('favorites')
-		.run()
-		.then(function(result) {
-			var i = 0,
-				resultIndex = false;
 
-			for (i; i < result.length; i++) {
-				if (result[i].UCMID === req.payload.UCMID) {
-					resultIndex = i;
-					break;
+	var favoriteIndex;
+
+	(function checkEstate() {
+
+		Estates
+			.get(req.payload.ECMID)('favorites')
+			.run()
+			.then(function(result) {
+				var i = 0;
+
+				for (i; i < result.length; i++) {
+					if (result[i].UCMID === req.payload.UCMID) {
+						favoriteIndex = i;
+						break;
+					}
 				}
-			}
 
-			if (resultIndex !== false) {
-				Estates
-					.get(req.payload.ECMID)
-					.update({
-						favorites: Estates.r.row('favorites').deleteAt(resultIndex)
-					})
-					.run()
-					.then(function(result) {
-						reply({
-							message: 'Favorite was removed'
-						});
-					}).error(function(err) {
-						reply(Boom.badRequest('Sorry, Something are wrong!'));
-					});
-			} else {
-				reply(Boom.badRequest('Sorry, It was not favorited by this user!'));
-			}
+				if (!favoriteIndex) {
+					reply(Boom.badRequest('Sorry, It was not favorited by this user!'));
+				} else {
+					remove(favoriteIndex);
+				}				
 
-		}).error(function(err) {
-			reply(Boom.badRequest('Sorry, Something are wrong!'));
-		})
+			}).error(function(err) {
+				reply(Boom.badRequest('Sorry, Something are wrong!'));
+			})
+	}());
+
+	function remove(favoriteIndex) {
+		Estates
+			.get(req.payload.ECMID)
+			.update({
+				favorites: Estates.r.row('favorites').deleteAt(favoriteIndex)
+			})
+			.run()
+			.then(function(result) {
+				reply({
+					message: 'Favorite was removed'
+				});
+			}).error(function(err) {
+				reply(Boom.badRequest('Sorry, Something are wrong!'));
+			});
+	};
 }
 
 module.exports = handleDelete;

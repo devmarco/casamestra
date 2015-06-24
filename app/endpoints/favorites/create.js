@@ -24,18 +24,11 @@ var handleCreate = {
 	}
 }
 
-/*
- * Favorite an Estate
- */
 function createFavorite(req, reply) {
 
 	var userID 		= req.payload.UCMID,
 		estateID	= req.payload.ECMID;
 
-	/*
-	 * Check if the Estate exist before create the favorite
-	 * Check if the Estate already have a favorite of the same user
-	 */
 	(function checkEstate() {
 		//Check if the estate exist
 		Estates
@@ -54,13 +47,9 @@ function createFavorite(req, reply) {
 								break;
 							}
 						}
-						if (!hasFavorite) {
-							createFavorite();
-						} else {
+						if (hasFavorite) {
 							reply(Boom.conflict('Sorry, The user already favorited this estate!'));
 						}
-					} else {
-						createFavorite();
 					}
 				} else {
 					reply(Boom.badRequest('Sorry, This estate not exist'));
@@ -70,7 +59,7 @@ function createFavorite(req, reply) {
 			});
 	}());
 
-	function createFavorite() {
+	(function createFavorite() {
 		//Check if the user exist
 		Users
 			.get(userID)
@@ -95,7 +84,7 @@ function createFavorite(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Sorry, Something are wrong!'));
 			});
-	}
+	}());
 } 
 
 module.exports = handleCreate;

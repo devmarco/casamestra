@@ -11,10 +11,8 @@ var getFavoritedUsers = {
 	handler: getFavorites
 }
 
-/*
- * Get all users that has favorited a specific estate
- */
 function getFavorites(req, reply) {
+	
 	Estates
 		.get(req.params.ECMID)
 		.run()

@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getFavorites
 }
 
-/*
- * Get all favorited estates
- */
 function getFavorites(req, reply) {
+	
 	Estates
 		.filter(function(estates) {
 			return estates('favorites').count().ne(0);

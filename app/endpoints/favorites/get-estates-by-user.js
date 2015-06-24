@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getFavorites
 }
 
-/*
- * Get all favorites of a specific user
- */
 function getFavorites(req, reply) {
+	
 	Estates
 		.filter( function(estates) {
 			return estates('favorites').contains(function(favorites) {

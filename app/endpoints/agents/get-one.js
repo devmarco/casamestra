@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getAgent
 }
 
-/*
- * Get an Agent
- */
 function getAgent(req, reply) {
+	
 	Agents
 		.get(req.params.ACMID)
 		.run()

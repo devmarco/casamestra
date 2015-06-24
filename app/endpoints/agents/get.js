@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getAgent
 }
 
-/*
- * Get all Agents
- */
 function getAgent(req, reply) {
+	
 	Agents
 		.run()
 		.then(function(result) {

@@ -36,10 +36,8 @@ var handleUpdate = {
 	}
 }
 
-/*
- * Update an Agent
- */
 function updateAgent(req, reply) {
+	
 	Agents
 		.get(req.params.ACMID)
 		.update(req.payload)

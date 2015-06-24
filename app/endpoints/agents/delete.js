@@ -11,10 +11,8 @@ var handleDelete = {
 	handler: deleteAgent
 }
 
-/*
- * Delete the Agent
- */
 function deleteAgent(req, reply) {
+	
 	Agents
 		.get(req.params.ACMID)
 		.delete({

@@ -36,10 +36,8 @@ var handleCreate = {
 	}
 }	
 
-/*
- * Create an Agent
- */
 function createAgent(req, reply) {
+	
 	Agents
 		.insert(req.payload, {
 			conflict: 'error'

@@ -2,16 +2,12 @@
 
 ## Overview
 
-This is the oficial Private API for Casa Mestra
+This is the oficial API for Casa Mestra
 
 Here you can understand better how the API works, and how you can access the endpoints
 
 - [Features](#features)
-- [Users](#users)
-- [Agents](#agents)
-- [Estates](#estates)
-- [Neighborhoods](#neighborhoods)
-- [Favorites](#favorites)
+- [Endpoints docs](#endpoints-docs)
 
 ## Features
 
@@ -25,7 +21,7 @@ Here you can understand better how the API works, and how you can access the end
 - [ ] Apointmments
 - [ ] Recommendations
 
-##ENDPOINTS DOCS
+## Endpoints docs
 
 - [Users](http://github.com/devmarco/casamestra/blob/master/docs/USERS.md)
 - [Agents](http://github.com/devmarco/casamestra/blob/master/docs/AGENTS.md)

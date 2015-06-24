@@ -4,28 +4,37 @@ var lab = exports.lab = Lab.script();
 var app = require('../../app/bin/casamestra');
 
 var server,
-	options;
+	request,
+	dispatch;
 
 lab.experiment('[GET:Users]', function() {
 
-	lab.before(function(done) {
+	lab.beforeEach(function(done) {
 		server = app.config.server;
 
-		options = {
+		request = {
 			method: 'GET',
 			url: '/users'
 		};
 
-		done();
+		dispatch = function (req, res) {
+	        var reply = 'Hello World';
+	        res.writeHead(200, { 'Content-Type': 'text/plain', 'Content-Length': reply.length });
+	        res.end();
+	    };reply
 	});
 
 	lab.test('Should retrieve a list of users', function(done) {
-		server.inject(options, function(response) {
-			var result = response.result;
+		server.inject(request, function(res) {
+			var result = res.result;
 
-			Code.expect(response.statusCode).to.equal(200);
+			Code.expect(res.statusCode).to.equal(200);
 			Code.expect(result).to.be.instanceof(Array);
 			done();
 		});
 	});
+});
+
+lab.after(function(done) {
+	done();
 });

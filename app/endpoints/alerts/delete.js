@@ -13,9 +13,6 @@ var handleDelete = {
 	handler: removeAlert
 }
 
-/*
- * Create an Alert
- */
 function removeAlert(req, reply) {
 	
 	Alerts

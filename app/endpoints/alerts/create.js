@@ -50,29 +50,23 @@ var handleCreate = {
 	}
 }
 
-/*
- * Create an Alert
- */
 function createAlert(req, reply) {
-	/*
-	 * Check if the User exist before create the alert
-	 * This prevent that you associating an alert for an user that not exist
-	 */
-	Users
-		.get(req.payload.UCMID)
-		.run()
-		.then(function(result) {
-			if (result) {
-				create();
-			} else {
-				reply(Boom.notFound('Sorry, this user not exist'));
-			}
-		}).error(function(err) {
-			reply(Boom.forbidden('Try again some time'));
-		});
 
-	function create() {
+	(function checkUser() {
+		Users
+			.get(req.payload.UCMID)
+			.run()
+			.then(function(result) {
+				if (!result) {
+					reply(Boom.notFound('Sorry, this user not exist'));
+				}
+			}).error(function(err) {
+				reply(Boom.forbidden('Try again some time'));
+			});
+	}());
 
+	(function create() {
+		
 		req.payload.createdAt = moment().format('DD-MM-YYYY');
 
 		Alerts
@@ -110,7 +104,7 @@ function createAlert(req, reply) {
 			}).error(function(err) {
 				reply(Boom.forbidden('Try again some time'));
 			});
-	}
+	}());
 }
 
 module.exports = handleCreate;

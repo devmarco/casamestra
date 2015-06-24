@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getAlerts
 }
 
-/*
- * Get all Agents
- */
 function getAlerts(req, reply) {
+	
 	Alerts
 		.run()
 		.then(function(result) {

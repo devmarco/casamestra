@@ -11,10 +11,8 @@ var handleGet = {
 	handler: getAlert
 }
 
-/*
- * Get an Agent
- */
 function getAlert(req, reply) {
+
 	Alerts
 		.get(req.params.ALCMID)
 		.run()

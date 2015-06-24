@@ -12,27 +12,24 @@ var handleGet = {
 	handler: getAlerts
 }
 
-/*
- * Get alerts of user
- */
 function getAlerts(req, reply) {
-	/*
-	 * Check if the User exist before retrieve the alerts
-	 */
-	Users
-		.get(req.params.UCMID)
-		.run()
-		.then(function(result) {
-			if (result) {
-				get();
-			} else {
-				reply(Boom.notFound('Sorry, this user not exist'));
-			}
-		}).error(function(err) {
-			reply(Boom.forbidden('Try again some time'));
-		});
+	
+	(function checkUser() {
 
-	function get() {
+		Users
+			.get(req.params.UCMID)
+			.run()
+			.then(function(result) {
+				if (!result) {
+					reply(Boom.notFound('Sorry, this user not exist'));
+				}
+			}).error(function(err) {
+				reply(Boom.forbidden('Try again some time'));
+			});
+	}());
+
+	(function get() {
+		
 		Alerts
 			.filter(function(alerts) {
 				return alerts('UCMID').eq(req.params.UCMID);
@@ -43,7 +40,7 @@ function getAlerts(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	}
+	}());
 }
 
 module.exports = handleGet;

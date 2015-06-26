@@ -4,6 +4,7 @@
 
 var Boom 		= require('boom');
 var Joi 		= require('joi');
+var Async   	= require('async');
 var Estates 	= require('../../config/tables').estates;
 var Users 		= require('../../config/tables').users;
 
@@ -29,8 +30,8 @@ function createFavorite(req, reply) {
 	var userID 		= req.payload.UCMID,
 		estateID	= req.payload.ECMID;
 
-	(function checkEstate() {
-		//Check if the estate exist
+	function checkEstate(next) {
+
 		Estates
 			.get(estateID)
 			.run()
@@ -48,43 +49,61 @@ function createFavorite(req, reply) {
 							}
 						}
 						if (hasFavorite) {
-							reply(Boom.conflict('Sorry, The user already favorited this estate!'));
+							next(Boom.conflict('Sorry, The user already favorited this estate!'));
+						} else {
+							next();
 						}
 					}
 				} else {
-					reply(Boom.badRequest('Sorry, This estate not exist'));
+					next(Boom.badRequest('Sorry, This estate not exist'));
 				}
 			}).error(function(err) {
-				reply(Boom.badRequest('Sorry, Something are wrong!'));
+				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
-	}());
+	};
 
-	(function createFavorite() {
-		//Check if the user exist
+	function checkUser(next) {
+
 		Users
 			.get(userID)
 			.without('password')
 			.run()
 			.then(function(result) {
-				//Create the favorite
-				Estates
-					.get(estateID)
-					.update({
-						favorites: Users.r.row('favorites').default([]).append(result)
-					})
-					.run()
-					.then(function(result) {
-						reply({
-							status: 'success',
-							message: 'Estate favorited'
-						});
-					}).error(function(err) {
-						reply(Boom.badRequest('Sorry, Something are wrong!'));
-					});
+				if (result) {
+					next();
+				} else {
+					next(Boom.badRequest('Sorry, This user not exist!'))
+				}
 			}).error(function(err) {
-				reply(Boom.badRequest('Sorry, Something are wrong!'));
+				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
-	}());
+	};
+
+	function create(next) {
+
+		Estates
+			.get(estateID)
+			.update({
+				favorites: Users.r.row('favorites').default([]).append(result)
+			})
+			.run()
+			.then(function(result) {
+				next(null, {
+					status: 'success',
+					message: 'Estate favorited'
+				});
+			}).error(function(err) {
+				next(Boom.badRequest('Sorry, Something are wrong!'));
+			});
+	};
+
+	Async.waterfall([
+		checkEstate,
+		checkUser,
+		create
+	], function(err, result) {
+		reply(result || err);
+	});
 } 
 
 module.exports = handleCreate;

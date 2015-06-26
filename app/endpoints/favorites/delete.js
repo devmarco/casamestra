@@ -4,6 +4,7 @@
 
 var Boom 	= require('boom');
 var Joi 	= require('joi');
+var Async   = require('async');
 var Estates = require('../../config/tables').estates;
 
 var handleDelete = {
@@ -27,7 +28,7 @@ function removeFavorite(req, reply) {
 
 	var favoriteIndex;
 
-	(function checkEstate() {
+	function checkEstate(next) {
 
 		Estates
 			.get(req.payload.ECMID)('favorites')
@@ -43,17 +44,17 @@ function removeFavorite(req, reply) {
 				}
 
 				if (!favoriteIndex) {
-					reply(Boom.badRequest('Sorry, It was not favorited by this user!'));
+					next(Boom.badRequest('Sorry, It was not favorited by this user!'));
 				} else {
-					remove(favoriteIndex);
+					next(null, favoriteIndex);
 				}				
 
 			}).error(function(err) {
-				reply(Boom.badRequest('Sorry, Something are wrong!'));
+				next(Boom.badRequest('Sorry, Something are wrong!'));
 			})
-	}());
+	};
 
-	function remove(favoriteIndex) {
+	function remove(favoriteIndex, next) {
 		Estates
 			.get(req.payload.ECMID)
 			.update({
@@ -61,13 +62,21 @@ function removeFavorite(req, reply) {
 			})
 			.run()
 			.then(function(result) {
-				reply({
+				next(null, {
+					status: 'success',
 					message: 'Favorite was removed'
 				});
 			}).error(function(err) {
-				reply(Boom.badRequest('Sorry, Something are wrong!'));
+				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
 	};
+
+	Async.waterfall([
+		checkEstate,
+		remove
+	], function(err, result) {
+		reply(result || err);
+	});
 }
 
 module.exports = handleDelete;

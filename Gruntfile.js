@@ -6,19 +6,18 @@ module.exports = function(grunt) {
 
 		lab : {
 			color       : true,
-			coverage    : true,
-			minCoverage : 100
+			coverage    : false
 		},
 
 		watch: {
 			scripts: {
-				files: ['*/*.js'],
+				files: ['test/**/*.js'],
 				tasks: ['lab'],
 				options: {
 					spawn: false,
 				},
 			},
-		},
+		}
 
 	});
 
@@ -28,6 +27,4 @@ module.exports = function(grunt) {
 
 	// Default task(s).
 	grunt.registerTask('default', ['lab']);
-	grunt.registerTask('watch', ['nodemon', 'lab']);
-
 };

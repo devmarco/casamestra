@@ -3,6 +3,7 @@
 \*------------------------------------*/
 
 var Boom 	= require('boom');
+var Async   = require('async');
 var Alerts 	= require('../../config/tables').alerts;
 var Users 	= require('../../config/tables').users;
 
@@ -14,33 +15,42 @@ var handleGet = {
 
 function getAlerts(req, reply) {
 	
-	(function checkUser() {
+	function checkUser(next) {
 
 		Users
 			.get(req.params.UCMID)
 			.run()
 			.then(function(result) {
-				if (!result) {
-					reply(Boom.notFound('Sorry, this user not exist'));
+				if (result) {
+					next();
+				} else {
+					next(Boom.notFound('Sorry, this user not exist'));
 				}
 			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
+				next(Boom.forbidden('Try again some time'));
 			});
-	}());
+	};
 
-	(function get() {
+	function get(next) {
 		
 		Alerts
 			.filter(function(alerts) {
-				return alerts('UCMID').eq(req.params.UCMID);
+				return alerts('ucmid').eq(req.params.UCMID);
 			})
 			.run()
 			.then(function(result) {
-				reply(result);
+				next(result);
 			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
+				next(Boom.badRequest('Try again some time'));
 			});
-	}());
+	};
+
+	Async.waterfall([
+		checkUser,
+		get,
+	], function(err, result) {
+		reply(result || err);
+	});
 }
 
 module.exports = handleGet;

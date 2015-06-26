@@ -5,6 +5,7 @@
 var moment	= require('moment');
 var Boom 	= require('boom');
 var Joi 	= require('joi');
+var Async   = require('async');
 var Alerts 	= require('../../config/tables').alerts;
 var Users 	= require('../../config/tables').users;
 
@@ -18,7 +19,7 @@ var handleCreate = {
 				abortEarly: false
 			},
 			payload: {
-				UCMID: Joi.string().required(),
+				ucmid: Joi.string().required(),
 				filters: Joi.object({
 					title: Joi.string(),
 					description: Joi.string(),
@@ -52,59 +53,75 @@ var handleCreate = {
 
 function createAlert(req, reply) {
 
-	(function checkUser() {
+	function checkUser(next) {
+
 		Users
-			.get(req.payload.UCMID)
+			.get(req.payload.ucmid)
 			.run()
 			.then(function(result) {
-				if (!result) {
-					reply(Boom.notFound('Sorry, this user not exist'));
+				if (result) {
+					next();
+				} else {
+					next(Boom.notFound('Sorry, this user not exist'));
 				}
 			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
+				next(Boom.forbidden('Try again some time'));
 			});
-	}());
+	};
 
-	(function create() {
-		
-		req.payload.createdAt = moment().format('DD-MM-YYYY');
+	function checkAlerts(next) {
 
 		Alerts
 			.filter(function(alerts) {
 				return alerts('filters')
 							.eq(req.payload.filters)
-							.and(alerts('UCMID')
-							.eq(req.payload.UCMID));
+							.and(alerts('ucmid')
+							.eq(req.payload.ucmid));
 			})
 			.run()
 			.then(function(result) {
 				if (result.length) {
-					reply(Boom.conflict('Sorry, This alert already exist'));
+					next(Boom.conflict('Sorry, This alert already exist'));
 				} else {
-					Alerts
-						.insert(req.payload, {
-							conflict: 'error'
-						})
-						.run()
-						.then(function(result) {
-							if (result.errors !== 0) {
-								reply(Boom.conflict('Probably this alert already exist'));
-							} else {
-								reply({
-									status: 'success',
-									message: 'Alert created',
-									filters: req.payload.filters
-								});
-							}
-							
-						}).error(function(err) {
-							reply(Boom.badRequest('Something bad happen :('));
-						});
+					next();
 				}
 			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
+				next(Boom.forbidden('Try again some time'));
 			});
-	}());
+	};
+
+	function create() {
+
+		req.payload.createdAt = moment().format('DD-MM-YYYY');
+
+		Alerts
+			.insert(req.payload, {
+				conflict: 'error'
+			})
+			.run()
+			.then(function(result) {
+				if (result.errors !== 0) {
+					next(Boom.conflict('Probably this alert already exist'));
+				} else {
+					next(null, {
+						status: 'success',
+						message: 'Alert created',
+						filters: req.payload.filters
+					});
+				}
+				
+			}).error(function(err) {
+				next(Boom.badRequest('Something bad happen :('));
+			});
+	};
+
+	Async.waterfall([
+		checkUser,
+		checkAlerts,
+		create,
+	], function(err, result) {
+		reply(result || err);
+	});
 }
 
 module.exports = handleCreate;

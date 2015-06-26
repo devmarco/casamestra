@@ -5,6 +5,7 @@
 var Boom 	= require('boom');
 var Joi 	= require('joi');
 var Agents 	= require('../../config/tables').agents;
+var Schema 	= require('../../models/agent');
 
 var handleCreate = {
 	method: 'POST',
@@ -13,25 +14,10 @@ var handleCreate = {
 	config: {
 		validate: {
 			options: {
-				abortEarly: false
+				abortEarly: false,
+				presence: 'required'
 			},
-			payload: {
-				firstName: Joi.string().required(),
-				lastName: Joi.string().required(),
-				email: Joi.string().email().required(),
-				phones: Joi.object({
-					cellphone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required(),
-					homephone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required()
-				}),
-				description: Joi.string().required(),
-				about: Joi.object({
-					academic: Joi.array().items(Joi.string()),
-					professional: Joi.array().items(Joi.string()),
-					expertise: Joi.array().items(Joi.string()).required(),
-					languages: Joi.array().items(Joi.string()).required()
-				}),
-				creci: Joi.number().required()
-			}
+			payload: Schema
 		}
 	}
 }	

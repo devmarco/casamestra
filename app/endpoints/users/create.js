@@ -4,8 +4,10 @@
 
 var Boom 	= require('boom');
 var Joi 	= require('joi');
+var Async   = require('async');
 var bcrypt	= require('bcrypt');
 var Users 	= require('../../config/tables').users;
+var Schema 	= require('../../models/user');
 
 var handleCreate = {
 	method: 'POST',
@@ -14,51 +16,60 @@ var handleCreate = {
 	config: {
 		validate: {
 			options: {
-				abortEarly: false
+				abortEarly: false,
+				presence: 'required'
 			},
-			payload: {
-				firstName: Joi.string().required(),
-				lastName: Joi.string().required(),
-				email: Joi.string().email().required(),
-				phones: Joi.object({
-					cellphone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required(),
-					homephone: Joi.string().regex(/^(\(11\) [9][0-9]{4}-[0-9]{4})|(\(1[2-9]\) [5-9][0-9]{3}-[0-9]{4})|(\([2-9][1-9]\) [1-9][0-9]{3}-[0-9]{4})$/).required()
-				}).required(),
-				password: Joi.string().required()
-			}
+			payload: Schema
 		}
 	}
 }
 
 function createUser(req, reply) {
 
-	bcrypt.genSalt(15, function(err, salt) {
-		bcrypt.hash(req.payload.password, salt, function(err, hash) {
 
-			if (err) {
-				return reply(Boom.badRequest('Something bad happen :('));
-			}
+	function encrypt(next) {
 
-			req.payload.password = hash;
+		bcrypt.genSalt(15, function(err, salt) {
+			bcrypt.hash(req.payload.password, salt, function(err, hash) {
 
-			T_USERS
-				.insert(req.payload, {
-					conflict: 'error'
-				})
-				.run()
-				.then(function(result) {
-					if (result.errors !== 0) {
-						reply(Boom.conflict('Probably this user already exist'));
-					} else {
-						reply({
-							message: 'Success'
-						});
-					}
-					
-				}).error(function(err) {
-					reply(Boom.badRequest('Something bad happen :('));
-				});
+				if (err) {
+					return next(Boom.badRequest('Something bad happen :('));
+				}
+
+				req.payload.password = hash;
+
+				next();
+			});
 		});
+	}
+
+	function create(next) {
+
+		Users
+			.insert(req.payload, {
+				conflict: 'error'
+			})
+			.run()
+			.then(function(result) {
+				if (result.errors !== 0) {
+					next(Boom.conflict('Probably this user already exist'));
+				} else {
+					next({
+						status: 'success',
+						message: 'Success'
+					});
+				}
+				
+			}).error(function(err) {
+				next(Boom.badRequest('Something bad happen :('));
+			});
+	}
+
+	Async.waterfall([
+		encrypt,
+		create
+	], function(err, result) {
+		reply(result || err);
 	});
 }
 

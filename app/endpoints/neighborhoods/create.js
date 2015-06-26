@@ -5,6 +5,7 @@
 var Boom 			= require('boom');
 var Joi 			= require('joi');
 var Neighborhoods 	= require('../../config/tables').neighborhoods;
+var Schema 			= require('../../models/neighborhood');
 
 var handleCreate = {
 	method: 'POST',
@@ -13,33 +14,10 @@ var handleCreate = {
 	config: {
 		validate: {
 			options: {
-				abortEarly: false
+				abortEarly: false,
+				presence: 'required'
 			},
-			payload: {
-				city: Joi.string().required(),
-				name: Joi.string().required(),
-				title: Joi.string().required(),
-				description: Joi.string().required(),
-				cover: Joi.string().required(),
-				tags: Joi.array().required(),
-				about: Joi.object({
-					neighbors: Joi.string().required(),
-					expect: Joi.string().required(),
-					lifestyle: Joi.string().required(),
-					notexpect: Joi.string().required(),
-					market: Joi.string().required(),
-					love: Joi.string().required()
-				}).required(),
-				address: Joi.object({
-					local: Joi.string().required(),
-					lat: Joi.number().required(),
-					lng: Joi.number().required()
-				}).required(),
-				commutetimes: Joi.array().items({
-					destination: Joi.string(),
-					time: Joi.number()
-				})
-			}
+			payload: Schema
 		}
 	}
 }

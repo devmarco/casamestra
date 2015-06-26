@@ -4,9 +4,11 @@
 
 var Boom 	= require('boom');
 var Joi 	= require('joi');
+var Async   = require('async');
 var Estates = require('../../config/tables').estates;
 var Agents 	= require('../../config/tables').agents;
 var Users 	= require('../../config/tables').users;
+var Schema 	= require('../../models/estate');
 
 var handleEstate = {
 	method: 'POST',
@@ -15,81 +17,60 @@ var handleEstate = {
 	config: {
 		validate: {
 			options: {
-				abortEarly: false
+				abortEarly: false,
+				presence: 'required'
 			},
-			payload: {
-				title: Joi.string().required(),
-				description: Joi.string().required(),
-				location: Joi.object({
-					lat: Joi.number(),
-					lng: Joi.number()
-				}).required(),
-				address: Joi.string().required(),
-				bathrooms: Joi.number().required(),
-				bedrooms: Joi.number().required(),
-				photos: Joi.object({
-					cover: Joi.string().uri().required(),
-					gallery: Joi.array().items(Joi.string().uri())
-				}).required(),
-				features: Joi.array().items(Joi.string()).required(),
-				details: Joi.object({
-					type: Joi.string(),
-					value: Joi.string()
-				}),
-				homeType: Joi.string().required(),
-				action: Joi.any().valid(['rent', 'sell']).required(),
-				status: Joi.any().valid(['sold', 'rented', 'available', 'negotiation']).required(),
-				area: Joi.number().required(),
-				garages: Joi.number().required(),
-				price: Joi.number().required(),
-				city: Joi.string().required(),
-				neighborhood: Joi.string().required(),
-				dogAllowed: Joi.boolean(),
-				catAllowed: Joi.boolean(),
-				exclusive: Joi.boolean(),
-				ACMID: Joi.string(),
-				UCMID: Joi.string()
-			}
+			payload: Schema
 		}
 	}
 }
 
 function createEstate(req, reply) {
 
-	(function checkAgent() {
+	function checkAgent(next) {
 
-		if (!req.payload.ACMID) return false;
+		if (!req.payload.acmid) return next();
 
 		Agents
-			.get(req.payload.ACMID)	
+			.get(req.payload.acmid)	
 			.run()
 			.then(function(result) {
-				if (!result) {
-					reply(Boom.notFound('Sorry, this agent not exist'));
-				} 
+				
+				if (result) req.payload.acmid = result;
+
+				next();
+
 			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
+				next(Boom.forbidden('Try again some time'));
 			});
-	}());
+	};
 
-	(function checkUser() {
+	function checkUser(next) {
 
-		if (!req.payload.UCMID) return false;
+		if (!req.payload.acmid) return next();
 
 		Users
-			.get(req.payload.UCMID)	
+			.get(req.payload.ucmid)
+			.without('password')	
 			.run()
 			.then(function(result) {
-				if (!result) {
-					reply(Boom.notFound('Sorry, this user not exist'));
-				} 
-			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
-			});
-	}());
+				if (result) req.payload.ucmid = result;
 
-	(function create() {
-		
+				next();
+
+			}).error(function(err) {
+				next(Boom.forbidden('Try again some time'));
+			});
+	};
+
+	function checkLocation(next) {
+
+		//Estate must associated to an user or an agent
+		if (!req.payload.acmid && !req.payload.ucmid) {
+			next(Boom.forbidden('Sorry, Estate must be associated to an user or an agent'));
+			return false;
+		};
+
 		Estates
 			.filter({
 				location: req.payload.location
@@ -97,30 +78,41 @@ function createEstate(req, reply) {
 			.run()
 			.then(function(result) {
 				if (result.length === 0) {
-					//Add updatedAt to payload
 					req.payload.createdAt = new Date();
-
-					Estates
-						.insert(req.payload)
-						.run()
-						.then(function(result) {
-							if (result.errors !== 0) {
-								reply(Boom.conflict('Probably this estate already exist'));
-							} else {
-								reply(req.payload);
-							}
-							
-						}).error(function(err) {
-							reply(Boom.badRequest('Something bad happen :('));
-						});
+					next();
 				} else {
-					reply(Boom.conflict('Already exist an estate with the same address'));
+					next(Boom.conflict('Already exist an estate with the same address'));
 				}
 			})
 			.error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
+				next(Boom.badRequest('Try again some time'));
 			});
-	}());
+	};
+
+	function create(next) {
+		
+		Estates
+			.insert(req.payload)
+			.run()
+			.then(function(result) {
+				if (result.errors !== 0) {
+					next(Boom.conflict('Probably this estate already exist'));
+				} else {
+					next(null, req.payload);
+				}
+			}).error(function(err) {
+				next(Boom.badRequest('Something bad happen :('));
+			});
+	}
+
+	Async.waterfall([
+		checkAgent,
+		checkUser,
+		checkLocation,
+		create
+	], function(err, result) {
+		reply(result || err);
+	});
 }
 
 module.exports = handleEstate;

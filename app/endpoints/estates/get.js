@@ -3,22 +3,31 @@
 \*------------------------------------*/
 
 var Boom 	= require('boom');
+var Joi   	= require('joi');
 var filter 	= require('../../filters/limit-offset');
 var Estates = require('../../config/tables').estates;
 
 var handleGet = {
 	method: 'GET',
 	path: '/estates',
-	handler: getEstates
+	handler: getEstates,
+	config: {
+		validate: {
+			query: {
+				limit: Joi.number(),
+				offset: Joi.number()
+			}
+		}
+	}
 }
 
 function  getEstates(req, reply) {
 
 	var filterQuery = filter('estates', req);
 
-	(function getWithFilter() {
+	(filterQuery) ? getWithFilter() : get();
 
-		if (!filterQuery) return false;
+	function getWithFilter() {
 
 		filterQuery.run()
 			.then(function(result) {
@@ -26,9 +35,10 @@ function  getEstates(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	}());
+	};
 
-	(function get() {
+	function get() {
+		
 		Estates
 			.run()
 			.then(function(result) {
@@ -36,7 +46,7 @@ function  getEstates(req, reply) {
 			}).error(function(err) {
 				reply(Boom.badRequest('Try again some time'));
 			});
-	}());
+	};
 }
 
 module.exports = handleGet;

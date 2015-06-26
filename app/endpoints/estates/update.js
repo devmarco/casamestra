@@ -4,9 +4,11 @@
 
 var Boom    = require('boom');
 var Joi     = require('joi');
+var Async   = require('async');
 var Estates = require('../../config/tables').estates;
 var Agents 	= require('../../config/tables').agents;
 var Users 	= require('../../config/tables').users;
+var Schema 	= require('../../models/estate');
 
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],
@@ -15,101 +17,78 @@ var handleUpdate = {
 	config: {
 		validate: {
 			options: {
-				abortEarly: false
+				abortEarly: false,
+				presence: 'optional'
 			},
-			payload: {
-				title: Joi.string(),
-				description: Joi.string(),
-				location: Joi.object({
-					lat: Joi.number(),
-					lng: Joi.number()
-				}),
-				address: Joi.string(),
-				bathrooms: Joi.number(),
-				bedrooms: Joi.number(),
-				photos: Joi.object({
-					cover: Joi.string().uri(),
-					gallery: Joi.array().items(Joi.string().uri())
-				}),
-				features: Joi.array().items(Joi.string()),
-				details: Joi.object({
-					type: Joi.string(),
-					value: Joi.string()
-				}),
-				homeType: Joi.string(),
-				action: Joi.any().valid(['rent', 'sell']),
-				status: Joi.any().valid(['sold', 'rented', 'available', 'negotiation']),
-				area: Joi.number(),
-				garages: Joi.number(),
-				price: Joi.number(),
-				city: Joi.string(),
-				neighborhood: Joi.string(),
-				dogAllowed: Joi.boolean(),
-				catAllowed: Joi.boolean(),
-				birdAllowed: Joi.boolean(),
-				exclusive: Joi.boolean(),
-				updatedAt: Joi.date(),
-				ACMID: Joi.string(),
-				UCMID: Joi.string()
-			}
+			payload: Schema
 		}
 	}
 }
 
 function updateEstate(req, reply) {
 
-	req.payload.updatedAt = new Date();
+	function checkAgent(next) {
 
-	(function checkAgent() {
-
-		if (!req.payload.ACMID) return false;
+		if (!req.payload.ACMID) return next();
 
 		Agents
 			.get(req.payload.ACMID)	
 			.run()
 			.then(function(result) {
 				if (!result) {
-					reply(Boom.notFound('Sorry, this agent not exist'));
+					next(Boom.notFound('Sorry, this agent not exist'));
 				} 
 			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
+				next(Boom.forbidden('Try again some time'));
 			});
-	}());
+	};
 
-	(function checkUser() {
+	function checkUser(next) {
 
-		if (!req.payload.UCMID) return false;
+		if (!req.payload.UCMID) return next();
 
 		Users
 			.get(req.payload.UCMID)	
 			.run()
 			.then(function(result) {
 				if (!result) {
-					reply(Boom.notFound('Sorry, this user not exist'));
+					next(Boom.notFound('Sorry, this user not exist'));
 				} 
 			}).error(function(err) {
-				reply(Boom.forbidden('Try again some time'));
+				next(Boom.forbidden('Try again some time'));
 			});
-	}());
+	};
 
-	(function update() {
+	function update(next) {
+
+		req.payload.updatedAt = new Date();
+
 		Estates
 			.get(req.params.ECMID)
 			.update(req.payload)
 			.run()
 			.then(function(result) {
 				if (result.replaced === 0) {
-					reply(Boom.badRequest('Something bad happen :('));
+					next(Boom.badRequest('Something bad happen :('));
 				} else {
-					reply({
+					next(null, {
+						status: 'success',
 						message: 'The estate was updated'
 					});
 				}
 				
 			}).error(function(err) {
-				reply(Boom.badRequest('Something bad happen :('));
+				next(Boom.badRequest('Something bad happen :('));
 			});
-	}());
+	};
+
+	Async.waterfall([
+		checkAgent,
+		checkUser,
+		update
+	], function(err, result) {
+		reply(result || err);
+	});
 }
 
 module.exports = handleUpdate;

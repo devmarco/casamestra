@@ -1,78 +1,128 @@
 var DB 		= require('../config/settings').db;
 var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
-var customFilter = {};
 
-/**
- * Filter result by limit
- * @param  {[string]} collection [The name of collection]
- * @param  {[function]} reply    [The reply function]
- * @param  {[number]} limit      [The number of limit]
- */
-function filterByLimit(tableName, limit) {
+var Filters = function(config) {
+
+	this.table 			= config.table;
+	this.customValues 	= {};
+
+	this.filters = {
+		pluck: 	config.fields 			|| null,
+		skip: 	parseInt(config.offset) || null,
+		limit:  parseInt(config.limit) 	|| null
+	}
+
+	if (config.options) this.customValues = config.options;
+}
+
+Filters.prototype.limit = function(limit) {
 	var limit = parseInt(limit);
 
-	query = r.table(tableName).filter(customFilter).limit(limit);
+	query = table.filter(customValues).limit(limit);
 
 	return query;
 }
 
-/**
- * Filter result by offset
- * @param  {[string]} collection [The name of collection]
- * @param  {[function]} reply    [The reply function]
- * @param  {[number]} offset     [The number of offset]
- */
-function filterByOffset(tableName, offset) {
+Filters.prototype.offset = function(offset) {
 	var offset = parseInt(offset);
 
-	query = r.table(tableName).filter(customFilter).skip(offset);
+	query = filter(customValues).skip(offset);
 
 	return query;
 }
 
-/**
- * Filter result by limit and offset
- * @param  {[string]} collection [The name of collection]
- * @param  {[function]} reply    [The reply function]
- * @param  {[number]} limit      [The number of limit]
- * @param  {[number]} offset     [The number of offset]
- */
-function filterByLimitAndOffset(tableName, limit, offset) {
+Filters.prototype.fields = function(fields) {
+
+	var fieldsString = fields.split(',');
+
+	query = 'pluck(fieldsString)';
+
+	return query;
+}
+
+Filters.prototype.limitAndOffset = function(limit, offset) {
 	var offset = parseInt(offset),
 		limit = parseInt(limit),
 		query;
 
-	query = r.table(tableName).filter(customFilter).skip(offset).limit(limit);
+	query = table.filter(customValues).skip(offset).limit(limit);
 
 	return query;
 }
 
+Filters.prototype.limitAndFields = function(limit, offset) {
+	var offset = parseInt(offset),
+		limit = parseInt(limit),
+		query;
 
-/**
- * Verify the request parameters
- * @param  {[string]} collection [The name of collection]
- * @param  {[function]} reply    [The reply function]
- * @param  {[object]} req        [The request object]
- */
-function verifyLimitAndOffset(tableName, req, option) {
-	var limit,
-		offset;
+	query = table.filter(customValues).skip(offset).limit(limit);
 
-	if (option) customFilter = option;
-
-	if (req.query.limit && req.query.offset) {
-		return filterByLimitAndOffset(tableName, req.query.limit, req.query.offset);
-
-	} else if (req.query.offset) {
-		return filterByOffset(tableName, req.query.offset);
-
-	} else if (req.query.limit) {
-		return filterByLimit(tableName, req.query.limit);
-
-	} else {
-		return false;
-	}
+	return query;
 }
 
-module.exports = verifyLimitAndOffset;
+Filters.prototype.offsetAndFields = function(limit, offset) {
+	var offset = parseInt(offset),
+		limit = parseInt(limit),
+		query;
+
+	query = table.filter(customValues).skip(offset).limit(limit);
+
+	return query;
+}
+
+Filters.prototype.All = function(limit, offset) {
+	var offset = parseInt(offset),
+		limit = parseInt(limit),
+		query;
+
+	query = table.filter(customValues).skip(offset).limit(limit);
+
+	return query;
+}
+
+Filters.prototype.map = function(limit, offset) {
+	var method,
+		value;
+
+	this.query = this.table.filter(this.customValues);
+
+	for (i in this.filters) {
+
+		method 	= i;
+		value 	= this.filters[i];
+
+		if (value) {
+
+			if (method === 'pluck') {
+				value = value.split(',');
+			}
+			
+			this.query = this.query[method](value);
+		}
+	}
+
+	return this;
+}	
+
+Filters.prototype.getQuery = function(limit, offset) {
+	return this.query || false;
+}	
+
+
+function checkFilter(table, req, option) {
+	var Filter;
+
+	Filter = new Filters({
+		table:  	table,
+		options: 	option,
+		limit: 		req.query.limit,
+		offset: 	req.query.offset,
+		fields: 	req.query.fields
+	});
+
+
+	return Filter.map().getQuery();
+}
+
+module.exports = checkFilter;

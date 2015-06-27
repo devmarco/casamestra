@@ -14,6 +14,7 @@ Here you can understand better how the API works, and how you can access the end
 - [x] Error Handlings
 - [x] Logging
 - [x] Validation
+- [x] Filter (limit,offset,fields)
 - [ ] Test cover
 - [ ] Authentication & Authorization
 - [ ] Hypermedia

@@ -16,72 +16,7 @@ var Filters = function(config) {
 	if (config.options) this.customValues = config.options;
 }
 
-Filters.prototype.limit = function(limit) {
-	var limit = parseInt(limit);
-
-	query = table.filter(customValues).limit(limit);
-
-	return query;
-}
-
-Filters.prototype.offset = function(offset) {
-	var offset = parseInt(offset);
-
-	query = filter(customValues).skip(offset);
-
-	return query;
-}
-
-Filters.prototype.fields = function(fields) {
-
-	var fieldsString = fields.split(',');
-
-	query = 'pluck(fieldsString)';
-
-	return query;
-}
-
-Filters.prototype.limitAndOffset = function(limit, offset) {
-	var offset = parseInt(offset),
-		limit = parseInt(limit),
-		query;
-
-	query = table.filter(customValues).skip(offset).limit(limit);
-
-	return query;
-}
-
-Filters.prototype.limitAndFields = function(limit, offset) {
-	var offset = parseInt(offset),
-		limit = parseInt(limit),
-		query;
-
-	query = table.filter(customValues).skip(offset).limit(limit);
-
-	return query;
-}
-
-Filters.prototype.offsetAndFields = function(limit, offset) {
-	var offset = parseInt(offset),
-		limit = parseInt(limit),
-		query;
-
-	query = table.filter(customValues).skip(offset).limit(limit);
-
-	return query;
-}
-
-Filters.prototype.All = function(limit, offset) {
-	var offset = parseInt(offset),
-		limit = parseInt(limit),
-		query;
-
-	query = table.filter(customValues).skip(offset).limit(limit);
-
-	return query;
-}
-
-Filters.prototype.map = function(limit, offset) {
+Filters.prototype.mount = function(limit, offset) {
 	var method,
 		value;
 
@@ -122,7 +57,7 @@ function checkFilter(table, req, option) {
 	});
 
 
-	return Filter.map().getQuery();
+	return Filter.mount().getQuery();
 }
 
 module.exports = checkFilter;

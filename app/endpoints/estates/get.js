@@ -15,7 +15,8 @@ var handleGet = {
 		validate: {
 			query: {
 				limit: Joi.number(),
-				offset: Joi.number()
+				offset: Joi.number(),
+				fields: Joi.string()
 			}
 		}
 	}
@@ -23,7 +24,9 @@ var handleGet = {
 
 function  getEstates(req, reply) {
 
-	var filterQuery = filter('estates', req);
+	var filterQuery = filter(Estates, req, {
+		action: 'rent'
+	});
 
 	(filterQuery) ? getWithFilter() : get();
 

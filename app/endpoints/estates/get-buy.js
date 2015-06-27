@@ -3,7 +3,6 @@
 \*------------------------------------*/
 
 var Boom 	= require('boom');
-var Async   = require('async');
 var Joi   	= require('joi');
 var filter 	= require('../../filters/limit-offset');
 var Estates = require('../../config/tables').estates;
@@ -24,7 +23,7 @@ var handleGet = {
 
 function getEstates(req, reply) {
 
-	var filterQuery = filter('estates', req, {
+	var filterQuery = filter(Estates, req, {
 		action: 'buy'
 	});
 

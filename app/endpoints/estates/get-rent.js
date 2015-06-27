@@ -23,7 +23,7 @@ var handleGet = {
 
 function getEstates(req, reply) {
 
-	var filterQuery = filter('estates', req, {
+	var filterQuery = filter(Estates, req, {
 		action: 'rent'
 	});
 

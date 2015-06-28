@@ -41,13 +41,13 @@ function createEstate(req, reply) {
 				next();
 
 			}).error(function(err) {
-				next(Boom.forbidden('Try again some time'));
+				next(Boom.forbidden('Something are wrong if the agent'));
 			});
 	};
 
 	function checkUser(next) {
 
-		if (!req.payload.acmid) return next();
+		if (!req.payload.ucmid) return next();
 
 		Users
 			.get(req.payload.ucmid)
@@ -59,7 +59,7 @@ function createEstate(req, reply) {
 				next();
 
 			}).error(function(err) {
-				next(Boom.forbidden('Try again some time'));
+				next(Boom.forbidden('Something are wrong if the user'));
 			});
 	};
 

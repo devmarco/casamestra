@@ -30,6 +30,11 @@ function createUser(req, reply) {
 	function encrypt(next) {
 
 		bcrypt.genSalt(15, function(err, salt) {
+
+			if (err) {
+				return next(Boom.badRequest('Something bad happen :('));
+			}
+			
 			bcrypt.hash(req.payload.password, salt, function(err, hash) {
 
 				if (err) {

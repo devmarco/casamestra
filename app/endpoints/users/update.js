@@ -40,6 +40,9 @@ function updateUser(req, reply) {
 										//Set the new password
 										req.payload.password = hash;
 
+										//Delete the currentPassword
+										delete req.payload.currentPassword;
+
 										next();
 									});
 								});	
@@ -62,6 +65,7 @@ function updateUser(req, reply) {
 	}
 
 	function update(next) {
+
 		Users
 			.get(req.params.UCMID)
 			.update(req.payload)

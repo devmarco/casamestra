@@ -17,8 +17,7 @@ var handleUpdate = {
 	config: {
 		validate: {
 			options: {
-				abortEarly: false,
-				presence: 'optional'
+				abortEarly: false
 			},
 			payload: Schema
 		}

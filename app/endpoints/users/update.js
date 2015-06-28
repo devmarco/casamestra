@@ -16,8 +16,7 @@ var handleUpdate = {
 	config: {
 		validate: {
 			options: {
-				abortEarly: false,
-				presence: 'optional'
+				abortEarly: false
 			},
 			payload: Schema
 		}
@@ -27,13 +26,13 @@ var handleUpdate = {
 function updateUser(req, reply) {
 
 	function checkPassword(next) {
-		if (req.payload.oldPassword && req.payload.password) {
+		if (req.payload.currentPassword && req.payload.password) {
 			Users
 				.get(req.params.UCMID)
 				.run()
 				.then(function(result) {
 					if (result) {
-						bcrypt.compare(req.payload.oldPassword, result.password, function(err, res) {
+						bcrypt.compare(req.payload.currentPassword, result.password, function(err, res) {
 							if (res) {
 								bcrypt.genSalt(15, function(err, salt) {
 									bcrypt.hash(req.payload.password, salt, function(err, hash) {
@@ -45,7 +44,7 @@ function updateUser(req, reply) {
 									});
 								});	
 							} else {
-								next(Boom.badRequest('Sorry, The oldPassword are wrong'));
+								next(Boom.badRequest('Sorry, The currentPassword are wrong'));
 							}
 						});
 					} else {
@@ -55,8 +54,8 @@ function updateUser(req, reply) {
 					next(Boom.badRequest('Something bad happen :('));
 				});
 
-		} else if (req.payload.oldPassword || req.payload.password) {
-			next(Boom.badRequest('Sorry, Update password need of the both properties (oldPassword and password)'));
+		} else if (req.payload.currentPassword || req.payload.password) {
+			next(Boom.badRequest('Sorry, Update password need of the both properties (currentPassword and password)'));
 		} else {
 			next();
 		}

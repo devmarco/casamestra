@@ -45,7 +45,15 @@ var routes = [
 	require('../../app/endpoints/alerts/delete'),
 	require('../../app/endpoints/alerts/get'),
 	require('../../app/endpoints/alerts/get-one'),
-	require('../../app/endpoints/alerts/get-alerts-by-user')
+	require('../../app/endpoints/alerts/get-alerts-by-user'),
+
+	//Recommendations
+	require('../../app/endpoints/recommendations/create'),
+	require('../../app/endpoints/recommendations/delete'),
+	require('../../app/endpoints/recommendations/get-recommend-by-user'),
+	require('../../app/endpoints/recommendations/get-recommend-by-estate')
+	//require('../../app/endpoints/alerts/get-one'),
+	//require('../../app/endpoints/alerts/get-alerts-by-user')
 ];
 
 module.exports = {

@@ -30,29 +30,39 @@ function createFavorite(req, reply) {
 	var userID 		= req.payload.UCMID,
 		estateID	= req.payload.ECMID;
 
-	function checkEstate(next) {
+	function checkUser(next) {
+
+		Users
+			.get(userID)
+			.without('password')
+			.run()
+			.then(function(result) {
+				next(null, result);
+			}).error(function(err) {
+				next(Boom.badRequest('Sorry, Something are wrong!'));
+			});
+	};
+
+	function checkEstate(user, next) {
 
 		Estates
 			.get(estateID)
 			.run()
 			.then(function(result) {
-				var i = 0,
-					hasFavorite = false;
+				var i = 0;
 
 				if (result) {
 					//Check if the estate have some favorites
 					if (result.favorites && result.favorites.length > 0) {
 						for (i; i < result.favorites.length; i++) {
 							if (result.favorites[i].UCMID === userID) {
-								hasFavorite = true;
+								next(Boom.conflict('Sorry, The user already favorited this estate!'));
 								break;
 							}
 						}
-						if (hasFavorite) {
-							next(Boom.conflict('Sorry, The user already favorited this estate!'));
-						} else {
-							next();
-						}
+						next(null, user);
+					} else {
+						next(null, user);
 					}
 				} else {
 					next(Boom.badRequest('Sorry, This estate not exist'));
@@ -62,29 +72,12 @@ function createFavorite(req, reply) {
 			});
 	};
 
-	function checkUser(next) {
-
-		Users
-			.get(userID)
-			.without('password')
-			.run()
-			.then(function(result) {
-				if (result) {
-					next();
-				} else {
-					next(Boom.badRequest('Sorry, This user not exist!'))
-				}
-			}).error(function(err) {
-				next(Boom.badRequest('Sorry, Something are wrong!'));
-			});
-	};
-
-	function create(next) {
+	function create(user, next) {
 
 		Estates
 			.get(estateID)
 			.update({
-				favorites: Users.r.row('favorites').default([]).append(result)
+				favorites: Estates.r.row('favorites').default([]).append(result)
 			})
 			.run()
 			.then(function(result) {
@@ -98,8 +91,8 @@ function createFavorite(req, reply) {
 	};
 
 	Async.waterfall([
-		checkEstate,
 		checkUser,
+		checkEstate,
 		create
 	], function(err, result) {
 		reply(result || err);

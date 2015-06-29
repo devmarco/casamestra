@@ -61,7 +61,7 @@ function createUser(req, reply) {
 				} else {
 					next({
 						status: 'success',
-						message: 'Success'
+						message: 'User created'
 					});
 				}
 				

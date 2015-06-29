@@ -24,6 +24,7 @@ function removeUser(req, reply) {
 				reply(Boom.notFound('Sorry, this user not exist'));
 			} else {
 				reply({
+					status: 'success',
 					message: 'The user was deleted'
 				});
 			}

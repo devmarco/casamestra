@@ -20,7 +20,7 @@ Here you can understand better how the API works, and how you can access the end
 - [ ] Hypermedia
 - [x] Alert System
 - [ ] Apointmments
-- [ ] Recommendations
+- [x] Recommendations
 
 ## Endpoints docs
 

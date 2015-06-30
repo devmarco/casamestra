@@ -18,8 +18,8 @@ var handleCreate = {
 				abortEarly: false
 			},
 			payload: {
-				ECMID: Joi.string().required(),
-				UCMID: Joi.string().required()
+				ecmid: Joi.string().required(),
+				ucmid: Joi.string().required()
 			}
 		}
 	}
@@ -27,8 +27,8 @@ var handleCreate = {
 
 function createRecommendation(req, reply) {
 
-	var userID 		= req.payload.UCMID,
-		estateID	= req.payload.ECMID;
+	var userID 		= req.payload.ucmid,
+		estateID	= req.payload.ecmid;
 
 	function checkUser(next) {
 
@@ -47,32 +47,34 @@ function createRecommendation(req, reply) {
 		var i = 0;
 
 		Estates
-			.get(estateID)
+			.get(estateID)('recommendations')
 			.run()
 			.then(function(result) {
-				var recm;
+				next(result);
+				// var recm;
 
-				if (result) {
-					if (result.recommendations && result.recommendations.length) {
+				// if (result) {
+				// 	if (result.recommendations && result.recommendations.length) {
 
-						recm = result.recommendations;
+				// 		recm = result.recommendations;
 
-						for (i; i < recm.length; i++) {
-							if (recm[i].UCMID === req.payload.UCMID) {
-								next(Boom.badRequest('This estate already was recommended for this user'));
-								break;
-							}
-						}
+				// 		for (i; i < recm.length; i++) {
+				// 			if (recm[i].ucmid === req.payload.ucmid) {
+				// 				next(Boom.badRequest('This estate already was recommended for this user'));
+				// 				break;
+				// 			}
+				// 		}
 
-						next(null, user);
-					} else {
-						next(null, user);
-					}
-				} else {
-					next(Boom.badRequest('Sorry, This estate not exist!'));
-				}
+				// 		next(null, user);
+				// 	} else {
+				// 		next(null, user);
+				// 	}
+				// } else {
+				// 	next(Boom.badRequest('Sorry, This estate not exist!'));
+				// }
 
 			}).error(function(err) {
+				console.log(err);
 				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
 	}

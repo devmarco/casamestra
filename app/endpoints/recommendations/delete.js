@@ -17,8 +17,8 @@ var handleDelete = {
 				abortEarly: false
 			},
 			payload: {
-				ECMID: Joi.string().required(),
-				UCMID: Joi.string().required()
+				ecmid: Joi.string().required(),
+				ucmid: Joi.string().required()
 			}
 		}
 	}
@@ -31,13 +31,16 @@ function removeFavorite(req, reply) {
 	function checkEstate(next) {
 
 		Estates
-			.get(req.payload.ECMID)('recommendations')
+			.get(req.payload.ecmid)('recommendations')
+			.filter(function(recommendations) {
+				return recommendations('ucmid').eq(req.payload.ucmid)
+			})
 			.run()
 			.then(function(result) {
 				var i = 0;
 
 				for (i; i < result.length; i++) {
-					if (result[i].UCMID === req.payload.UCMID) {
+					if (result[i].ucmid === req.payload.ucmid) {
 						recommendationIndex = i;
 						break;
 					}
@@ -56,7 +59,7 @@ function removeFavorite(req, reply) {
 
 	function remove(recommendationIndex, next) {
 		Estates
-			.get(req.payload.ECMID)
+			.get(req.payload.ecmid)
 			.update({
 				recommendations: Estates.r.row('recommendations').deleteAt(recommendationIndex)
 			})

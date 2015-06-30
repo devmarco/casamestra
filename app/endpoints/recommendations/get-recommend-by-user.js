@@ -7,14 +7,14 @@ var Users = require('../../config/tables').users;
 
 var handleGet = {
 	method: 'GET',
-	path: '/estates/recommend/{UCMID}',
+	path: '/estates/recommend/{ucmid}',
 	handler: getRecommendations
 }
 
 function getRecommendations(req, reply) {
 	
 	Users
-		.get(req.params.UCMID)
+		.get(req.params.ucmid)
 		.run()
 		.then(function(result) {
 			if (result && result.recommendations && result.recommendations.length) {

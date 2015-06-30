@@ -8,7 +8,7 @@ var Estates = require('../../config/tables').estates;
 
 var handleGet = {
 	method: 'GET',
-	path: '/estates/recommend/users/{ECMID}',
+	path: '/estates/recommend/users/{ecmid}',
 	handler: getRecommendations
 }
 
@@ -17,7 +17,7 @@ function getRecommendations(req, reply) {
 	Users
 		.innerJoin(Estates, function(usersRow, estatesRow) {
 			return usersRow('recommendations').filter(function(recommendations) {
-				return recommendations('ECMID').eq(estatesRow('ECMID'));
+				return recommendations('ecmid').eq(estatesRow('ecmid'));
 			});
 		})
 		.run()
@@ -26,7 +26,7 @@ function getRecommendations(req, reply) {
 		});
 
 	// Users
-	// 	.get(req.params.UCMID)
+	// 	.get(req.params.ucmid)
 	// 	.run()
 	// 	.then(function(result) {
 	// 		if (result.recommendations && result.recommendations.length) {

@@ -7,14 +7,14 @@ var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 var handleDelete = {
 	method: 'DELETE',
-	path: '/neighborhoods/{NCMID}',
+	path: '/neighborhoods/{ncmid}',
 	handler: deleteNeighborhoods
 }
 
 function deleteNeighborhoods(req, reply) {
 	
 	Neighborhoods
-		.get(req.params.NCMID)
+		.get(req.params.ncmid)
 		.delete({
 			returnChanges: true
 		})

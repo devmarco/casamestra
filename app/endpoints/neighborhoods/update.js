@@ -9,7 +9,7 @@ var Schema 			= require('../../models/neighborhood');
 
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],
-	path: '/neighborhoods/{NCMID}',
+	path: '/neighborhoods/{ncmid}',
 	handler: updateNeighborhood,
 	config: {
 		validate: {
@@ -24,7 +24,7 @@ var handleUpdate = {
 function updateNeighborhood(req, reply) {
 	
 	Neighborhoods
-		.get(req.params.NCMID)
+		.get(req.params.ncmid)
 		.update(req.payload)
 		.run()
 		.then(function(result) {

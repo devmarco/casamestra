@@ -7,14 +7,14 @@ var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
 var handleGet = {
 	method: 'GET',
-	path: '/neighborhoods/{NCMID}',
+	path: '/neighborhoods/{ncmid}',
 	handler: getNeighborhood
 }
 
 function getNeighborhood(req, reply) {
 	
 	Neighborhoods
-		.get(req.params.NCMID)
+		.get(req.params.ncmid)
 		.run()
 		.then(function(result) {
 			if (result) {

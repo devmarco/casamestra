@@ -14,7 +14,7 @@ var schema = {
 	}),
 	description: Joi.string(),
 	about: Joi.object({
-		academic: Joi.array().items(Joi.string()),
+		academic: Joi.array().items(Joi.string()).optional(),
 		professional: Joi.array().items(Joi.string()),
 		expertise: Joi.array().items(Joi.string()),
 		languages: Joi.array().items(Joi.string())

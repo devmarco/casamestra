@@ -31,7 +31,7 @@ var schema = {
 	dogAllowed: Joi.boolean(),
 	catAllowed: Joi.boolean(),
 	exclusive: Joi.boolean(),
-	ucmid: Joi.string().optional()
+	agent: Joi.string()
 }
 
 module.exports = schema;

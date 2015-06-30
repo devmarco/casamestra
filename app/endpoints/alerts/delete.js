@@ -9,14 +9,14 @@ var Alerts 	= require('../../config/tables').alerts;
 
 var handleDelete = {
 	method: 'DELETE',
-	path: '/estates/alerts/{ALCMID}',
+	path: '/estates/alerts/{alcmid}',
 	handler: removeAlert
 }
 
 function removeAlert(req, reply) {
 	
 	Alerts
-		.get(req.params.ALCMID)
+		.get(req.params.alcmid)
 		.delete({
 			returnChanges: true
 		})

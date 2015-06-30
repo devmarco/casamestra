@@ -7,14 +7,14 @@ var Alerts 	= require('../../config/tables').alerts;
 
 var handleGet = {
 	method: 'GET',
-	path: '/estates/alerts/{ALCMID}',
+	path: '/estates/alerts/{alcmid}',
 	handler: getAlert
 }
 
 function getAlert(req, reply) {
 
 	Alerts
-		.get(req.params.ALCMID)
+		.get(req.params.alcmid)
 		.run()
 		.then(function(result) {
 			if (result) {

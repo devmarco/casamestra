@@ -9,7 +9,7 @@ var Users 	= require('../../config/tables').users;
 
 var handleGet = {
 	method: 'GET',
-	path: '/estates/alerts/user/{UCMID}',
+	path: '/estates/alerts/user/{ucmid}',
 	handler: getAlerts
 }
 
@@ -18,7 +18,7 @@ function getAlerts(req, reply) {
 	function checkUser(next) {
 
 		Users
-			.get(req.params.UCMID)
+			.get(req.params.ucmid)
 			.run()
 			.then(function(result) {
 				if (result) {
@@ -35,7 +35,7 @@ function getAlerts(req, reply) {
 		
 		Alerts
 			.filter(function(alerts) {
-				return alerts('ucmid').eq(req.params.UCMID);
+				return alerts('ucmid').eq(req.params.ucmid);
 			})
 			.run()
 			.then(function(result) {

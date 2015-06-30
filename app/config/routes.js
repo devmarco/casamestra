@@ -27,7 +27,6 @@ var routes = [
 	require('../../app/endpoints/neighborhoods/delete'),
 
 	//Favorites
-	require('../../app/endpoints/favorites/get'),
 	require('../../app/endpoints/favorites/get-estates-by-user'),
 	require('../../app/endpoints/favorites/get-users-by-estate'),
 	require('../../app/endpoints/favorites/create'),

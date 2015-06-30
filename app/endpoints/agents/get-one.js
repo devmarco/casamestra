@@ -7,14 +7,14 @@ var Agents 	= require('../../config/tables').agents;
 
 var handleGet = {
 	method: 'GET',
-	path: '/agents/{ACMID}',
+	path: '/agents/{acmid}',
 	handler: getAgent
 }
 
 function getAgent(req, reply) {
 	
 	Agents
-		.get(req.params.ACMID)
+		.get(req.params.acmid)
 		.run()
 		.then(function(result) {
 			if (result) {

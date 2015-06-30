@@ -9,7 +9,7 @@ var Schema 	= require('../../models/agent');
 
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],
-	path: '/agents/{ACMID}',
+	path: '/agents/{acmid}',
 	handler: updateAgent,
 	config: {
 		validate: {
@@ -24,7 +24,7 @@ var handleUpdate = {
 function updateAgent(req, reply) {
 	
 	Agents
-		.get(req.params.ACMID)
+		.get(req.params.acmid)
 		.update(req.payload)
 		.run()
 		.then(function(result) {

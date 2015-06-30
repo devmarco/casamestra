@@ -7,14 +7,14 @@ var Agents 	= require('../../config/tables').agents;
 
 var handleDelete = {
 	method: 'DELETE',
-	path: '/agents/{ACMID}',
+	path: '/agents/{acmid}',
 	handler: deleteAgent
 }
 
 function deleteAgent(req, reply) {
 	
 	Agents
-		.get(req.params.ACMID)
+		.get(req.params.acmid)
 		.delete({
 			returnChanges: true
 		})

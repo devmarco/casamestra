@@ -7,14 +7,14 @@ var Users 	= require('../../config/tables').users;
 
 var handleGet = {
 	method: 'GET',
-	path: '/users/{UCMID}',
+	path: '/users/{ucmid}',
 	handler: getUser
 }
 
 function getUser(req, reply) {
 	
 	Users
-		.get(req.params.UCMID)
+		.get(req.params.ucmid)
 		.without('password')
 		.run()
 		.then(function(result) {

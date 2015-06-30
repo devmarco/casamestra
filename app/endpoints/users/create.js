@@ -50,6 +50,9 @@ function createUser(req, reply) {
 
 	function create(next) {
 
+		req.payload.favorites 	= [];
+		req.payload.suggestions = [];
+
 		Users
 			.insert(req.payload, {
 				conflict: 'error'

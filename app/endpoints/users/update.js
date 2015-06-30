@@ -11,7 +11,7 @@ var Schema 	= require('../../models/user');
 
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],
-	path: '/users/{UCMID}',
+	path: '/users/{ucmid}',
 	handler: updateUser,
 	config: {
 		validate: {
@@ -28,7 +28,7 @@ function updateUser(req, reply) {
 	function checkPassword(next) {
 		if (req.payload.currentPassword && req.payload.password) {
 			Users
-				.get(req.params.UCMID)
+				.get(req.params.ucmid)
 				.run()
 				.then(function(result) {
 					if (result) {
@@ -67,7 +67,7 @@ function updateUser(req, reply) {
 	function update(next) {
 
 		Users
-			.get(req.params.UCMID)
+			.get(req.params.ucmid)
 			.update(req.payload)
 			.run()
 			.then(function(result) {

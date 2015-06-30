@@ -7,14 +7,14 @@ var Users 	= require('../../config/tables').users;
 
 var handleDelete = {
 	method: 'DELETE',
-	path: '/users/{UCMID}',
+	path: '/users/{ucmid}',
 	handler: removeUser
 }
 
 function removeUser(req, reply) {
 	
 	Users
-		.get(req.params.UCMID)
+		.get(req.params.ucmid)
 		.delete({
 			returnChanges: true
 		})

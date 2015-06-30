@@ -10,7 +10,7 @@ var Users 		= require('../../config/tables').users;
 
 var handleCreate = {
 	method: 'POST',
-	path: '/favorites',
+	path: '/favorites/{ecmid}',
 	handler: createFavorite,
 	config: {
 		validate: {
@@ -18,8 +18,7 @@ var handleCreate = {
 				abortEarly: false
 			},
 			payload: {
-				ECMID: Joi.string().required(),
-				UCMID: Joi.string().required()
+				ucmid: Joi.string().required()
 			}
 		}
 	}
@@ -27,14 +26,11 @@ var handleCreate = {
 
 function createFavorite(req, reply) {
 
-	var userID 		= req.payload.UCMID,
-		estateID	= req.payload.ECMID;
+	function checkEstate(next) {
 
-	function checkUser(next) {
-
-		Users
-			.get(userID)
-			.without('password')
+		Estates
+			.get(req.params.ecmid)
+			.pluck('ecmid')
 			.run()
 			.then(function(result) {
 				next(null, result);
@@ -43,56 +39,50 @@ function createFavorite(req, reply) {
 			});
 	};
 
-	function checkEstate(user, next) {
+	function checkFavorite(estate, next) {
 
-		Estates
-			.get(estateID)
+		Users
+			.get(req.payload.ucmid)('favorites')
+			.filter(function(favorites) {
+				return favorites('ecmid').eq(estate.ecmid);
+			})
 			.run()
 			.then(function(result) {
-				var i = 0;
-
-				if (result) {
-					//Check if the estate have some favorites
-					if (result.favorites && result.favorites.length > 0) {
-						for (i; i < result.favorites.length; i++) {
-							if (result.favorites[i].UCMID === userID) {
-								next(Boom.conflict('Sorry, The user already favorited this estate!'));
-								break;
-							}
-						}
-						next(null, user);
-					} else {
-						next(null, user);
-					}
+				if (result.length === 0) {
+					next(null, estate);
 				} else {
-					next(Boom.badRequest('Sorry, This estate not exist'));
+					next(Boom.badRequest('Sorry, This estate already was favorited by this user'));
+				}
+			}).error(function(err) {
+				next(Boom.badRequest('Sorry, Something are wrong!'));
+			});
+	}
+
+	function create(estate, next) {
+
+		Users
+			.get(req.payload.ucmid)
+			.update({
+				favorites: Users.r.row('favorites').append(estate)
+			})
+			.run()
+			.then(function(result) {
+				if (result.replaced) {
+					next(null, {
+						status: 'success',
+						message: 'Estate favorited'
+					});
+				} else {
+					next(Boom.badRequest('Sorry, Try again'));
 				}
 			}).error(function(err) {
 				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
 	};
 
-	function create(user, next) {
-
-		Estates
-			.get(estateID)
-			.update({
-				favorites: Estates.r.row('favorites').default([]).append(result)
-			})
-			.run()
-			.then(function(result) {
-				next(null, {
-					status: 'success',
-					message: 'Estate favorited'
-				});
-			}).error(function(err) {
-				next(Boom.badRequest('Sorry, Something are wrong!'));
-			});
-	};
-
 	Async.waterfall([
-		checkUser,
 		checkEstate,
+		checkFavorite,
 		create
 	], function(err, result) {
 		reply(result || err);

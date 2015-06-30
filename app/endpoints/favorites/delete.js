@@ -5,11 +5,11 @@
 var Boom 	= require('boom');
 var Joi 	= require('joi');
 var Async   = require('async');
-var Estates = require('../../config/tables').estates;
+var Users 	= require('../../config/tables').users;
 
 var handleDelete = {
 	method: 'DELETE',
-	path: '/favorites',
+	path: '/favorites/{ecmid}',
 	handler: removeFavorite,
 	config: {
 		validate: {
@@ -17,8 +17,7 @@ var handleDelete = {
 				abortEarly: false
 			},
 			payload: {
-				ECMID: Joi.string().required(),
-				UCMID: Joi.string().required()
+				ucmid: Joi.string().required()
 			}
 		}
 	}
@@ -26,53 +25,47 @@ var handleDelete = {
 
 function removeFavorite(req, reply) {
 
-	var favoriteIndex;
+	function checkFavorite(next) {
 
-	function checkEstate(next) {
-
-		Estates
-			.get(req.payload.ECMID)('favorites')
+		Users
+			.get(req.payload.ucmid)('favorites')
+			.offsetsOf(Users.r.row('ecmid').eq(req.params.ecmid))
 			.run()
 			.then(function(result) {
-				var i = 0;
-
-				for (i; i < result.length; i++) {
-					if (result[i].UCMID === req.payload.UCMID) {
-						favoriteIndex = i;
-						break;
-					}
-				}
-
-				if (!favoriteIndex) {
-					next(Boom.badRequest('Sorry, It was not favorited by this user!'));
+				if (result.length) {
+					next(null, result);
 				} else {
-					next(null, favoriteIndex);
-				}				
-
+					next(Boom.badRequest('Sorry, This estate wasn`t favorited'));
+				}
 			}).error(function(err) {
 				next(Boom.badRequest('Sorry, Something are wrong!'));
-			})
-	};
+			});
+	}
 
-	function remove(favoriteIndex, next) {
-		Estates
-			.get(req.payload.ECMID)
+	function remove(index, next) {
+
+		Users
+			.get(req.payload.ucmid)
 			.update({
-				favorites: Estates.r.row('favorites').deleteAt(favoriteIndex)
+				favorites: Users.r.row('favorites').deleteAt(index[0])
 			})
 			.run()
 			.then(function(result) {
-				next(null, {
-					status: 'success',
-					message: 'Favorite was removed'
-				});
+				if (result.replaced) {
+					next(null, {
+						status: 'success',
+						message: 'Favorite was removed'
+					});
+				} else {
+					next(Boom.badRequest('Sorry, Try again'));
+				}
 			}).error(function(err) {
 				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
 	};
 
 	Async.waterfall([
-		checkEstate,
+		checkFavorite,
 		remove
 	], function(err, result) {
 		reply(result || err);

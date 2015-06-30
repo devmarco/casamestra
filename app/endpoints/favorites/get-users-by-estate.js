@@ -4,24 +4,25 @@
 
 var Boom 	= require('boom');
 var Estates = require('../../config/tables').estates;
+var Users 	= require('../../config/tables').users;
 
 var getFavoritedUsers = {
 	method: 'GET',
-	path: '/favorites/users/{ECMID}',
+	path: '/favorites/users/{ecmid}',
 	handler: getFavorites
 }
 
 function getFavorites(req, reply) {
 	
-	Estates
-		.get(req.params.ECMID)
+	Users
+		.filter(function(users) {
+			return users('favorites').contains(function(favorite) {
+				return favorite('ecmid').eq(req.params.ecmid);
+			});
+		})
 		.run()
 		.then(function(result) {
-			if (result) {
-				reply(result.favorites);
-			} else {
-				reply(Boom.badRequest('Sorry, This estate not have favorites'));
-			}
+			reply(result);
 		}).error(function(err) {
 			reply(Boom.badRequest('Sorry, Something are wrong!'));
 		});

@@ -7,14 +7,14 @@ var Estates = require('../../config/tables').estates;
 
 var handleDelete = {
 	method: 'DELETE',
-	path: '/estates/{ECMID}',
+	path: '/estates/{ecmid}',
 	handler: deleteEstate
 }
 
 function deleteEstate(req, reply) {
 	
 	Estates
-		.get(req.params.ECMID)
+		.get(req.params.ecmid)
 		.delete({
 			returnChanges: true
 		})

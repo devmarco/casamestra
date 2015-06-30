@@ -12,7 +12,7 @@ var Schema 	= require('../../models/estate');
 
 var handleUpdate = {
 	method: ['PUT', 'PATCH'],
-	path: '/estates/{ECMID}',
+	path: '/estates/{ecmid}',
 	handler: updateEstate,
 	config: {
 		validate: {
@@ -28,13 +28,15 @@ function updateEstate(req, reply) {
 
 	function checkAgent(next) {
 
-		if (!req.payload.ACMID) return next();
+		if (!req.payload.agent) return next(null, '');
 
 		Agents
-			.get(req.payload.ACMID)	
+			.get(req.payload.agent)	
 			.run()
 			.then(function(result) {
-				if (!result) {
+				if (result) {
+					next(null, result);
+				} else {
 					next(Boom.notFound('Sorry, this agent not exist'));
 				} 
 			}).error(function(err) {
@@ -42,28 +44,14 @@ function updateEstate(req, reply) {
 			});
 	};
 
-	function checkUser(next) {
+	function update(agent, next) {
 
-		if (!req.payload.UCMID) return next();
-
-		Users
-			.get(req.payload.UCMID)	
-			.run()
-			.then(function(result) {
-				if (!result) {
-					next(Boom.notFound('Sorry, this user not exist'));
-				} 
-			}).error(function(err) {
-				next(Boom.forbidden('Try again some time'));
-			});
-	};
-
-	function update(next) {
-
+		if (agent) req.payload.agent = agent;
+		
 		req.payload.updatedAt = new Date();
 
 		Estates
-			.get(req.params.ECMID)
+			.get(req.params.ecmid)
 			.update(req.payload)
 			.run()
 			.then(function(result) {
@@ -83,7 +71,6 @@ function updateEstate(req, reply) {
 
 	Async.waterfall([
 		checkAgent,
-		checkUser,
 		update
 	], function(err, result) {
 		reply(result || err);

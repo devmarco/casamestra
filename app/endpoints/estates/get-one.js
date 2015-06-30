@@ -7,14 +7,14 @@ var Estates = require('../../config/tables').estates;
 
 var handleGet = {
 	method: 'GET',
-	path: '/estates/{ECMID}',
+	path: '/estates/{ecmid}',
 	handler: getEstates
 }
 
 function getEstates(req, reply) {
 
 	Estates
-		.get(req.params.ECMID)
+		.get(req.params.ecmid)
 		.run()
 		.then(function(result) {
 			if (result) {

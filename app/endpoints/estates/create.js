@@ -28,58 +28,29 @@ var handleEstate = {
 function createEstate(req, reply) {
 
 	function checkAgent(next) {
-
-		if (!req.payload.acmid) return next();
-
 		Agents
-			.get(req.payload.acmid)	
+			.get(req.payload.agent)
 			.run()
 			.then(function(result) {
-				
-				if (result) req.payload.acmid = result;
-
-				next();
-
-			}).error(function(err) {
-				next(Boom.forbidden('Something are wrong if the agent'));
+				if (result) {
+					next(null, result);
+				} else {
+					next(Boom.badRequest('Sorry, This agent not exist'));
+				}
+			})
+			.error(function(err) {
+				next(Boom.badRequest('Try again some time'));
 			});
-	};
+	}
 
-	function checkUser(next) {
-
-		if (!req.payload.ucmid) return next();
-
-		Users
-			.get(req.payload.ucmid)
-			.without('password')	
-			.run()
-			.then(function(result) {
-				if (result) req.payload.ucmid = result;
-
-				next();
-
-			}).error(function(err) {
-				next(Boom.forbidden('Something are wrong if the user'));
-			});
-	};
-
-	function checkLocation(next) {
-
-		//Estate must associated to an user or an agent
-		if (!req.payload.acmid && !req.payload.ucmid) {
-			next(Boom.forbidden('Sorry, Estate must be associated to an user or an agent'));
-			return false;
-		};
+	function checkLocation(agent, next) {
 
 		Estates
-			.filter({
-				location: req.payload.location
-			})
+			.filter(Estates.r.row('location').eq(req.payload.location))
 			.run()
 			.then(function(result) {
 				if (result.length === 0) {
-					req.payload.createdAt = new Date();
-					next();
+					next(null, agent);
 				} else {
 					next(Boom.conflict('Already exist an estate with the same address'));
 				}
@@ -89,8 +60,11 @@ function createEstate(req, reply) {
 			});
 	};
 
-	function create(next) {
-		
+	function create(agent, next) {
+			
+		req.payload.createdAt = new Date();
+		req.payload.agent = agent;
+
 		Estates
 			.insert(req.payload)
 			.run()
@@ -107,7 +81,6 @@ function createEstate(req, reply) {
 
 	Async.waterfall([
 		checkAgent,
-		checkUser,
 		checkLocation,
 		create
 	], function(err, result) {

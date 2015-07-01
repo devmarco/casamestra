@@ -2,15 +2,15 @@
 	[FAVORITES] CREATE
 \*------------------------------------*/
 
-var Boom 		= require('boom');
-var Joi 		= require('joi');
-var Async   	= require('async');
-var Estates 	= require('../../config/tables').estates;
-var Users 		= require('../../config/tables').users;
+var Boom 	= require('boom');
+var Joi 	= require('joi');
+var Async   = require('async');
+var Estates = require('../../config/tables').estates;
+var Users 	= require('../../config/tables').users;
 
 var handleCreate = {
 	method: 'POST',
-	path: '/recommend',
+	path: '/recommend/{ecmid}',
 	handler: createRecommendation,
 	config: {
 		validate: {
@@ -18,7 +18,6 @@ var handleCreate = {
 				abortEarly: false
 			},
 			payload: {
-				ecmid: Joi.string().required(),
 				ucmid: Joi.string().required()
 			}
 		}
@@ -27,14 +26,11 @@ var handleCreate = {
 
 function createRecommendation(req, reply) {
 
-	var userID 		= req.payload.ucmid,
-		estateID	= req.payload.ecmid;
+	function checkEstate(next) {
 
-	function checkUser(next) {
-
-		Users
-			.get(userID)
-			.without('password')
+		Estates
+			.get(req.params.ecmid)
+			.pluck('ecmid')
 			.run()
 			.then(function(result) {
 				next(null, result);
@@ -43,68 +39,51 @@ function createRecommendation(req, reply) {
 			});
 	};
 
-	function checkRecommendation(user, next) {
-		var i = 0;
+	function checkRecommendation(estate, next) {
 
-		Estates
-			.get(estateID)('recommendations')
+		Users
+			.get(req.payload.ucmid)('suggestions')
+			.filter(function(suggestions) {
+				return suggestions('ecmid').eq(req.params.ecmid);
+			})
 			.run()
 			.then(function(result) {
-				next(result);
-				// var recm;
-
-				// if (result) {
-				// 	if (result.recommendations && result.recommendations.length) {
-
-				// 		recm = result.recommendations;
-
-				// 		for (i; i < recm.length; i++) {
-				// 			if (recm[i].ucmid === req.payload.ucmid) {
-				// 				next(Boom.badRequest('This estate already was recommended for this user'));
-				// 				break;
-				// 			}
-				// 		}
-
-				// 		next(null, user);
-				// 	} else {
-				// 		next(null, user);
-				// 	}
-				// } else {
-				// 	next(Boom.badRequest('Sorry, This estate not exist!'));
-				// }
-
+				console.log(result);
+				if (!result.length) {
+					next(null, estate);
+				} else {
+					next(Boom.badRequest('Sorry, This estate already was recommended for this user'));
+				}
 			}).error(function(err) {
 				console.log(err);
 				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
-	}
+	};
 
-	function create(user, next) {
+	function create(estate, next) {
 
-		Estates
-			.get(estateID)
+		Users
+			.get(req.payload.ucmid)
 			.update({
-				recommendations: Estates.r.row('recommendations').default([]).append(user)
+				suggestions: Users.r.row('suggestions').append(estate)
 			})
 			.run()
 			.then(function(result) {
-
-				if (result.replaced !== 0) {
+				if (result.replaced) {
 					next(null, {
 						status: 'success',
-						message: 'Recommendation added'
+						message: 'Estate recommended'
 					});
 				} else {
-					next(Boom.badRequest('Sorry, Something are wrong!'));
+					next(Boom.badRequest('Sorry, Try again'));
 				}
-				
 			}).error(function(err) {
 				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
 	};
 
 	Async.waterfall([
-		checkUser,
+		checkEstate,
 		checkRecommendation,
 		create
 	], function(err, result) {

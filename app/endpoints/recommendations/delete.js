@@ -5,11 +5,11 @@
 var Boom 	= require('boom');
 var Joi 	= require('joi');
 var Async   = require('async');
-var Estates = require('../../config/tables').estates;
+var Users 	= require('../../config/tables').users;
 
 var handleDelete = {
 	method: 'DELETE',
-	path: '/recommend',
+	path: '/recommend/{ecmid}',
 	handler: removeFavorite,
 	config: {
 		validate: {
@@ -17,7 +17,6 @@ var handleDelete = {
 				abortEarly: false
 			},
 			payload: {
-				ecmid: Joi.string().required(),
 				ucmid: Joi.string().required()
 			}
 		}
@@ -26,56 +25,47 @@ var handleDelete = {
 
 function removeFavorite(req, reply) {
 
-	var recommendationIndex;
+	function checkRecommendation(next) {
 
-	function checkEstate(next) {
-
-		Estates
-			.get(req.payload.ecmid)('recommendations')
-			.filter(function(recommendations) {
-				return recommendations('ucmid').eq(req.payload.ucmid)
-			})
+		Users
+			.get(req.payload.ucmid)('suggestions')
+			.offsetsOf(Users.r.row('ecmid').eq(req.params.ecmid))
 			.run()
 			.then(function(result) {
-				var i = 0;
-
-				for (i; i < result.length; i++) {
-					if (result[i].ucmid === req.payload.ucmid) {
-						recommendationIndex = i;
-						break;
-					}
-				}
-
-				if (!recommendationIndex) {
-					next(Boom.badRequest('Sorry, This estate not was recommended for this user'));
+				if (result.length) {
+					next(null, result);
 				} else {
-					next(null, recommendationIndex);
-				}				
-
+					next(Boom.badRequest('Sorry, This estate wasn`t recommended'));
+				}
 			}).error(function(err) {
 				next(Boom.badRequest('Sorry, Something are wrong!'));
-			})
-	};
+			});
+	}
 
-	function remove(recommendationIndex, next) {
-		Estates
-			.get(req.payload.ecmid)
+	function remove(index, next) {
+
+		Users
+			.get(req.payload.ucmid)
 			.update({
-				recommendations: Estates.r.row('recommendations').deleteAt(recommendationIndex)
+				suggestions: Users.r.row('suggestions').deleteAt(index[0])
 			})
 			.run()
 			.then(function(result) {
-				next(null, {
-					status: 'success',
-					message: 'Recommendation was removed'
-				});
+				if (result.replaced) {
+					next(null, {
+						status: 'success',
+						message: 'Recommendation was removed'
+					});
+				} else {
+					next(Boom.badRequest('Sorry, Try again'));
+				}
 			}).error(function(err) {
 				next(Boom.badRequest('Sorry, Something are wrong!'));
 			});
 	};
 
 	Async.waterfall([
-		checkUser,
+		checkRecommendation,
 		remove
 	], function(err, result) {
 		reply(result || err);

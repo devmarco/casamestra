@@ -6,10 +6,7 @@ This is the oficial API for Casa Mestra
 
 Here you can understand better how the API works, and how you can access the endpoints
 
-- [Features](#features)
-- [Endpoints docs](#endpoints-docs)
-
-## Features
+## Roadmap
 
 - [x] Error Handlings
 - [x] Logging
@@ -21,6 +18,7 @@ Here you can understand better how the API works, and how you can access the end
 - [x] Alert System
 - [ ] Apointmments
 - [x] Recommendations
+- [x] Favorites
 
 ## Endpoints docs
 

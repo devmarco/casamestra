@@ -14,6 +14,7 @@ var schema = {
 	address: Joi.string(),
 	bathrooms: Joi.number(),
 	bedrooms: Joi.number(),
+	cover: Joi.string().uri(),
 	photos: Joi.array().items(Joi.string().uri()),
 	features: Joi.array().items(Joi.string()),
 	details: Joi.object({
@@ -31,7 +32,11 @@ var schema = {
 	dogAllowed: Joi.boolean(),
 	catAllowed: Joi.boolean(),
 	exclusive: Joi.boolean(),
-	agent: Joi.string()
+	agent: Joi.string(),
+	openHouses: Joi.object({
+		startTime: Joi.number(),
+		endTime: Joi.number()
+	}).optional()
 }
 
 module.exports = schema;

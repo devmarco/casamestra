@@ -10,12 +10,13 @@ var schema = {
 	title: Joi.string(),
 	description: Joi.string(),
 	cover: Joi.string(),
+	photos: Joi.array().items(Joi.string().uri()),
 	tags: Joi.array(),
 	about: Joi.object({
 		neighbors: Joi.string(),
 		expect: Joi.string(),
 		lifestyle: Joi.string(),
-		notexpect: Joi.string(),
+		notExpect: Joi.string(),
 		market: Joi.string(),
 		love: Joi.string()
 	}),

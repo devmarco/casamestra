@@ -9,6 +9,7 @@ var routes = [
 	require('../../app/endpoints/agents/create'),
 	require('../../app/endpoints/agents/update'),
 	require('../../app/endpoints/agents/delete'),
+	require('../../app/endpoints/agents/upload'),
 
 	//Estates
 	require('../../app/endpoints/estates/get'),

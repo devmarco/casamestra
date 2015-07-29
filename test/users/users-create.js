@@ -1,23 +1,33 @@
+var Joi 	= require('joi');
 var Lab 	= require('lab');
 var Code 	= require('code');
-var Shot 	= require('shot');
 var lab 	= exports.lab = Lab.script();
-var app 	= require('../../app/bin/casamestra');
+var Shot 	= require('shot');
+var Schema  = require('../../app/models/user');
 
-var server,
-	options,
+var options,
 	dispatch;
 
-lab.experiment('[POST:Users]', function() {
+lab.experiment('Users:', function() {
 	lab.before(function(done) {
 
 		dispatch = function (req, res) {
-			res.end('Marco');
+			Joi.validate(req._shot.payload, Schema, {
+				presence: 'required'
+
+			}, function (err, result) {
+				if (err) {
+					res.end(JSON.stringify(err));
+				} else {
+					res.end(JSON.stringify(result));
+				}
+				
+			});
 		};
 
 		options = {
 			method: 'POST',
-			url: '/estates',
+			url: '/users',
 			payload: {
 				firstName: 'Marco Paulo',
 				lastName: 'Patricio',
@@ -25,17 +35,16 @@ lab.experiment('[POST:Users]', function() {
 				phones: {
 					cellphone: '(31) 9813-1398',
 					homephone: '(31) 3581-7138'
-				},
-				password: '123456'
+				}
 			}
 		};
 
 		done();
 	});
 
-	lab.test('Should create a new estate', function(done) {
+	lab.test('Should create a new user', function(done) {
 		Shot.inject(dispatch, options, function(response) {
-			var result = response;
+			var result = JSON.parse(response.payload);
 
 			console.log('RESULT', result);
 

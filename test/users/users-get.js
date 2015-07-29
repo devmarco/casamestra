@@ -4,9 +4,8 @@ var lab = exports.lab = Lab.script();
 var app = require('../../app/bin/casamestra');
 
 var server,
-	request,
-	dispatch;
-
+	request;
+	
 lab.experiment('[GET:Users]', function() {
 
 	lab.beforeEach(function(done) {
@@ -17,11 +16,7 @@ lab.experiment('[GET:Users]', function() {
 			url: '/users'
 		};
 
-		dispatch = function (req, res) {
-	        var reply = 'Hello World';
-	        res.writeHead(200, { 'Content-Type': 'text/plain', 'Content-Length': reply.length });
-	        res.end();
-	    };reply
+		done();
 	});
 
 	lab.test('Should retrieve a list of users', function(done) {

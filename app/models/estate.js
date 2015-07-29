@@ -17,10 +17,10 @@ var schema = {
 	cover: Joi.string().uri(),
 	photos: Joi.array().items(Joi.string().uri()),
 	features: Joi.array().items(Joi.string()),
-	details: Joi.object({
+	details: Joi.array().items(Joi.object({
 		type: Joi.string(),
 		value: Joi.string()
-	}),
+	})),
 	homeType: Joi.string(),
 	action: Joi.any().valid(['rent', 'sell']),
 	status: Joi.any().valid(['sold', 'rented', 'available', 'negotiation']),

@@ -19,6 +19,7 @@ var routes = [
 	require('../../app/endpoints/estates/create'),
 	require('../../app/endpoints/estates/update'),
 	require('../../app/endpoints/estates/delete'),
+	require('../../app/endpoints/estates/import'),
 
 	//Neighborhoods
 	require('../../app/endpoints/neighborhoods/get'),
@@ -51,9 +52,12 @@ var routes = [
 	require('../../app/endpoints/recommendations/create'),
 	require('../../app/endpoints/recommendations/delete'),
 	require('../../app/endpoints/recommendations/get-estates-by-user'),
-	require('../../app/endpoints/recommendations/get-users-by-estate')
+	require('../../app/endpoints/recommendations/get-users-by-estate'),
 	//require('../../app/endpoints/alerts/get-one'),
 	//require('../../app/endpoints/alerts/get-alerts-by-user')
+
+	//Search
+	require('../../app/endpoints/search/search')
 ];
 
 module.exports = {

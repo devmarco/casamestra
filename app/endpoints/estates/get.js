@@ -16,7 +16,11 @@ var handleGet = {
 			query: {
 				limit: Joi.number(),
 				offset: Joi.number(),
-				fields: Joi.string()
+				fields: Joi.string(),
+				bedrooms: Joi.number(),
+				price: Joi.number(),
+				bathrooms: Joi.number(),
+				neighborhood: Joi.string()
 			}
 		}
 	}
@@ -24,9 +28,7 @@ var handleGet = {
 
 function  getEstates(req, reply) {
 
-	var filterQuery = filter(Estates, req, {
-		action: 'rent'
-	});
+	var filterQuery = filter(Estates, req);
 
 	(filterQuery) ? getWithFilter() : get();
 

@@ -1,6 +1,7 @@
 var DB 		= require('../config/settings').db;
 var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');
+var _ 		= require('lodash');
 
 var Filters = function(config) {
 
@@ -14,6 +15,7 @@ var Filters = function(config) {
 	}
 
 	if (config.options) this.customValues = config.options;
+	if (config.values) this.customValues = _.merge(this.customValues, config.values);
 }
 
 Filters.prototype.mount = function(limit, offset) {
@@ -53,7 +55,13 @@ function checkFilter(table, req, option) {
 		options: 	option,
 		limit: 		req.query.limit,
 		offset: 	req.query.offset,
-		fields: 	req.query.fields
+		fields: 	req.query.fields,
+		values:     {
+			bedrooms: 		req.query.bedrooms,
+			price:      	req.query.price,
+			bathrooms:  	req.query.bathrooms,
+			neighborhood: 	req.query.neighborhood
+		}
 	});
 
 

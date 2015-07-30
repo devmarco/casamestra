@@ -36,7 +36,7 @@ function imageUpload(req, reply) {
 
 	var s3 = new AWS.S3({
 		accessKeyId: "AKIAIRPF3N2HZBUESIUA",
-		secretAccessKey: "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"
+		secretAccessKey: "XXX"
 	});
 
 	if (data.length) {

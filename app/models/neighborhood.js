@@ -1,6 +1,6 @@
-/*------------------------------------ *\
+/* ------------------------------------ *\
 	[SCHEMA] NEIGHBORHOOD
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Joi = require('joi');
 
@@ -18,17 +18,17 @@ var schema = {
 		lifestyle: Joi.string(),
 		notExpect: Joi.string(),
 		market: Joi.string(),
-		love: Joi.string()
+		love: Joi.string(),
 	}),
 	address: Joi.object({
 		local: Joi.string(),
 		lat: Joi.number(),
-		lng: Joi.number()
+		lng: Joi.number(),
 	}),
 	commutetimes: Joi.array().items({
 		destination: Joi.string(),
-		time: Joi.number()
-	})
-}
+		time: Joi.number(),
+	}),
+};
 
 module.exports = schema;

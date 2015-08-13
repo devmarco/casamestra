@@ -1,22 +1,25 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[PLUGINS]
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var goodPlugin = {
 	register: require('good'),
 	options: {
 		reporters: [{
 			reporter: require('good-console'),
-			events: { log: '*', response: '*' }
-		}]
-	}
-}
+			events: {
+				log: '*',
+				response: '*',
+			},
+		}],
+	},
+};
 
-var plugins = function(server) {
+var plugins = function plugins(server) {
 	/**
 	 * Register plugins to hapi server
 	 */
-	server.register([goodPlugin], function(err) {
+	server.register([goodPlugin], function register(err) {
 		if (err) {
 			throw err;
 		}
@@ -24,7 +27,7 @@ var plugins = function(server) {
 };
 
 module.exports = {
-	init: function(server) {
+	init: function init(server) {
 		plugins(server);
-	}
-}
+	},
+};

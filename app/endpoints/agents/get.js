@@ -1,25 +1,22 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[AGENTS] GET
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Boom 	= require('boom');
 var Agents 	= require('../../config/tables').agents;
 
-var handleGet = {
-	method: 'GET',
-	path: '/agents',
-	handler: getAgent
-}
-
 function getAgent(req, reply) {
-	
 	Agents
 		.run()
-		.then(function(result) {
+		.then(function then(result) {
 			reply(result);
-		}).error(function(err) {
+		}).error(function error(err) {
 			reply(Boom.badRequest('Try again some time'));
 		});
 }
 
-module.exports = handleGet;
+module.exports = {
+	method: 'GET',
+	path: '/agents',
+	handler: getAgent,
+};

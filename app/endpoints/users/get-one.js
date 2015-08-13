@@ -1,27 +1,24 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[USERS] GET ONE
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Boom 	= require('boom');
 var Users 	= require('../../config/tables').users;
 
-var handleGet = {
-	method: 'GET',
-	path: '/users/{ucmid}',
-	handler: getUser
-}
-
 function getUser(req, reply) {
-	
 	Users
 		.get(req.params.ucmid)
 		.without('password')
 		.run()
-		.then(function(result) {
+		.then(function then(result) {
 			reply(result);
-		}).error(function(err) {
+		}).error(function error(err) {
 			reply(Boom.badRequest('Try again some time'));
 		});
 }
 
-module.exports = handleGet;
+module.exports = {
+	method: 'GET',
+	path: '/users/{ucmid}',
+	handler: getUser,
+};

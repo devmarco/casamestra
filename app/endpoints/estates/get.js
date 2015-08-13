@@ -1,13 +1,38 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[ESTATE] GET
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Boom 	= require('boom');
 var Joi   	= require('joi');
 var filter 	= require('../../filters/limit-offset');
 var Estates = require('../../config/tables').estates;
 
-var handleGet = {
+function  getEstates(req, reply) {
+	var filterQuery = filter(Estates, req);
+
+	function getWithFilter() {
+		filterQuery.run()
+			.then(function then(result) {
+				reply(result);
+			}).error(function error(err) {
+				reply(Boom.badRequest('Try again some time'));
+			});
+	}
+
+	function get() {
+		Estates
+			.run()
+			.then(function then(result) {
+				reply(result);
+			}).error(function error(err) {
+				reply(Boom.badRequest('Try again some time'));
+			});
+	}
+
+	(filterQuery) ? getWithFilter() : get();
+}
+
+module.exports = {
 	method: 'GET',
 	path: '/estates',
 	handler: getEstates,
@@ -20,38 +45,8 @@ var handleGet = {
 				bedrooms: Joi.number(),
 				price: Joi.number(),
 				bathrooms: Joi.number(),
-				neighborhood: Joi.string()
-			}
-		}
-	}
-}
-
-function  getEstates(req, reply) {
-
-	var filterQuery = filter(Estates, req);
-
-	(filterQuery) ? getWithFilter() : get();
-
-	function getWithFilter() {
-
-		filterQuery.run()
-			.then(function(result) {
-				reply(result);
-			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
-	};
-
-	function get() {
-		
-		Estates
-			.run()
-			.then(function(result) {
-				reply(result);
-			}).error(function(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
-	};
-}
-
-module.exports = handleGet;
+				neighborhood: Joi.string(),
+			},
+		},
+	},
+};

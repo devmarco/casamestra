@@ -1,30 +1,27 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[FAVORITES] GET
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Boom 	= require('boom');
 var Users = require('../../config/tables').users;
 
-var handleGet = {
-	method: 'GET',
-	path: '/recommend/users/{ecmid}',
-	handler: getRecommendations
-}
-
 function getRecommendations(req, reply) {
-	
 	Users
-		.filter(function(users) {
-			return users('suggestions').contains(function(suggestion) {
+		.filter(function filter(users) {
+			return users('suggestions').contains(function contains(suggestion) {
 				return suggestion('ecmid').eq(req.params.ecmid);
 			});
 		})
 		.run()
-		.then(function(result) {
+		.then(function then(result) {
 			reply(result);
-		}).error(function(err) {
+		}).error(function error(err) {
 			reply(Boom.badRequest('Sorry, Something are wrong!'));
 		});
 }
 
-module.exports = handleGet;
+module.exports = {
+	method: 'GET',
+	path: '/recommend/users/{ecmid}',
+	handler: getRecommendations,
+};

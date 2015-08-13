@@ -1,6 +1,6 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[USERS] CREATE
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Boom 	= require('boom');
 var Joi 	= require('joi');
@@ -9,43 +9,27 @@ var Async   = require('async');
 var Users 	= require('../../config/tables').users;
 var Schema 	= require('../../models/user');
 
-var handleUpdate = {
-	method: ['PUT', 'PATCH'],
-	path: '/users/{ucmid}',
-	handler: updateUser,
-	config: {
-		validate: {
-			options: {
-				abortEarly: false
-			},
-			payload: Schema
-		}
-	}
-}
-
 function updateUser(req, reply) {
-
 	function checkPassword(next) {
 		if (req.payload.currentPassword && req.payload.password) {
 			Users
 				.get(req.params.ucmid)
 				.run()
-				.then(function(result) {
+				.then(function then(result) {
 					if (result) {
-						bcrypt.compare(req.payload.currentPassword, result.password, function(err, res) {
+						bcrypt.compare(req.payload.currentPassword, result.password, function compare(err, res) {
 							if (res) {
-								bcrypt.genSalt(15, function(err, salt) {
-									bcrypt.hash(req.payload.password, salt, function(err, hash) {
-
-										//Set the new password
+								bcrypt.genSalt(15, function generate(err, salt) {
+									bcrypt.hash(req.payload.password, salt, function create(err, hash) {
+										// Set the new password
 										req.payload.password = hash;
 
-										//Delete the currentPassword
+										// Delete the currentPassword
 										delete req.payload.currentPassword;
 
 										next();
 									});
-								});	
+								});
 							} else {
 								next(Boom.badRequest('Sorry, The currentPassword are wrong'));
 							}
@@ -53,10 +37,9 @@ function updateUser(req, reply) {
 					} else {
 						next(Boom.badRequest('Something bad happen :('));
 					}
-				}).error(function(err) {
+				}).error(function error(err) {
 					next(Boom.badRequest('Something bad happen :('));
 				});
-
 		} else if (req.payload.currentPassword || req.payload.password) {
 			next(Boom.badRequest('Sorry, Update password need of the both properties (currentPassword and password)'));
 		} else {
@@ -65,32 +48,42 @@ function updateUser(req, reply) {
 	}
 
 	function update(next) {
-
 		Users
 			.get(req.params.ucmid)
 			.update(req.payload)
 			.run()
-			.then(function(result) {
+			.then(function then(result) {
 				if (result.replaced === 0) {
 					next(Boom.badRequest('Something bad happen :('));
 				} else {
 					next(null, {
 						status: 'success',
-						message: 'The user was updated'
+						message: 'The user was updated',
 					});
 				}
-				
-			}).error(function(err) {
+			}).error(function error(err) {
 				next(Boom.badRequest('Something bad happen :('));
 			});
 	}
 
 	Async.waterfall([
 		checkPassword,
-		update
-	], function(err, result) {
+		update,
+	], function reply(err, result) {
 		reply(result || err);
 	});
 }
 
-module.exports = handleUpdate;
+module.exports = {
+	method: ['PUT', 'PATCH'],
+	path: '/users/{ucmid}',
+	handler: updateUser,
+	config: {
+		validate: {
+			options: {
+				abortEarly: false,
+			},
+			payload: Schema,
+		},
+	},
+};

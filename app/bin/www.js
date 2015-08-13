@@ -1,4 +1,4 @@
 var server = require('./casamestra');
 
-//Initialize
+// Initialize
 server.init();

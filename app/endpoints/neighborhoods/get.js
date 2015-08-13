@@ -1,25 +1,22 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[NEIGHBORHOODS] GET
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Boom 			= require('boom');
 var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
-var handleGet = {
-	method: 'GET',
-	path: '/neighborhoods',
-	handler: getNeighborhoods
-}
-
 function getNeighborhoods(req, reply) {
-	
 	Neighborhoods
 		.run()
-		.then(function(result) {
+		.then(function then(result) {
 			reply(result);
-		}).error(function(err) {
+		}).error(function error(err) {
 			reply(Boom.badRequest('Try again some time'));
 		});
 }
 
-module.exports = handleGet;
+module.exports = {
+	method: 'GET',
+	path: '/neighborhoods',
+	handler: getNeighborhoods,
+};

@@ -1,6 +1,6 @@
-/*------------------------------------ *\
+/* ------------------------------------ *\
 	[SCHEMA] ESTATE
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Joi = require('joi');
 
@@ -9,7 +9,7 @@ var schema = {
 	description: Joi.string(),
 	location: Joi.object({
 		lat: Joi.number(),
-		lng: Joi.number()
+		lng: Joi.number(),
 	}),
 	address: Joi.string(),
 	bathrooms: Joi.number(),
@@ -19,7 +19,7 @@ var schema = {
 	features: Joi.array().items(Joi.string()),
 	details: Joi.array().items(Joi.object({
 		type: Joi.string(),
-		value: Joi.string()
+		value: Joi.string(),
 	})),
 	homeType: Joi.string(),
 	action: Joi.any().valid(['rent', 'sell']),
@@ -35,8 +35,8 @@ var schema = {
 	agent: Joi.string(),
 	openHouses: Joi.object({
 		startTime: Joi.number(),
-		endTime: Joi.number()
-	}).optional()
-}
+		endTime: Joi.number(),
+	}).optional(),
+};
 
 module.exports = schema;

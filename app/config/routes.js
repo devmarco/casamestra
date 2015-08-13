@@ -1,6 +1,6 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[ROUTES]
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var routes = [
 	// Agents
@@ -9,9 +9,8 @@ var routes = [
 	require('../../app/endpoints/agents/create'),
 	require('../../app/endpoints/agents/update'),
 	require('../../app/endpoints/agents/delete'),
-	require('../../app/endpoints/agents/upload'),
 
-	//Estates
+	// Estates
 	require('../../app/endpoints/estates/get'),
 	require('../../app/endpoints/estates/get-one'),
 	require('../../app/endpoints/estates/get-buy'),
@@ -21,52 +20,52 @@ var routes = [
 	require('../../app/endpoints/estates/delete'),
 	require('../../app/endpoints/estates/import'),
 
-	//Neighborhoods
+	// Neighborhoods
 	require('../../app/endpoints/neighborhoods/get'),
 	require('../../app/endpoints/neighborhoods/get-one'),
 	require('../../app/endpoints/neighborhoods/create'),
 	require('../../app/endpoints/neighborhoods/update'),
 	require('../../app/endpoints/neighborhoods/delete'),
 
-	//Favorites
+	// Favorites
 	require('../../app/endpoints/favorites/get-estates-by-user'),
 	require('../../app/endpoints/favorites/get-users-by-estate'),
 	require('../../app/endpoints/favorites/create'),
 	require('../../app/endpoints/favorites/delete'),
 
-	//Users
+	// Users
 	require('../../app/endpoints/users/get'),
 	require('../../app/endpoints/users/get-one'),
 	require('../../app/endpoints/users/create'),
 	require('../../app/endpoints/users/update'),
 	require('../../app/endpoints/users/delete'),
 
-	//Alerts
+	// Alerts
 	require('../../app/endpoints/alerts/create'),
 	require('../../app/endpoints/alerts/delete'),
 	require('../../app/endpoints/alerts/get'),
 	require('../../app/endpoints/alerts/get-one'),
 	require('../../app/endpoints/alerts/get-alerts-by-user'),
 
-	//Recommendations
+	// Recommendations
 	require('../../app/endpoints/recommendations/create'),
 	require('../../app/endpoints/recommendations/delete'),
 	require('../../app/endpoints/recommendations/get-estates-by-user'),
 	require('../../app/endpoints/recommendations/get-users-by-estate'),
-	//require('../../app/endpoints/alerts/get-one'),
-	//require('../../app/endpoints/alerts/get-alerts-by-user')
+	// require('../../app/endpoints/alerts/get-one'),
+	// require('../../app/endpoints/alerts/get-alerts-by-user')
 
-	//Search
-	require('../../app/endpoints/search/search')
+	// Search
+	require('../../app/endpoints/search/search'),
 ];
 
 module.exports = {
-	create: function(server) {
-		var endpointValue,
-			r = 0, i
+	create: function create(server) {
+		var endpointValue;
+		var r = 0;
+		var i;
 
-		if (!server || !routes)
-			throw new error('Routes: Server or Endpoints are not found');
+		if (!server || !routes) throw new Error('Routes: Server or Endpoints are not found');
 
 		for (r; r < routes.length; r++) {
 			endpointValue = routes[r];
@@ -75,9 +74,9 @@ module.exports = {
 					method: endpointValue.method,
 					path: endpointValue.path,
 					handler: endpointValue.handler,
-					config: endpointValue.config || {}
+					config: endpointValue.config || {},
 				});
 			}
 		}
-	}
-}
+	},
+};

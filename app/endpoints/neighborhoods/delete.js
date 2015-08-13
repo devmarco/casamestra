@@ -1,35 +1,32 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[NEIGHBORHOODS] DELETE
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Boom 			= require('boom');
 var Neighborhoods 	= require('../../config/tables').neighborhoods;
 
-var handleDelete = {
-	method: 'DELETE',
-	path: '/neighborhoods/{ncmid}',
-	handler: deleteNeighborhoods
-}
-
 function deleteNeighborhoods(req, reply) {
-	
 	Neighborhoods
 		.get(req.params.ncmid)
 		.delete({
-			returnChanges: true
+			returnChanges: true,
 		})
 		.run()
-		.then(function(result) {
+		.then(function then(result) {
 			if (result.deleted === 0) {
 				reply(Boom.notFound('Sorry, this neighborhood not exist'));
 			} else {
 				reply({
-					message: 'The neighborhood was deleted'
+					message: 'The neighborhood was deleted',
 				});
 			}
-		}).error(function(err) {
+		}).error(function error(err) {
 			reply(Boom.badRequest('Something bad happen :('));
 		});
 }
 
-module.exports = handleDelete;
+module.exports = {
+	method: 'DELETE',
+	path: '/neighborhoods/{ncmid}',
+	handler: deleteNeighborhoods,
+};

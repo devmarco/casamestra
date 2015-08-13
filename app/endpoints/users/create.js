@@ -1,6 +1,6 @@
-/*------------------------------------*\
+/* ------------------------------------ *\
 	[USERS] CREATE
-\*------------------------------------*/
+\* ------------------------------------ */
 
 var Boom 	= require('boom');
 var Joi 	= require('joi');
@@ -9,34 +9,13 @@ var bcrypt	= require('bcrypt');
 var Users 	= require('../../config/tables').users;
 var Schema 	= require('../../models/user');
 
-var handleCreate = {
-	method: 'POST',
-	path: '/users',
-	handler: createUser,
-	config: {
-		validate: {
-			options: {
-				abortEarly: false,
-				presence: 'required'
-			},
-			payload: Schema
-		}
-	}
-}
-
 function createUser(req, reply) {
-
-
 	function encrypt(next) {
-
-		bcrypt.genSalt(15, function(err, salt) {
-
+		bcrypt.genSalt(15, function generate(err, salt) {
 			if (err) {
 				return next(Boom.badRequest('Something bad happen :('));
 			}
-			
-			bcrypt.hash(req.payload.password, salt, function(err, hash) {
-
+			bcrypt.hash(req.payload.password, salt, function create(err, hash) {
 				if (err) {
 					return next(Boom.badRequest('Something bad happen :('));
 				}
@@ -49,36 +28,47 @@ function createUser(req, reply) {
 	}
 
 	function create(next) {
-
 		req.payload.favorites 	= [];
 		req.payload.suggestions = [];
 
 		Users
 			.insert(req.payload, {
-				conflict: 'error'
+				conflict: 'error',
 			})
 			.run()
-			.then(function(result) {
+			.then(function then(result) {
 				if (result.errors !== 0) {
 					next(Boom.conflict('Probably this user already exist'));
 				} else {
 					next({
 						status: 'success',
-						message: 'User created'
+						message: 'User created',
 					});
 				}
-				
-			}).error(function(err) {
+			}).error(function error(err) {
 				next(Boom.badRequest('Something bad happen :('));
 			});
 	}
 
 	Async.waterfall([
 		encrypt,
-		create
-	], function(err, result) {
+		create,
+	], function reply(err, result) {
 		reply(result || err);
 	});
 }
 
-module.exports = handleCreate;
+module.exports = {
+	method: 'POST',
+	path: '/users',
+	handler: createUser,
+	config: {
+		validate: {
+			options: {
+				abortEarly: false,
+				presence: 'required',
+			},
+			payload: Schema,
+		},
+	},
+};

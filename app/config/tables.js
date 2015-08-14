@@ -17,7 +17,7 @@ var dbTables = {
  * Expose rethinkDB instance to table objects
  */
 for (key in dbTables) {
-	if ({}.hasOwnProperty.call(dbTables, key)) {
+	if (Object.hasOwnProperty.call(dbTables, key)) {
 		dbTables[key].r = r;
 	}
 }

@@ -52,11 +52,6 @@ var routes = [
 	require('../../app/endpoints/recommendations/delete'),
 	require('../../app/endpoints/recommendations/get-estates-by-user'),
 	require('../../app/endpoints/recommendations/get-users-by-estate'),
-	// require('../../app/endpoints/alerts/get-one'),
-	// require('../../app/endpoints/alerts/get-alerts-by-user')
-
-	// Search
-	require('../../app/endpoints/search/search'),
 ];
 
 module.exports = {

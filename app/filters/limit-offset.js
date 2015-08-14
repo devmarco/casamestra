@@ -9,8 +9,8 @@ var Filters = function Filters(config) {
 
 	this.filters = {
 		pluck: config.fields || null,
-		skip: parseFloat(config.offset) || null,
-		limit: parseFloat(config.limit) || null,
+		skip: parseInt(config.offset, 0) || null,
+		limit: parseInt(config.limit, 0) || null,
 	};
 
 	if (config.options) this.customValues = config.options;
@@ -24,9 +24,9 @@ Filters.prototype.mount = function mount(limit, offset) {
 	this.query = this.table.filter(this.customValues);
 
 	for (key in this.filters) {
-		if ({}.hasOwnProperty.call(this.filters, key)) {
+		if (Object.hasOwnProperty.call(this.filters, key)) {
 			method 	= key;
-			value 	= this.filters[i];
+			value 	= this.filters[key];
 
 			if (value) {
 				if (method === 'pluck') {

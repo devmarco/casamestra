@@ -47,7 +47,8 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-lab": "^2.1.2",
     "lab": "^5.9.0",
-    "shot": "^1.5.3"
+    "shot": "^1.5.3",
+    "sinon": "^1.15.4"
   },
   "private": true
 }

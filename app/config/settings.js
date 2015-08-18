@@ -13,9 +13,10 @@ var config = {
 		investiments: '/investiments',
 	},
 	db: {
-		host: 'localhost',
+		host: '54.207.101.8',
 		port: 28015,
 		db: 'casamestra',
+		authKey: 'cminstance',
 	},
 };
 

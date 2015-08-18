@@ -56,22 +56,16 @@ var routes = [
 
 module.exports = {
 	create: function create(server) {
-		var endpointValue;
-		var r = 0;
-		var i;
-
 		if (!server || !routes) throw new Error('Routes: Server or Endpoints are not found');
-
-		for (r; r < routes.length; r++) {
-			endpointValue = routes[r];
-			if (typeof endpointValue === 'object') {
+		routes.forEach(function forEach(endpoint, index) {
+			if (typeof endpoint === 'object') {
 				server.route({
-					method: endpointValue.method,
-					path: endpointValue.path,
-					handler: endpointValue.handler,
-					config: endpointValue.config || {},
+					method: endpoint.method,
+					path: endpoint.path,
+					handler: endpoint.handler,
+					config: endpoint.config || {},
 				});
 			}
-		}
+		});
 	},
 };

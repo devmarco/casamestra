@@ -4,7 +4,7 @@
 
 var Boom 	= require('boom');
 var Joi   	= require('joi');
-var filter 	= require('../../filters/limit-offset');
+var filter 	= require('../../filters/filters');
 var Estates = require('../../config/tables').estates;
 
 function getEstates(req, reply) {

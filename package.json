@@ -4,51 +4,44 @@
   "description": "Casa Mestra API",
   "main": "server.js",
   "scripts": {
-    "test": "lab -c",
-    "start": "node server.js"
+	"test": "lab",
+	"start": "node server.js"
   },
   "repository": {
-    "type": "git",
-    "url": "https://github.com/devmarco/casamestra.git"
+	"type": "git",
+	"url": "https://github.com/devmarco/casamestra.git"
   },
   "homepage": "http://api-casamestra.rhcloud.com/",
   "keywords": [
-    "web",
-    "casamestra"
+	"web",
+	"casamestra"
   ],
   "author": {
-    "name": "Marco Paulo",
-    "email": "markoskt@gmail.com"
+	"name": "Marco Paulo",
+	"email": "markoskt@gmail.com"
   },
   "license": "ISC",
   "engines": {
-    "node": ">= 0.12.2",
-    "npm": ">= 2.7.4"
+	"node": ">= 0.12.2",
+	"npm": ">= 2.7.4"
   },
   "dependencies": {
-    "amqplib": "^0.3.2",
-    "async": "^1.3.0",
-    "aws-sdk": "^2.1.38",
-    "bcrypt": "^0.8.3",
-    "boom": "^2.8.0",
-    "formidable": "^1.0.17",
-    "good": "^6.2.0",
-    "good-console": "^5.0.2",
-    "hapi": "^8.8.0",
-    "joi": "^6.5.0",
-    "lodash": "^3.10.0",
-    "moment": "^2.10.3",
-    "rethinkdbdash": "^2.0.16",
-    "transloadit": "^1.4.0"
+	"async": "^1.3.0",
+	"bcrypt": "^0.8.3",
+	"boom": "^2.8.0",
+	"good": "^6.2.0",
+	"good-console": "^5.0.2",
+	"hapi": "^8.8.0",
+	"joi": "^6.5.0",
+	"lodash": "^3.10.0",
+	"moment": "^2.10.3",
+	"rethinkdbdash": "^2.0.16",
   },
   "devDependencies": {
-    "code": "^1.4.0",
-    "grunt": "^0.4.5",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-lab": "^2.1.2",
-    "lab": "^5.9.0",
-    "shot": "^1.5.3",
-    "sinon": "^1.15.4"
+	"code": "^1.4.0",
+	"lab": "^5.9.0",
+	"shot": "^1.5.3",
+	"sinon": "^1.15.4",
   },
   "private": true
 }

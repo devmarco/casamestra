@@ -4,6 +4,7 @@ var app = require('../../app/bin/casamestra');
 var Code = require('code');
 
 var server;
+var request;
 
 lab.experiment('[GET:Agents]', function experiment() {
 	lab.beforeEach(function beforeEach(done) {

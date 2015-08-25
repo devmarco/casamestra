@@ -19,6 +19,7 @@ Here you can understand better how the API works, and how you can access the end
 - [ ] Apointmments
 - [x] Recommendations
 - [x] Favorites
+- [x] Image Upload
 
 ## Endpoints docs
 

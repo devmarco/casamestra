@@ -1,3 +1,7 @@
+/* ------------------------------------ *\
+	[UTIL] FILTERS
+\* ------------------------------------ */
+
 var DB 		= require('../config/settings').db;
 var r 		= require('rethinkdbdash')(DB);
 var Boom 	= require('boom');

@@ -9,6 +9,7 @@ var routes = [
 	require('../../app/endpoints/agents/create'),
 	require('../../app/endpoints/agents/update'),
 	require('../../app/endpoints/agents/delete'),
+	require('../../app/endpoints/agents/upload'),
 
 	// Estates
 	require('../../app/endpoints/estates/get'),
@@ -19,6 +20,7 @@ var routes = [
 	require('../../app/endpoints/estates/update'),
 	require('../../app/endpoints/estates/delete'),
 	require('../../app/endpoints/estates/import'),
+	require('../../app/endpoints/estates/upload'),
 
 	// Neighborhoods
 	require('../../app/endpoints/neighborhoods/get'),

@@ -16,8 +16,12 @@ var schema = {
 	bedrooms: Joi.number(),
 	garages: Joi.number(),
 	cover: Joi.string().uri(),
-	photos: Joi.array().items(Joi.string().uri()),
-	features: Joi.array().items(Joi.string()),
+	images: Joi.array().items(Joi.string().uri()),
+	features: Joi.array().items(Joi.object({
+		original: Joi.string().uri(),
+		thumbnail: Joi.string().uri(),
+		gallery: Joi.string().uri(),
+	})),
 	keyDetails: Joi.object({
 		dogAllowed: Joi.boolean(),
 		catAllowed: Joi.boolean(),

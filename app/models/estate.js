@@ -5,7 +5,6 @@
 var Joi = require('joi');
 
 var schema = {
-	title: Joi.string(),
 	description: Joi.string(),
 	location: Joi.object({
 		lat: Joi.number(),

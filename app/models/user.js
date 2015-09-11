@@ -2,9 +2,11 @@
 	[SCHEMA] USER
 \* ------------------------------------ */
 
-var Joi = require('joi');
+'use strict';
 
-var schema = {
+const Joi = require('joi');
+
+const schema = {
 	firstName: Joi.string(),
 	lastName: Joi.string(),
 	email: Joi.string().email(),

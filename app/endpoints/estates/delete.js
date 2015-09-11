@@ -2,8 +2,10 @@
 	[ESTATE] DELETE
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Estates = require('../../config/tables').estates;
+'use strict';
+
+const Boom 		= require('boom');
+const Estates 	= require('../../config/tables').estates;
 
 function deleteEstate(req, reply) {
 	Estates
@@ -12,7 +14,7 @@ function deleteEstate(req, reply) {
 			returnChanges: true,
 		})
 		.run()
-		.then(function then(result) {
+		.then(result => {
 			if (result.deleted === 0) {
 				reply(Boom.notFound('Sorry, this estate not exist'));
 			} else {
@@ -20,9 +22,7 @@ function deleteEstate(req, reply) {
 					message: 'The estate was deleted',
 				});
 			}
-		}).error(function error(err) {
-			reply(Boom.badRequest('Something bad happen :('));
-		});
+		}).error(() => reply(Boom.badRequest('Something bad happen :(')));
 }
 
 module.exports = {

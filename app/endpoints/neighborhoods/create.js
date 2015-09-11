@@ -2,12 +2,13 @@
 	[NEIGHBORHOODS] CREATE
 \* ------------------------------------ */
 
-var Boom 			= require('boom');
-var Joi 			= require('joi');
-var Neighborhoods 	= require('../../config/tables').neighborhoods;
-var Schema 			= require('../../models/neighborhood');
+'use strict';
 
-function createNeighborhood(req, reply) {
+const Boom 				= require('boom');
+const Neighborhoods 	= require('../../config/tables').neighborhoods;
+const Schema 			= require('../../models/neighborhood');
+
+const createNeighborhood = (req, reply) => {
 	Neighborhoods
 		.insert(req.payload, {
 			conflict: 'error',
@@ -19,10 +20,8 @@ function createNeighborhood(req, reply) {
 			} else {
 				reply(req.payload);
 			}
-		}).error(function error(err) {
-			reply(Boom.badRequest('Something bad happen :('));
-		});
-}
+		}).error(() => reply(Boom.badRequest('Something bad happen :(')));
+};
 
 module.exports = {
 	method: 'POST',

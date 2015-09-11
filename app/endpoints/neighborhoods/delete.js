@@ -2,17 +2,19 @@
 	[NEIGHBORHOODS] DELETE
 \* ------------------------------------ */
 
-var Boom 			= require('boom');
-var Neighborhoods 	= require('../../config/tables').neighborhoods;
+'use strict';
 
-function deleteNeighborhoods(req, reply) {
+const Boom 			= require('boom');
+const Neighborhoods = require('../../config/tables').neighborhoods;
+
+const deleteNeighborhoods = (req, reply) => {
 	Neighborhoods
 		.get(req.params.ncmid)
 		.delete({
 			returnChanges: true,
 		})
 		.run()
-		.then(function then(result) {
+		.then(result => {
 			if (result.deleted === 0) {
 				reply(Boom.notFound('Sorry, this neighborhood not exist'));
 			} else {
@@ -20,10 +22,8 @@ function deleteNeighborhoods(req, reply) {
 					message: 'The neighborhood was deleted',
 				});
 			}
-		}).error(function error(err) {
-			reply(Boom.badRequest('Something bad happen :('));
-		});
-}
+		}).error(() => reply(Boom.badRequest('Something bad happen :(')));
+};
 
 module.exports = {
 	method: 'DELETE',

@@ -2,10 +2,12 @@
 	[NEIGHBORHOODS] GET ONE
 \* ------------------------------------ */
 
-var Boom 			= require('boom');
-var Neighborhoods 	= require('../../config/tables').neighborhoods;
+'use strict';
 
-function getNeighborhood(req, reply) {
+const Boom 			= require('boom');
+const Neighborhoods = require('../../config/tables').neighborhoods;
+
+const getNeighborhood = (req, reply) => {
 	Neighborhoods
 		.get(req.params.ncmid)
 		.run()
@@ -15,10 +17,8 @@ function getNeighborhood(req, reply) {
 			} else {
 				reply(Boom.notFound('Sorry, this neighborhood not exist'));
 			}
-		}).error(function error(err) {
-			reply(Boom.badRequest('Try again some time'));
-		});
-}
+		}).error(() => reply(Boom.badRequest('Try again some time')));
+};
 
 module.exports = {
 	method: 'GET',

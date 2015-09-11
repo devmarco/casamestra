@@ -2,14 +2,15 @@
 	[USERS] CREATE
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var bcrypt	= require('bcrypt');
-var Async   = require('async');
-var Users 	= require('../../config/tables').users;
-var Schema 	= require('../../models/user');
+'use strict';
 
-function updateUser(req, reply) {
+const Boom 		= require('boom');
+const bcrypt	= require('bcrypt');
+const Async   	= require('async');
+const Users 	= require('../../config/tables').users;
+const Schema 	= require('../../models/user');
+
+const updateUser = (req, reply) => {
 	function checkPassword(next) {
 		if (req.payload.currentPassword && req.payload.password) {
 			Users
@@ -17,10 +18,12 @@ function updateUser(req, reply) {
 				.run()
 				.then(function then(result) {
 					if (result) {
-						bcrypt.compare(req.payload.currentPassword, result.password, function compare(err, res) {
+						bcrypt.compare(req.payload.currentPassword, result.password, function compare(errCompare, res) {
 							if (res) {
-								bcrypt.genSalt(15, function generate(err, salt) {
-									bcrypt.hash(req.payload.password, salt, function create(err, hash) {
+								bcrypt.genSalt(15, (errSalt, salt) => {
+									if (errSalt) return next(Boom.badRequest('Something bad happen :('));
+
+									bcrypt.hash(req.payload.password, salt, (err, hash) => {
 										// Set the new password
 										req.payload.password = hash;
 
@@ -37,9 +40,7 @@ function updateUser(req, reply) {
 					} else {
 						next(Boom.badRequest('Something bad happen :('));
 					}
-				}).error(function error(err) {
-					next(Boom.badRequest('Something bad happen :('));
-				});
+				}).error(() => next(Boom.badRequest('Something bad happen :(')));
 		} else if (req.payload.currentPassword || req.payload.password) {
 			next(Boom.badRequest('Sorry, Update password need of the both properties (currentPassword and password)'));
 		} else {
@@ -61,18 +62,16 @@ function updateUser(req, reply) {
 						message: 'The user was updated',
 					});
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Something bad happen :('));
-			});
+			}).error(() => next(Boom.badRequest('Something bad happen :(')));
 	}
 
 	Async.waterfall([
 		checkPassword,
 		update,
-	], function reply(err, result) {
+	], (err, result) => {
 		reply(result || err);
 	});
-}
+};
 
 module.exports = {
 	method: ['PUT', 'PATCH'],

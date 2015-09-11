@@ -2,47 +2,45 @@
 	[AGENTS] GET
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Async   = require('async');
-var Alerts 	= require('../../config/tables').alerts;
-var Users 	= require('../../config/tables').users;
+'use strict';
 
-function getAlerts(req, reply) {
+const Boom 		= require('boom');
+const Async   	= require('async');
+const Alerts 	= require('../../config/tables').alerts;
+const Users 	= require('../../config/tables').users;
+
+const getAlerts = (req, reply) => {
 	function checkUser(next) {
 		Users
 			.get(req.params.ucmid)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result) {
 					next();
 				} else {
 					next(Boom.notFound('Sorry, this user not exist'));
 				}
-			}).error(function error(err) {
-				next(Boom.forbidden('Try again some time'));
-			});
+			}).error(() => next(Boom.forbidden('Try again some time')));
 	}
 
 	function get(next) {
 		Alerts
-			.filter(function filter(alerts) {
+			.filter(alerts => {
 				return alerts('ucmid').eq(req.params.ucmid);
 			})
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				next(result);
-			}).error(function error(err) {
-				next(Boom.badRequest('Try again some time'));
-			});
+			}).error(() => next(Boom.badRequest('Try again some time')));
 	}
 
 	Async.waterfall([
 		checkUser,
 		get,
-	], function reply(err, result) {
+	], (err, result) => {
 		reply(result || err);
 	});
-}
+};
 
 module.exports = {
 	method: 'GET',

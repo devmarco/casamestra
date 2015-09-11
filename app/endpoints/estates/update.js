@@ -2,29 +2,27 @@
 	[ESTATE] UPDATE
 \* ------------------------------------ */
 
-var Boom    = require('boom');
-var Joi     = require('joi');
-var Async   = require('async');
-var Estates = require('../../config/tables').estates;
-var Agents 	= require('../../config/tables').agents;
-var Users 	= require('../../config/tables').users;
-var Schema 	= require('../../models/estate');
+'use strict';
 
-function updateEstate(req, reply) {
+const Boom    = require('boom');
+const Async   = require('async');
+const Estates = require('../../config/tables').estates;
+const Agents 	= require('../../config/tables').agents;
+const Schema 	= require('../../models/estate');
+
+const updateEstate = (req, reply) => {
 	function checkAgent(next) {
 		if (!req.payload.agent) return next(null, '');
 		Agents
 			.get(req.payload.agent)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result) {
 					next(null, result);
 				} else {
 					next(Boom.notFound('Sorry, this agent not exist'));
 				}
-			}).error(function error(err) {
-				next(Boom.forbidden('Try again some time'));
-			});
+			}).error(() => next(Boom.forbidden('Try again some time')));
 	}
 
 	function update(agent, next) {
@@ -36,7 +34,7 @@ function updateEstate(req, reply) {
 			.get(req.params.ecmid)
 			.update(req.payload)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.replaced === 0) {
 					next(Boom.badRequest('Something bad happen :('));
 				} else {
@@ -45,18 +43,16 @@ function updateEstate(req, reply) {
 						message: 'The estate was updated',
 					});
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Something bad happen :('));
-			});
+			}).error(() => next(Boom.badRequest('Something bad happen :(')));
 	}
 
 	Async.waterfall([
 		checkAgent,
 		update,
-	], function reply(err, result) {
+	], (err, result) => {
 		reply(result || err);
 	});
-}
+};
 
 module.exports = {
 	method: ['PUT', 'PATCH'],

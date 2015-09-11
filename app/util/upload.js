@@ -2,9 +2,10 @@
 	[UTIL] UPLOAD
 \* ------------------------------------ */
 
-var cloudinary = require('cloudinary');
-var fs = require('fs');
-var upload;
+'use strict';
+
+const cloudinary 	= require('cloudinary');
+const fs 			= require('fs');
 
 // Set the config
 cloudinary.config({
@@ -14,25 +15,23 @@ cloudinary.config({
 });
 
 // Fn
-CloudinaryUpload = function upload(file, opts, callback) {
-	var results = [];
-	var next = 0;
-	var options = opts || {};
+const CloudinaryUpload = (file, opts, callback) => {
+	const results = [];
+	const options = opts || {};
+	let next = 0;
 
-	function removeTempFile(file) {
+	function removeTempFile(tempFile) {
 		setTimeout(function remove() {
-			fs.unlink(file);
+			fs.unlink(tempFile);
 		}, 2000);
 	}
 
 	function uploadImageArray() {
-		cloudinary.uploader.upload(file[next].path, function result(result) {
+		cloudinary.uploader.upload(file[next++].path, result => {
 			results.push(result);
 
 			// Remove temporary files
 			removeTempFile(file[next].path);
-
-			next++;
 
 			if (next < file.length) {
 				uploadImageArray();
@@ -47,9 +46,8 @@ CloudinaryUpload = function upload(file, opts, callback) {
 	if (Array.isArray(file)) {
 		uploadImageArray();
 	} else {
-		cloudinary.uploader.upload(file.path, function result(result) {
+		cloudinary.uploader.upload(file.path, result => {
 			callback(result);
-
 			// Remove temporary files
 			removeTempFile(file.path);
 		}, options);

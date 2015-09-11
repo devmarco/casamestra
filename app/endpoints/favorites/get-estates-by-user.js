@@ -2,24 +2,24 @@
 	[FAVORITES] GET
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Estates = require('../../config/tables').estates;
-var Users 	= require('../../config/tables').users;
+'use strict';
 
-function getFavorites(req, reply) {
+const Boom 		= require('boom');
+const Estates 	= require('../../config/tables').estates;
+const Users 	= require('../../config/tables').users;
+
+const getFavorites = (req, reply) => {
 	Users
 		.get(req.params.ucmid)('favorites')
-		.innerJoin(Estates, function innerJoin(userRow, estatesRow) {
+		.innerJoin(Estates, (userRow, estatesRow) => {
 			return estatesRow('ecmid').eq(userRow('ecmid'));
 		})
 		.zip()
 		.run()
 		.then(function then(result) {
 			reply(result);
-		}).error(function error(err) {
-			reply(Boom.badRequest('Sorry, Something are wrong!'));
-		});
-}
+		}).error(() => reply(Boom.badRequest('Sorry, Something are wrong!')));
+};
 
 module.exports = {
 	method: 'GET',

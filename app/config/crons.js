@@ -2,16 +2,16 @@
 	[CRONS]
 \* ------------------------------------ */
 
-var crons = {
-	alerts: require('../crons/alerts'),
+'use strict';
+
+const crons = [
+	require('../crons/alerts'),
+];
+
+const start = () => {
+	crons.forEach((value) => {
+		if (value.init && typeof value.init === 'function') value.init();
+	});
 };
 
-module.exports = {
-	start: function start() {
-		for (i in crons) {
-			if (crons[i].init && typeof crons[i].init === 'function') {
-				crons[i].init();
-			}
-		}
-	},
-};
+module.exports = { start };

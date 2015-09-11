@@ -2,9 +2,11 @@
 	[AGENTS] UPLOAD
 \* ------------------------------------ */
 
-var _upload = require('../../util/upload');
+'use strict';
 
-function upload(req, reply) {
+const _upload = require('../../util/upload');
+
+const upload = (req, reply) => {
 	_upload(req.payload.file, {
 		eager: [
 			{
@@ -14,10 +16,10 @@ function upload(req, reply) {
 				gravity: 'face',
 			},
 		],
-	}, function result(result) {
+	}, result => {
 		reply(result);
 	});
-}
+};
 
 module.exports = {
 	method: ['PATCH'],

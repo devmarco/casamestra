@@ -2,23 +2,23 @@
 	[FAVORITES] GET
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Users = require('../../config/tables').users;
+'use strict';
 
-function getRecommendations(req, reply) {
+const Boom 	= require('boom');
+const Users = require('../../config/tables').users;
+
+const getRecommendations = (req, reply) => {
 	Users
 		.filter(function filter(users) {
-			return users('suggestions').contains(function contains(suggestion) {
+			return users('suggestions').contains(suggestion => {
 				return suggestion('ecmid').eq(req.params.ecmid);
 			});
 		})
 		.run()
-		.then(function then(result) {
+		.then(result => {
 			reply(result);
-		}).error(function error(err) {
-			reply(Boom.badRequest('Sorry, Something are wrong!'));
-		});
-}
+		}).error(() => reply(Boom.badRequest('Sorry, Something are wrong!')));
+};
 
 module.exports = {
 	method: 'GET',

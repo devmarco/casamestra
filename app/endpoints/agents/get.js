@@ -2,18 +2,18 @@
 	[AGENTS] GET
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Agents 	= require('../../config/tables').agents;
+'use strict';
 
-function getAgent(req, reply) {
+const Boom 		= require('boom');
+const Agents 	= require('../../config/tables').agents;
+
+const getAgent = (req, reply) => {
 	Agents
 		.run()
-		.then(function then(result) {
+		.then(result => {
 			reply(result);
-		}).error(function error(err) {
-			reply(Boom.badRequest('Try again some time'));
-		});
-}
+		}).error(() => reply(Boom.badRequest('Try again some time')));
+};
 
 module.exports = {
 	method: 'GET',

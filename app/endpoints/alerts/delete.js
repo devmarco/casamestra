@@ -2,19 +2,19 @@
 	[ALERTS] DELETE
 \* ------------------------------------ */
 
-var moment	= require('moment');
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var Alerts 	= require('../../config/tables').alerts;
+'use strict';
 
-function removeAlert(req, reply) {
+const Boom 		= require('boom');
+const Alerts 	= require('../../config/tables').alerts;
+
+const removeAlert = (req, reply) => {
 	Alerts
 		.get(req.params.alcmid)
 		.delete({
 			returnChanges: true,
 		})
 		.run()
-		.then(function then(result) {
+		.then(result => {
 			if (result.deleted === 0) {
 				reply(Boom.notFound('Sorry, this alert not exist'));
 			} else {
@@ -23,10 +23,8 @@ function removeAlert(req, reply) {
 					message: 'This alert was deleted',
 				});
 			}
-		}).error(function error(err) {
-			reply(Boom.forbidden('Try again some time'));
-		});
-}
+		}).error(() => reply(Boom.forbidden('Try again some time')));
+};
 
 module.exports = {
 	method: 'DELETE',

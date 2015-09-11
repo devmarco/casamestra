@@ -2,9 +2,11 @@
 	[SCHEMA] ESTATE
 \* ------------------------------------ */
 
-var Joi = require('joi');
+'use strict';
 
-var schema = {
+const Joi = require('joi');
+
+const schema = {
 	description: Joi.string(),
 	location: Joi.object({
 		lat: Joi.number(),

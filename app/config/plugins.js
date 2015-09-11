@@ -2,7 +2,9 @@
 	[PLUGINS]
 \* ------------------------------------ */
 
-var goodPlugin = {
+'use strict';
+
+const goodPlugin = {
 	register: require('good'),
 	options: {
 		reporters: [{
@@ -15,19 +17,14 @@ var goodPlugin = {
 	},
 };
 
-var plugins = function plugins(server) {
-	/**
-	 * Register plugins to hapi server
-	 */
-	server.register([goodPlugin], function register(err) {
-		if (err) {
-			throw err;
-		}
+const plugins = server => {
+	server.register([goodPlugin], err => {
+		if (err) throw err;
 	});
 };
 
-module.exports = {
-	init: function init(server) {
-		plugins(server);
-	},
+const init = server => {
+	plugins(server);
 };
+
+module.exports = { init };

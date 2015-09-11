@@ -2,17 +2,18 @@
 	[NEIGHBORHOODS] UPDATE
 \* ------------------------------------ */
 
-var Boom 			= require('boom');
-var Joi 			= require('joi');
-var Neighborhoods 	= require('../../config/tables').neighborhoods;
-var Schema 			= require('../../models/neighborhood');
+'use strict';
 
-function updateNeighborhood(req, reply) {
+const Boom 			= require('boom');
+const Neighborhoods = require('../../config/tables').neighborhoods;
+const Schema 		= require('../../models/neighborhood');
+
+const updateNeighborhood = (req, reply) => {
 	Neighborhoods
 		.get(req.params.ncmid)
 		.update(req.payload)
 		.run()
-		.then(function then(result) {
+		.then(result => {
 			if (result.replaced === 0) {
 				reply(Boom.badRequest('Something bad happen :('));
 			} else {
@@ -20,10 +21,8 @@ function updateNeighborhood(req, reply) {
 					message: 'The neighborhood was updated',
 				});
 			}
-		}).error(function error(err) {
-			reply(Boom.badRequest('Something bad happen :('));
-		});
-}
+		}).error(() => reply(Boom.badRequest('Something bad happen :(')));
+};
 
 module.exports = {
 	method: ['PUT', 'PATCH'],

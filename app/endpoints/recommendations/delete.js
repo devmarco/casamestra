@@ -2,26 +2,26 @@
 	[FAVORITES] REMOVE
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var Async   = require('async');
-var Users 	= require('../../config/tables').users;
+'use strict';
 
-function removeFavorite(req, reply) {
+const Boom 		= require('boom');
+const Joi 		= require('joi');
+const Async   	= require('async');
+const Users 	= require('../../config/tables').users;
+
+const removeFavorite = (req, reply) => {
 	function checkRecommendation(next) {
 		Users
 			.get(req.payload.ucmid)('suggestions')
 			.offsetsOf(Users.r.row('ecmid').eq(req.params.ecmid))
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.length) {
 					next(null, result);
 				} else {
 					next(Boom.badRequest('Sorry, This estate wasn`t recommended'));
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Sorry, Something are wrong!'));
-			});
+			}).error(() => next(Boom.badRequest('Sorry, Something are wrong!')));
 	}
 
 	function remove(index, next) {
@@ -31,7 +31,7 @@ function removeFavorite(req, reply) {
 				suggestions: Users.r.row('suggestions').deleteAt(index[0]),
 			})
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.replaced) {
 					next(null, {
 						status: 'success',
@@ -40,18 +40,16 @@ function removeFavorite(req, reply) {
 				} else {
 					next(Boom.badRequest('Sorry, Try again'));
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Sorry, Something are wrong!'));
-			});
+			}).error(() => next(Boom.badRequest('Sorry, Something are wrong!')));
 	}
 
 	Async.waterfall([
 		checkRecommendation,
 		remove,
-	], function reply(err, result) {
+	], (err, result) => {
 		reply(result || err);
 	});
-}
+};
 
 module.exports = {
 	method: 'DELETE',

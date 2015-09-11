@@ -2,17 +2,18 @@
 	[AGENTS] CREATE
 \* ------------------------------------ */
 
-var Boom    = require('boom');
-var Joi     = require('joi');
-var Agents 	= require('../../config/tables').agents;
-var Schema 	= require('../../models/agent');
+'use strict';
 
-function updateAgent(req, reply) {
+const Boom    	= require('boom');
+const Agents 	= require('../../config/tables').agents;
+const Schema 	= require('../../models/agent');
+
+const updateAgent = (req, reply) => {
 	Agents
 		.get(req.params.acmid)
 		.update(req.payload)
 		.run()
-		.then(function then(result) {
+		.then(result => {
 			if (result.replaced === 0) {
 				reply(Boom.badRequest('Something bad happen :('));
 			} else {
@@ -20,11 +21,8 @@ function updateAgent(req, reply) {
 					message: 'The agent was updated',
 				});
 			}
-
-		}).error(function error(err) {
-			reply(Boom.badRequest('Something bad happen :('));
-		});
-}
+		}).error(() => reply(Boom.badRequest('Something bad happen :(')));
+};
 
 module.exports = {
 	method: ['PUT', 'PATCH'],

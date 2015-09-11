@@ -2,120 +2,110 @@
 	[ESTATES] CREATE
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var Async   = require('async');
-var Estates = require('../../config/tables').estates;
-var Agents 	= require('../../config/tables').agents;
-var Users 	= require('../../config/tables').users;
-var Schema 	= require('../../models/estate');
+'use strict';
 
-function createEstate(req, reply) {
-	var estates = req.payload;
-	var errorImports = [];
-	var successImports = [];
-	var estateIndex = 0;
-	var currentEstate;
+const Boom 		= require('boom');
+const Joi 		= require('joi');
+const Async   	= require('async');
+const Estates 	= require('../../config/tables').estates;
+const Agents 	= require('../../config/tables').agents;
+const Schema 	= require('../../models/estate');
 
-	if (!estates.length) reply(Boom.badRequest('Sorry, you need pass an Array of json objects'));
+const 	errorArray 		= [];
+const 	successArray 	= [];
+let		currentEstate;
 
-	function checkAgent(next) {
-		Agents
-			.get(currentEstate.agent)
-			.run()
-			.then(function then(result) {
-				if (result) {
-					next(null, result);
-				} else {
-					next('Sorry, This agent not exist');
-				}
-			})
-			.error(function error(err) {
-				next('Try again some time');
-			});
-	}
+function checkAgent(next) {
+	Agents
+		.get(currentEstate.acmid)
+		.run()
+		.then(result => {
+			if (result) {
+				next(null, result);
+			} else {
+				next('Sorry, This agent not exist');
+			}
+		})
+		.error(() => next('Try again some time'));
+}
 
-	function checkLocation(agent, next) {
-		Estates
-			.filter(Estates.r.row('location').eq(currentEstate.location))
-			.run()
-			.then(function then(result) {
-				if (result.length === 0) {
-					next(null, agent);
-				} else {
-					next('Already exist an estate with the same address');
-				}
-			})
-			.error(function error(err) {
-				next('Try again some time');
-			});
+function checkLocation(agent, next) {
+	Estates
+		.filter(Estates.r.row('location').eq(currentEstate.location))
+		.run()
+		.then(result => {
+			if (result.length === 0) {
+				next(null, agent);
+			} else {
+				next('Already exist an estate with the same address');
+			}
+		})
+		.error(() => next('Try again some time'));
+}
+
+function isSuccess(agent) {
+	currentEstate.createdAt = new Date();
+	currentEstate.agent = agent;
+	successArray.push(currentEstate);
+}
+
+function isError(err, value) {
+	errorArray.push({
+		message: err,
+		value: value,
+	});
+}
+
+function checkEstate() {
+	Async.waterfall([
+		checkAgent,
+		checkLocation,
+	], (err, agent) => {
+		(agent) ? isSuccess(agent) : isError(err);
+	});
+}
+
+const createEstate = (req, reply) => {
+	const estates = req.payload;
+	const length = estates.length;
+
+	if (!req.payload.length) {
+		reply(Boom.badRequest('Sorry, you need pass an Array of json objects'));
+		return false;
 	}
 
 	function create() {
 		Estates
-			.insert(successImports)
+			.insert(successArray)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				reply({
 					status: 'Finished',
 					inserted: result.inserted,
 					skipped: result.skipped,
 					replaced: result.replaced,
 					insertErros: result.errors,
-					invalid: errorImports.length,
-					invalidValues: errorImports,
+					invalid: errorArray.length,
+					invalidValues: errorArray,
 				});
-			}).error(function error(err) {
-				reply(Boom.badRequest('Something bad happen :('));
-			});
+			}).error(() => reply(Boom.badRequest('Something bad happen :(')));
 	}
 
-	function pushError(err, value) {
-		errorImports.push({
-			message: err,
-			value: currentEstate,
+	const check = (estateIndex) => {
+		let index = estateIndex;
+
+		currentEstate = estates[estateIndex];
+
+		Joi.validate(currentEstate, Schema, {
+			presence: 'required',
+		}, (err, value) => {
+			(!err) ? checkEstate() : isError(err, value);
+			(estateIndex <= length) ? check(++index) : create();
 		});
-	}
+	};
 
-	function pushSuccess(value) {
-		successImports.push(value);
-	}
-
-	function validateEstate(next) {
-		currentEstate = req.payload[estateIndex];
-
-		estateIndex++;
-
-		if (estateIndex <= (req.payload.length)) {
-			Joi.validate(currentEstate, Schema, {
-				presence: 'required',
-			}, function result(err, value) {
-				if (err) {
-					pushError(err);
-					validateEstate();
-				} else {
-					Async.waterfall([
-						checkAgent,
-						checkLocation,
-					], function reply(err, agent) {
-						if (agent) {
-							currentEstate.createdAt = new Date();
-							currentEstate.agent = agent;
-							pushSuccess(currentEstate);
-						} else if (err) {
-							pushError(err);
-						}
-						validateEstate();
-					});
-				}
-			});
-		} else {
-			create();
-		}
-	}
-
-	validateEstate();
-}
+	check(0);
+};
 
 module.exports = {
 	method: 'POST',

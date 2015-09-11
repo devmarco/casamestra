@@ -2,26 +2,26 @@
 	[ESTATES] UPLOAD
 \* ------------------------------------ */
 
-var Boom    = require('boom');
-var Joi     = require('joi');
-var Async   = require('async');
-var Estates = require('../../config/tables').estates;
-var _upload = require('../../util/upload');
+'use strict';
 
-function upload(req, reply) {
+const Boom    = require('boom');
+const Joi     = require('joi');
+const Async   = require('async');
+const Estates = require('../../config/tables').estates;
+const _upload = require('../../util/upload');
+
+const upload = (req, reply) => {
 	function checkEstate(next) {
 		Estates
 			.get(req.params.ecmid)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result) {
 					next(null, result);
 				} else {
 					next(Boom.notFound('Sorry, this estate not exist'));
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Try again some time'));
-			});
+			}).error(() => next(Boom.badRequest('Try again some time')));
 	}
 
 	function uploadImage(estate, next) {
@@ -34,15 +34,12 @@ function upload(req, reply) {
 					gravity: 'face',
 				},
 			],
-		}, function result(result) {
-			next(null, result);
-		});
+		}, result => next(null, result));
 	}
 
 	function createObject(result) {
-		var imageObject;
-		var coverIndex = req.payload.cover;
-		var url;
+		let imageObject;
+		const coverIndex = req.payload.cover;
 
 		imageObject = {
 			cover: '',
@@ -52,7 +49,7 @@ function upload(req, reply) {
 		if (Array.isArray(result)) {
 			imageObject.cover = result[coverIndex].eager[0].url;
 			result.forEach(function each(value, index) {
-				url = result[index].eager[0].url;
+				const url = result[index].eager[0].url;
 				imageObject.photos.push(url);
 			});
 		} else {
@@ -63,14 +60,14 @@ function upload(req, reply) {
 		return imageObject;
 	}
 
-	function updateEstate(result, next) {
-		var changes = createObject(result);
+	function updateEstate(image, next) {
+		const changes = createObject(image);
 
 		Estates
 			.get(req.params.ecmid)
 			.update(changes)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.replaced === 0) {
 					next(Boom.badRequest('Something bad happen :('));
 				} else {
@@ -79,19 +76,17 @@ function upload(req, reply) {
 						message: 'The estate was updated',
 					});
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Something bad happen :('));
-			});
+			}).error(() => next(Boom.badRequest('Something bad happen :(')));
 	}
 
 	Async.waterfall([
 		checkEstate,
 		uploadImage,
 		updateEstate,
-	], function resp(err, result) {
+	], (err, result) => {
 		reply(result || err);
 	});
-}
+};
 
 module.exports = {
 	method: ['PATCH'],

@@ -1,4 +1,3 @@
-var server = require('./casamestra');
+'use strict';
 
-// Initialize
-server.init();
+require('./casamestra').init();

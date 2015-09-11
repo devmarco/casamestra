@@ -2,8 +2,10 @@
 	[USERS] DELETE
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Users 	= require('../../config/tables').users;
+'use strict';
+
+const Boom 		= require('boom');
+const Users 	= require('../../config/tables').users;
 
 function removeUser(req, reply) {
 	Users
@@ -21,9 +23,7 @@ function removeUser(req, reply) {
 					message: 'The user was deleted',
 				});
 			}
-		}).error(function error(err) {
-			reply(Boom.badRequest('Something bad happen :('));
-		});
+		}).error(() => reply(Boom.badRequest('Something bad happen :(')));
 }
 
 module.exports = {

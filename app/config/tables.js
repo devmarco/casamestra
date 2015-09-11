@@ -2,10 +2,12 @@
 	[DATABSE TABLES]
 \* ------------------------------------ */
 
-var DB 		= require('../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
+'use strict';
 
-var dbTables = {
+const DB 	= require('../config/settings').db;
+const r		= require('rethinkdbdash')(DB);
+
+const tables = {
 	estates: r.table('estates'),
 	agents: r.table('agents'),
 	users: r.table('users'),
@@ -16,10 +18,8 @@ var dbTables = {
 /*
  * Expose rethinkDB instance to table objects
  */
-for (key in dbTables) {
-	if (Object.hasOwnProperty.call(dbTables, key)) {
-		dbTables[key].r = r;
-	}
+for (const key in tables) {
+	if (Object.hasOwnProperty.call(tables, key)) tables[key].r = r;
 }
 
-module.exports = dbTables;
+module.exports = tables;

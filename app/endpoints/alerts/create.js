@@ -2,50 +2,48 @@
 	[ALERTS] CREATE
 \* ------------------------------------ */
 
-var moment	= require('moment');
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var Async   = require('async');
-var Alerts 	= require('../../config/tables').alerts;
-var Users 	= require('../../config/tables').users;
+'use strict';
 
-function createAlert(req, reply) {
+const moment	= require('moment');
+const Boom 		= require('boom');
+const Joi 		= require('joi');
+const Async   	= require('async');
+const Alerts 	= require('../../config/tables').alerts;
+const Users 	= require('../../config/tables').users;
+
+const createAlert = (req, reply) => {
 	function checkUser(next) {
 		Users
 			.get(req.payload.ucmid)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result) {
 					next();
 				} else {
 					next(Boom.notFound('Sorry, this user not exist'));
 				}
-			}).error(function error(err) {
-				next(Boom.forbidden('Try again some time'));
-			});
+			}).error(() => next(Boom.forbidden('Try again some time')));
 	}
 
 	function checkAlerts(next) {
 		Alerts
-			.filter(function filter(alerts) {
+			.filter(alerts => {
 				return alerts('filters')
-							.eq(req.payload.filters)
-							.and(alerts('ucmid')
-							.eq(req.payload.ucmid));
+					.eq(req.payload.filters)
+					.and(alerts('ucmid')
+					.eq(req.payload.ucmid));
 			})
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.length) {
 					next(Boom.conflict('Sorry, This alert already exist'));
 				} else {
 					next();
 				}
-			}).error(function error(err) {
-				next(Boom.forbidden('Try again some time'));
-			});
+			}).error(() => next(Boom.forbidden('Try again some time')));
 	}
 
-	function create() {
+	function create(next) {
 		req.payload.createdAt = moment().format('DD-MM-YYYY');
 
 		Alerts
@@ -53,7 +51,7 @@ function createAlert(req, reply) {
 				conflict: 'error',
 			})
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.errors !== 0) {
 					next(Boom.conflict('Probably this alert already exist'));
 				} else {
@@ -63,19 +61,17 @@ function createAlert(req, reply) {
 						filters: req.payload.filters,
 					});
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Something bad happen :('));
-			});
+			}).error(() => next(Boom.badRequest('Something bad happen :(')));
 	}
 
 	Async.waterfall([
 		checkUser,
 		checkAlerts,
 		create,
-	], function reply(err, result) {
+	], (err, result) => {
 		reply(result || err);
 	});
-}
+};
 
 module.exports = {
 	method: 'POST',

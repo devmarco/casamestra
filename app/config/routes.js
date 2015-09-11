@@ -2,7 +2,9 @@
 	[ROUTES]
 \* ------------------------------------ */
 
-var routes = [
+'use strict';
+
+const routes = [
 	// Agents
 	require('../../app/endpoints/agents/get'),
 	require('../../app/endpoints/agents/get-one'),
@@ -56,18 +58,18 @@ var routes = [
 	require('../../app/endpoints/recommendations/get-users-by-estate'),
 ];
 
-module.exports = {
-	create: function create(server) {
-		if (!server || !routes) throw new Error('Routes: Server or Endpoints are not found');
-		routes.forEach(function forEach(endpoint, index) {
-			if (typeof endpoint === 'object') {
-				server.route({
-					method: endpoint.method,
-					path: endpoint.path,
-					handler: endpoint.handler,
-					config: endpoint.config || {},
-				});
-			}
-		});
-	},
+const create = server => {
+	if (!server || !routes) throw new Error('Routes: Server or Endpoints are not found');
+	routes.forEach(endpoint => {
+		if (typeof endpoint === 'object') {
+			server.route({
+				method: endpoint.method,
+				path: endpoint.path,
+				handler: endpoint.handler,
+				config: endpoint.config || {},
+			});
+		}
+	});
 };
+
+module.exports = { create };

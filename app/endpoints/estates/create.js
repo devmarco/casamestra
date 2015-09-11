@@ -2,45 +2,41 @@
 	[ESTATES] CREATE
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var Async   = require('async');
-var Estates = require('../../config/tables').estates;
-var Agents 	= require('../../config/tables').agents;
-var Users 	= require('../../config/tables').users;
-var Schema 	= require('../../models/estate');
+'use strict';
 
-function createEstate(req, reply) {
+const Boom 		= require('boom');
+const Async   	= require('async');
+const Estates 	= require('../../config/tables').estates;
+const Agents 	= require('../../config/tables').agents;
+const Schema 	= require('../../models/estate');
+
+const createEstate = (req, reply) => {
 	function checkAgent(next) {
 		Agents
 			.get(req.payload.agent)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result) {
 					next(null, result);
 				} else {
 					next(Boom.badRequest('Sorry, This agent not exist'));
 				}
 			})
-			.error(function error(err) {
-				next(Boom.badRequest('Try again some time'));
-			});
+			.error(() => next(Boom.badRequest('Try again some time')));
 	}
 
 	function checkLocation(agent, next) {
 		Estates
 			.filter(Estates.r.row('location').eq(req.payload.location))
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.length === 0) {
 					next(null, agent);
 				} else {
 					next(Boom.conflict('Already exist an estate with the same address'));
 				}
 			})
-			.error(function error(err) {
-				next(Boom.badRequest('Try again some time'));
-			});
+			.error(() => next(Boom.badRequest('Try again some time')));
 	}
 
 	function create(agent, next) {
@@ -50,25 +46,23 @@ function createEstate(req, reply) {
 		Estates
 			.insert(req.payload)
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.errors !== 0) {
 					next(Boom.conflict('Probably this estate already exist'));
 				} else {
 					next(null, req.payload);
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Something bad happen :('));
-			});
+			}).error(() => next(Boom.badRequest('Something bad happen :(')));
 	}
 
 	Async.waterfall([
 		checkAgent,
 		checkLocation,
 		create,
-	], function reply(err, result) {
+	], (err, result) => {
 		reply(result || err);
 	});
-}
+};
 
 module.exports = {
 	method: 'POST',

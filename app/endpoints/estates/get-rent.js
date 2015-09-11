@@ -2,24 +2,24 @@
 	[ESTATE] GET
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Joi   	= require('joi');
-var filter 	= require('../../util/filters');
-var Estates = require('../../config/tables').estates;
+'use strict';
 
-function getEstates(req, reply) {
-	var filterQuery = filter(Estates, req, {
+const Boom 		= require('boom');
+const Joi   	= require('joi');
+const filter 	= require('../../util/filters');
+const Estates 	= require('../../config/tables').estates;
+
+const getEstates = (req, reply) => {
+	const filterQuery = filter(Estates, req, {
 		action: 'rent',
 	});
 
 	function getRentWithFilter() {
 		filterQuery
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				reply(result);
-			}).error(function error(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
+			}).error(() => reply(Boom.badRequest('Try again some time')));
 	}
 
 	function getRent() {
@@ -28,15 +28,12 @@ function getEstates(req, reply) {
 				action: 'rent',
 			})
 			.run()
-			.then(function then(result) {
-				reply(result);
-			}).error(function error(err) {
-				reply(Boom.badRequest('Try again some time'));
-			});
+			.then(result => reply(result))
+			.error(() => reply(Boom.badRequest('Try again some time')));
 	}
 
 	(filterQuery) ? getRentWithFilter() : getRent();
-}
+};
 
 module.exports = {
 	method: 'GET',

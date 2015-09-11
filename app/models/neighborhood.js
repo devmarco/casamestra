@@ -2,9 +2,11 @@
 	[SCHEMA] NEIGHBORHOOD
 \* ------------------------------------ */
 
-var Joi = require('joi');
+'use strict';
 
-var schema = {
+const Joi = require('joi');
+
+const schema = {
 	city: Joi.string(),
 	name: Joi.string(),
 	title: Joi.string(),

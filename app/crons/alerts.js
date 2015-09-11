@@ -2,35 +2,37 @@
 	[ALERTS] CRON
 \* ------------------------------------ */
 
-var Estates	= require('../config/tables').estates;
-var Alerts	= require('../config/tables').alerts;
+'use strict';
 
-function checkAlertsSubscribers(estate) {
+const Estates 	= require('../config/tables').estates;
+const Alerts	= require('../config/tables').alerts;
+
+const checkAlertsSubscribers = estate => {
 	Alerts
-		.filter(function filter(filter) {
+		.filter(filter => {
 			return filter('filters')
 				.coerceTo('array')
-				.map(function map(kv) {
+				.map(kv => {
 					return Alerts.r.expr(estate)(kv.nth(0)).eq(kv.nth(1));
 				})
-				.reduce(function reduce(x, y) {
+				.reduce((x, y) => {
 					return Alerts.r.and(x, y);
 				});
 		})
 		.run()
-		.then(function then(result) {
-			// Do something
-	}).error(function error(err) {
-		// Do nothing
-	});
-}
+		.then(result => {
+			console.log('New Alert', result);
+		}).error(err => {
+			console.log('Alert error: ', err);
+		});
+};
 
-function init() {
+const init = () => {
 	Estates
 		.changes()
 		.run({cursor: true})
-		.then(function then(cursor) {
-			cursor.each(function each(err, estate) {
+		.then(cursor => {
+			cursor.each((err, estate) => {
 				if (err) {
 					console.log(err);
 				} else {
@@ -41,10 +43,6 @@ function init() {
 				}
 			});
 		});
-
-	return true;
-}
-
-module.exports = {
-	init: init,
 };
+
+module.exports = { init };

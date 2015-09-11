@@ -2,23 +2,21 @@
 	[USERS] CREATE
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Joi 	= require('joi');
-var Async   = require('async');
-var bcrypt	= require('bcrypt');
-var Users 	= require('../../config/tables').users;
-var Schema 	= require('../../models/user');
+'use strict';
 
-function createUser(req, reply) {
+const Boom 		= require('boom');
+const Async   	= require('async');
+const bcrypt	= require('bcrypt');
+const Users 	= require('../../config/tables').users;
+const Schema 	= require('../../models/user');
+
+const createUser = (req, reply) => {
 	function encrypt(next) {
-		bcrypt.genSalt(15, function generate(err, salt) {
-			if (err) {
-				return next(Boom.badRequest('Something bad happen :('));
-			}
-			bcrypt.hash(req.payload.password, salt, function create(err, hash) {
-				if (err) {
-					return next(Boom.badRequest('Something bad happen :('));
-				}
+		bcrypt.genSalt(15, (saltErr, salt) => {
+			if (saltErr) return next(Boom.badRequest('Something bad happen :('));
+
+			bcrypt.hash(req.payload.password, salt, (err, hash) => {
+				if (err) return next(Boom.badRequest('Something bad happen :('));
 
 				req.payload.password = hash;
 
@@ -36,7 +34,7 @@ function createUser(req, reply) {
 				conflict: 'error',
 			})
 			.run()
-			.then(function then(result) {
+			.then(result => {
 				if (result.errors !== 0) {
 					next(Boom.conflict('Probably this user already exist'));
 				} else {
@@ -45,18 +43,16 @@ function createUser(req, reply) {
 						message: 'User created',
 					});
 				}
-			}).error(function error(err) {
-				next(Boom.badRequest('Something bad happen :('));
-			});
+			}).error(() => next(Boom.badRequest('Something bad happen :(')));
 	}
 
 	Async.waterfall([
 		encrypt,
 		create,
-	], function reply(err, result) {
+	], (err, result) => {
 		reply(result || err);
 	});
-}
+};
 
 module.exports = {
 	method: 'POST',

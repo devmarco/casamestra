@@ -2,16 +2,10 @@
 	[SETTINGS]
 \* ------------------------------------ */
 
-var config = {
-	url: {
-		path: 'http://localhost:7070',
-		agents: '/agents',
-		neighborhoods: '/neighborhoods',
-		buy: '/search/buy',
-		sell: '/search/sell',
-		rent: '/search/rent',
-		investiments: '/investiments',
-	},
+'use strict';
+
+const config = {
+	url: {},
 	db: {
 		host: '127.0.0.1',
 		port: 28015,

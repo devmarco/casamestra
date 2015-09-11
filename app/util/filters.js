@@ -2,57 +2,57 @@
 	[UTIL] FILTERS
 \* ------------------------------------ */
 
-var DB 		= require('../config/settings').db;
-var r 		= require('rethinkdbdash')(DB);
-var Boom 	= require('boom');
-var _ 		= require('lodash');
+'use strict';
 
-var Filters = function Filters(config) {
-	this.table 			= config.table;
-	this.customValues 	= {};
+const _ = require('lodash');
 
-	this.filters = {
+const filter = (config) => {
+	const table = config.table;
+	let query;
+	let customValues = {};
+
+	const filters = {
 		pluck: config.fields || null,
 		skip: parseInt(config.offset, 0) || null,
 		limit: parseInt(config.limit, 0) || null,
 	};
 
-	if (config.options) this.customValues = config.options;
-	if (config.values) this.customValues = _.merge(this.customValues, config.values);
-};
+	if (config.options) customValues = config.options;
+	if (config.values) customValues = _.merge(customValues, config.values);
 
-Filters.prototype.mount = function mount(limit, offset) {
-	var method;
-	var value;
+	function mount() {
+		let method;
+		let value;
 
-	this.query = this.table.filter(this.customValues);
+		query = table.filter(customValues);
 
-	for (key in this.filters) {
-		if (Object.hasOwnProperty.call(this.filters, key)) {
-			method 	= key;
-			value 	= this.filters[key];
+		for (const key in filters) {
+			if (Object.hasOwnProperty.call(filters, key)) {
+				method  = key;
+				value	= filters[key];
 
-			if (value) {
-				if (method === 'pluck') {
-					value = value.split(',');
+				if (value) {
+					if (method === 'pluck') {
+						value = value.split(',');
+					}
+
+					query = query[method](value);
 				}
-
-				this.query = this.query[method](value);
 			}
 		}
+
+		return this;
 	}
 
-	return this;
+	function getQuery() {
+		return query || false;
+	}
+
+	return {mount, getQuery};
 };
 
-Filters.prototype.getQuery = function getQuery(limit, offset) {
-	return this.query || false;
-};
-
-function checkFilter(table, req, option) {
-	var Filter;
-
-	Filter = new Filters({
+const checkFilter = (table, req, option) => {
+	const myFilter = filter({
 		table: table,
 		options: option,
 		limit: req.query.limit,
@@ -67,7 +67,7 @@ function checkFilter(table, req, option) {
 	});
 
 
-	return Filter.mount().getQuery();
-}
+	return myFilter.mount().getQuery();
+};
 
 module.exports = checkFilter;

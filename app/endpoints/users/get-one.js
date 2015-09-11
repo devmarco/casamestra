@@ -2,8 +2,10 @@
 	[USERS] GET ONE
 \* ------------------------------------ */
 
-var Boom 	= require('boom');
-var Users 	= require('../../config/tables').users;
+'use strict';
+
+const Boom 		= require('boom');
+const Users 	= require('../../config/tables').users;
 
 function getUser(req, reply) {
 	Users
@@ -12,9 +14,7 @@ function getUser(req, reply) {
 		.run()
 		.then(function then(result) {
 			reply(result);
-		}).error(function error(err) {
-			reply(Boom.badRequest('Try again some time'));
-		});
+		}).error(() => reply(Boom.badRequest('Try again some time')));
 }
 
 module.exports = {

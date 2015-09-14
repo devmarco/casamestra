@@ -23,7 +23,7 @@ const schema = {
 		gallery: Joi.array().items(Joi.string().uri()),
 	}),
 	keyDetails: Joi.object({
-		animals: Joi.any().valid(['dog', 'cat', true, false]),
+		animals: Joi.any().valid(['dog', 'cat', 'yes', 'no']),
 		neighborhood: Joi.string(),
 		city: Joi.string(),
 		area: Joi.number(),

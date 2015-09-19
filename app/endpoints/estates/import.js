@@ -17,7 +17,7 @@ let		currentEstate;
 
 function checkAgent(next) {
 	Agents
-		.get(currentEstate.acmid)
+		.get(currentEstate.agent)
 		.run()
 		.then(result => {
 			if (result) {
@@ -25,8 +25,7 @@ function checkAgent(next) {
 			} else {
 				next('Sorry, This agent not exist');
 			}
-		})
-		.error(() => next('Try again some time'));
+		}).error(() => next('Try again some time'));
 }
 
 function checkLocation(agent, next) {
@@ -39,8 +38,7 @@ function checkLocation(agent, next) {
 			} else {
 				next('Already exist an estate with the same address');
 			}
-		})
-		.error(() => next('Try again some time'));
+		}).error(() => next('Try again some time'));
 }
 
 function isSuccess(agent) {
@@ -56,19 +54,7 @@ function isError(err, value) {
 	});
 }
 
-function checkEstate() {
-	Async.waterfall([
-		checkAgent,
-		checkLocation,
-	], (err, agent) => {
-		(agent) ? isSuccess(agent) : isError(err);
-	});
-}
-
 const createEstate = (req, reply) => {
-	const estates = req.payload;
-	const length = estates.length;
-
 	if (!req.payload.length) {
 		reply(Boom.badRequest('Sorry, you need pass an Array of json objects'));
 		return false;
@@ -91,17 +77,36 @@ const createEstate = (req, reply) => {
 			}).error(() => reply(Boom.badRequest('Something bad happen :(')));
 	}
 
-	const check = (estateIndex) => {
-		let index = estateIndex;
+	const check = (index) => {
+		let i = index;
 
-		currentEstate = estates[estateIndex];
+		currentEstate = req.payload[i];
 
-		Joi.validate(currentEstate, Schema, {
-			presence: 'required',
-		}, (err, value) => {
-			(!err) ? checkEstate() : isError(err, value);
-			(estateIndex <= length) ? check(++index) : create();
-		});
+		if (i < req.payload.length) {
+			Joi.validate(currentEstate, Schema, {
+				presence: 'required',
+			}, (errSchema, value) => {
+				if (errSchema) {
+					isError(errSchema, value);
+					check(++i);
+				} else {
+					Async.waterfall([
+						checkAgent,
+						checkLocation,
+					], (err, agent) => {
+						if (agent) {
+							isSuccess(agent);
+						} else {
+							isError(err);
+						}
+
+						check(++i);
+					});
+				}
+			});
+		} else {
+			create();
+		}
 	};
 
 	check(0);

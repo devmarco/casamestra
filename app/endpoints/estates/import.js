@@ -25,8 +25,7 @@ function checkAgent(next) {
 			} else {
 				next('Sorry, This agent not exist');
 			}
-		})
-		.error(() => next('Try again some time'));
+		}).error(() => next('Try again some time'));
 }
 
 function checkLocation(agent, next) {
@@ -39,8 +38,7 @@ function checkLocation(agent, next) {
 			} else {
 				next('Already exist an estate with the same address');
 			}
-		})
-		.error(() => next('Try again some time'));
+		}).error(() => next('Try again some time'));
 }
 
 function isSuccess(agent) {
@@ -80,11 +78,6 @@ const createEstate = (req, reply) => {
 	errorArray = [];
 	successArray = [];
 
-	if (!req.payload.length) {
-		reply(Boom.badRequest('Sorry, you need pass an Array of json objects'));
-		return false;
-	}
-
 	const check = (estateIndex) => {
 		let index = estateIndex;
 
@@ -97,22 +90,27 @@ const createEstate = (req, reply) => {
 
 		Joi.validate(currentEstate, Schema, {
 			presence: 'required',
-		}, (errSchema, value) => {
+		}, (errSchema) => {
 			if (index < length) {
 				if (!errSchema) {
 					Async.waterfall([
 						checkAgent,
 						checkLocation,
 					], (err, agent) => {
-						(agent) ? isSuccess(agent) : isError(err);
+						if (agent) {
+							isSuccess(agent);
+						} else {
+							isError(err);
+						}
+
 						check(++index);
 					});
 				} else {
-					isError(errSchema, value);
+					isError(errSchema);
 					check(++index);
 				}
 			} else {
-				create(reply);
+				create();
 			}
 		});
 	};

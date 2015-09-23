@@ -21,9 +21,9 @@ const checkAlertsSubscribers = estate => {
 		})
 		.run()
 		.then(result => {
-			console.log('New Alert', result);
+			// console.log('New Alert', result);
 		}).error(err => {
-			console.log('Alert error: ', err);
+			// console.log('Alert error: ', err);
 		});
 };
 

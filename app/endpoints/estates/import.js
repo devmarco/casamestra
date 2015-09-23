@@ -11,13 +11,13 @@ const Estates 	= require('../../config/tables').estates;
 const Agents 	= require('../../config/tables').agents;
 const Schema 	= require('../../models/estate');
 
-const 	errorArray 		= [];
-const 	successArray 	= [];
-let		currentEstate;
+let errorArray;
+let successArray;
+let	currentEstate;
 
 function checkAgent(next) {
 	Agents
-		.get(currentEstate.acmid)
+		.get(currentEstate.agent)
 		.run()
 		.then(result => {
 			if (result) {
@@ -49,58 +49,71 @@ function isSuccess(agent) {
 	successArray.push(currentEstate);
 }
 
-function isError(err, value) {
+function isError(err) {
 	errorArray.push({
 		message: err,
-		value: value,
+		value: currentEstate,
 	});
 }
 
-function checkEstate() {
-	Async.waterfall([
-		checkAgent,
-		checkLocation,
-	], (err, agent) => {
-		(agent) ? isSuccess(agent) : isError(err);
-	});
+function create(reply) {
+	Estates
+		.insert(successArray)
+		.run()
+		.then(result => {
+			reply({
+				status: 'Finished',
+				inserted: result.inserted,
+				skipped: result.skipped,
+				replaced: result.replaced,
+				insertErros: result.errors,
+				invalid: errorArray.length,
+				invalidValues: errorArray,
+			});
+		}).error(() => reply(Boom.badRequest('Something bad happen :(')));
 }
 
 const createEstate = (req, reply) => {
 	const estates = req.payload;
 	const length = estates.length;
 
+	errorArray = [];
+	successArray = [];
+
 	if (!req.payload.length) {
 		reply(Boom.badRequest('Sorry, you need pass an Array of json objects'));
 		return false;
 	}
 
-	function create() {
-		Estates
-			.insert(successArray)
-			.run()
-			.then(result => {
-				reply({
-					status: 'Finished',
-					inserted: result.inserted,
-					skipped: result.skipped,
-					replaced: result.replaced,
-					insertErros: result.errors,
-					invalid: errorArray.length,
-					invalidValues: errorArray,
-				});
-			}).error(() => reply(Boom.badRequest('Something bad happen :(')));
-	}
-
 	const check = (estateIndex) => {
 		let index = estateIndex;
 
-		currentEstate = estates[estateIndex];
+		if (index >= length) {
+			create(reply);
+			return false;
+		}
+
+		currentEstate = estates[index];
 
 		Joi.validate(currentEstate, Schema, {
 			presence: 'required',
-		}, (err, value) => {
-			(!err) ? checkEstate() : isError(err, value);
-			(estateIndex <= length) ? check(++index) : create();
+		}, (errSchema, value) => {
+			if (index < length) {
+				if (!errSchema) {
+					Async.waterfall([
+						checkAgent,
+						checkLocation,
+					], (err, agent) => {
+						(agent) ? isSuccess(agent) : isError(err);
+						check(++index);
+					});
+				} else {
+					isError(errSchema, value);
+					check(++index);
+				}
+			} else {
+				create(reply);
+			}
 		});
 	};
 

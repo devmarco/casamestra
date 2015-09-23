@@ -36,6 +36,10 @@ const schema = {
 	price: Joi.number(),
 	exclusive: Joi.boolean(),
 	agent: Joi.string(),
+	featured: Joi.object({
+		isFeatured: Joi.boolean(),
+		position: Joi.number().valid([1, 2, 3, 4]),
+	}).optional(),
 	openHouses: Joi.object({
 		startTime: Joi.number(),
 		endTime: Joi.number(),

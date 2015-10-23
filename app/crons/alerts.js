@@ -12,12 +12,8 @@ const checkAlertsSubscribers = estate => {
 		.filter(filter => {
 			return filter('filters')
 				.coerceTo('array')
-				.map(kv => {
-					return Alerts.r.expr(estate)(kv.nth(0)).eq(kv.nth(1));
-				})
-				.reduce((x, y) => {
-					return Alerts.r.and(x, y);
-				});
+				.map(kv => Alerts.r.expr(estate)(kv.nth(0)).eq(kv.nth(1)))
+				.reduce((x, y) => Alerts.r.and(x, y));
 		})
 		.run()
 		.then(result => {

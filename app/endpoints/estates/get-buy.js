@@ -6,16 +6,17 @@
 
 const Boom 		= require('boom');
 const Joi   	= require('joi');
-const filter 	= require('../../util/filters');
+const Filter 	= require('../../util/filters');
 const Estates 	= require('../../config/tables').estates;
 
 const getEstates = (req, reply) => {
-	const filterQuery = filter(Estates, req, {
+	const EstatesFiltered = new Filter(Estates, req, {
 		action: 'sell',
 	});
 
 	function getBuyWithFilter() {
-		filterQuery
+		EstatesFiltered
+			.query()
 			.run()
 			.then(result => reply(result))
 			.error(() => reply(Boom.badRequest('Try again some time')));
@@ -31,7 +32,7 @@ const getEstates = (req, reply) => {
 			.error(() => reply(Boom.badRequest('Try again some time')));
 	}
 
-	(filterQuery) ? getBuyWithFilter() : getBuy();
+	(EstatesFiltered) ? getBuyWithFilter() : getBuy();
 };
 
 module.exports = {

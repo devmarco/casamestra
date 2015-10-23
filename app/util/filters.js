@@ -4,70 +4,52 @@
 
 'use strict';
 
-const _ = require('lodash');
+class Filter {
+	constructor(table, req, options) {
+		this.table 		= table;
+		this.req 		= req;
+		this.options 	= options;
+		this.limit 		= req.query.limit  || null;
+		this.offset 	= req.query.offset || null;
+		this.fields 	= req.query.fields || null;
 
-const filter = (config) => {
-	const table = config.table;
-	let query;
-	let customValues = {};
+		this.resolveFilter().mount();
+	}
 
-	const filters = {
-		pluck: config.fields || null,
-		skip: parseInt(config.offset, 0) || null,
-		limit: parseInt(config.limit, 0) || null,
-	};
+	resolveFilter() {
+		this.filters = {
+			pluck: this.fields,
+			skip: parseInt(this.offset, 0) || null,
+			limit: parseInt(this.limit, 0) || null,
+		};
 
-	if (config.options) customValues = config.options;
-	if (config.values) customValues = _.merge(customValues, config.values);
+		if (this.options) this.custom = this.options;
 
-	function mount() {
-		let method;
-		let value;
+		return this;
+	}
 
-		query = table.filter(customValues);
+	mount() {
+		this.filterQuery = this.table.filter(this.custom || {});
 
-		for (const key in filters) {
-			if (Object.hasOwnProperty.call(filters, key)) {
-				method  = key;
-				value	= filters[key];
+		for (const key in this.filters) {
+			if (key) {
+				const method  = key;
+				const value	= this.filters[key];
 
 				if (value) {
 					if (method === 'pluck') {
 						value = value.split(',');
 					}
 
-					query = query[method](value);
+					this.filterQuery = this.filterQuery[method](value);
 				}
 			}
 		}
-
-		return this;
 	}
 
-	function getQuery() {
-		return query || false;
+	query() {
+		return this.filterQuery || false;
 	}
+}
 
-	return {mount, getQuery};
-};
-
-const checkFilter = (table, req, option) => {
-	const myFilter = filter({
-		table: table,
-		options: option,
-		limit: req.query.limit,
-		offset: req.query.offset,
-		fields: req.query.fields,
-		values: {
-			bedrooms: req.query.bedrooms,
-			price: req.query.price,
-			bathrooms: req.query.bathrooms,
-			neighborhood: req.query.neighborhood,
-		},
-	});
-
-
-	return myFilter.mount().getQuery();
-};
-
-module.exports = checkFilter;
+module.exports = Filter;
